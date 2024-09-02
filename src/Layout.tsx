@@ -36,16 +36,21 @@ const MenuArea = styled.div`
 
 const ProjectListArea = styled.div`
   flex: 1;
-  padding: 0px 8px;
+  padding: 0 8px;
   overflow-y: auto;
 `;
 
 const UserInfoArea = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   height: 57px;
-  background-color: #d9d9d9;
+  border-top: 0.5px solid #b6b6b6;
+  background-color: var(--background-color);
 `;
 
+// 이 부분 손보기
 const ContentArea = styled.div`
   flex: 1;
   margin-top: 50px;
@@ -98,7 +103,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               return <div key={index}>프로젝트 {index + 1}</div>;
             })}
           </ProjectListArea>
-          <UserInfoArea>유저 프로필</UserInfoArea>
+          <UserInfoArea>Clerker</UserInfoArea>
         </SideBarContentArea>
       </SideBarArea>
       <ContentArea>{children}</ContentArea>
