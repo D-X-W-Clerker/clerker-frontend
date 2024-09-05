@@ -5,15 +5,20 @@ import AlarmIcon from './assets/SideBar/AlarmIcon.svg';
 import SettingIcon from './assets/SideBar/SettingIcon.svg';
 import AddIcon from './assets/SideBar/AddIcon.svg';
 
+// 전체 영역
 const Container = styled.div`
   display: flex;
+  width: 100%;
+  max-height: 100vh;
+  overflow: hidden;
 `;
 
+// 사이드바 영역
 const SideBarArea = styled.div`
   display: flex;
   flex-direction: column;
   width: 175px;
-  height: 100vh;
+  max-height: 100vh;
   border-right: 0.5px solid #b6b6b6;
   background-color: var(--background-color);
 `;
@@ -50,13 +55,6 @@ const UserInfoArea = styled.div`
   background-color: var(--background-color);
 `;
 
-// 이 부분 손보기
-const ContentArea = styled.div`
-  flex: 1;
-  margin-top: 50px;
-  padding: 20px;
-`;
-
 const MenuItem = styled.div`
   display: flex;
   align-items: center;
@@ -70,6 +68,16 @@ const MenuItem = styled.div`
 const MenuIcon = styled.img`
   width: 14px;
   height: 14px;
+`;
+
+// 컨텐츠 영역
+const ContentArea = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  height: calc(100vh - 50px);
 `;
 
 const menuItems = [
