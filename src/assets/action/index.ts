@@ -1,8 +1,8 @@
 import ActiveAlarmIcon from './alarm/ActiveAlarmIcon.svg';
 import AlarmIcon from './alarm/AlarmIcon.svg';
-import DownArrow from './arrow/DownArrowIcon.svg';
-import LeftArrow from './arrow/LeftArrowIcon.svg';
-import RightArrow from './arrow/RightArrowIcon.svg';
+import DownArrowIcon from './arrow/DownArrowIcon.svg';
+import LeftArrowIcon from './arrow/LeftArrowIcon.svg';
+import RightArrowIcon from './arrow/RightArrowIcon.svg';
 import DeleteIcon from './delete/DeleteIcon.svg';
 import InviteCancelIcon from './delete/InviteDeleteIcon.svg';
 import AddIcon from './AddIcon.svg';
@@ -16,11 +16,11 @@ export {
   AddIcon,
   AlarmIcon,
   DeleteIcon,
-  DownArrow,
+  DownArrowIcon,
   InviteCancelIcon,
-  LeftArrow,
+  LeftArrowIcon,
   LogoutIcon,
-  RightArrow,
+  RightArrowIcon,
   SettingIcon,
   ShareIcon,
   UrlClipIcon,
