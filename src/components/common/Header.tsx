@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import Clerker from '../../assets/Clerker.svg';
+import { Clerker } from '../../assets';
 
 const Container = styled.div`
   position: fixed;
