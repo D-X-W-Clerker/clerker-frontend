@@ -36,6 +36,7 @@ module.exports = {
       },
     ],
     'react/jsx-one-expression-per-line': 'off',
+    'no-unused-vars': 'off',
     'no-nested-ternary': 'off',
     'react/prop-types': 'off',
     'import/no-extraneous-dependencies': 'error',
