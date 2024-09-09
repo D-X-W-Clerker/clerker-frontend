@@ -33,17 +33,9 @@ const ProjectDetailPage: React.FC = () => {
       <Container>
         <LeftContentArea>
           <h2>멤버 및 파일 목록</h2>
-          {/* 스크롤 테스트를 위해 긴 내용 추가 */}
-          {Array.from({ length: 40 }, (_, index) => {
-            return <p key={index}>파일 {index + 1}</p>;
-          })}
         </LeftContentArea>
         <RightContentArea>
           <h2>캘린더 및 when2meet</h2>
-          {/* 스크롤 테스트를 위해 긴 내용 추가 */}
-          {Array.from({ length: 100 }, (_, index) => {
-            return <p key={index}>일정 {index + 1}</p>;
-          })}
         </RightContentArea>
       </Container>
     </Layout>
