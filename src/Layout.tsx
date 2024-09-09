@@ -8,11 +8,22 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+interface SummaryFile {
+  id: string;
+  name: string;
+}
+
+interface SubFolder {
+  id: string;
+  name: string;
+  summaryFiles: SummaryFile[];
+}
+
 interface Project {
   id: string;
   name: string;
-  summaryFiles: { id: string; name: string }[];
-  subFolders: { id: string; name: string }[];
+  summaryFiles: SummaryFile[];
+  subFolders: SubFolder[];
 }
 
 // -- 스타일 컴포넌트 --
@@ -32,6 +43,7 @@ const ContentArea = styled.div`
   height: calc(100vh - 50px);
 `;
 
+// 프로젝트와 하위 폴더의 생성, 업데이트 등 처리
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
 
@@ -52,9 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const onClickCreateProject = async (): Promise<void> => {
     try {
-      const response = await createProjectAPI();
-      const newProject = response;
-
+      const newProject = await createProjectAPI();
       setProjects((prevProjects) => {
         return [
           ...prevProjects,
@@ -77,11 +87,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         return project.id === projectId
           ? {
               ...project,
-              subItems: [
+              subFolders: [
                 ...project.subFolders,
                 {
                   id: generateUniqueId(),
                   name: `새로운 폴더`,
+                  summaryFiles: [],
                 },
               ],
             }

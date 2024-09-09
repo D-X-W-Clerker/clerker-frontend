@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
   RightArrowIcon,
@@ -8,17 +8,28 @@ import {
 } from '../../assets';
 
 // -- 인터페이스 --
+interface SummaryFile {
+  id: string;
+  name: string;
+}
+
+interface SubFolder {
+  id: string;
+  name: string;
+  summaryFiles: SummaryFile[];
+}
+
 interface Project {
   id: string;
   name: string;
-  summaryFiles: { id: string; name: string }[];
-  subFolders: { id: string; name: string }[];
+  summaryFiles: SummaryFile[];
+  subFolders: SubFolder[];
 }
 
 interface ProjectFolderProps {
   project: Project;
   isSelected: boolean;
-  onClick: () => void;
+  onClickProjectFolder: () => void;
   onClickCreateSubFolder: (projectId: string) => void;
 }
 
@@ -33,7 +44,7 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const ProjectFolderContainer = styled.div<{ isSelected: boolean }>`
+const FolderContainer = styled.div<{ isSelected: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -44,9 +55,16 @@ const ProjectFolderContainer = styled.div<{ isSelected: boolean }>`
     return props.isSelected ? '#ececec' : 'transparent';
   }};
   cursor: pointer;
+
   &:hover {
     background-color: #ececec;
   }
+`;
+
+const ProjectFolderContainer = styled(FolderContainer)``;
+
+const SubFolderContainer = styled(FolderContainer)`
+  padding-left: 20px;
 `;
 
 const AddSubFolderButton = styled.div`
@@ -54,8 +72,8 @@ const AddSubFolderButton = styled.div`
   align-items: center;
   gap: 4px;
   padding: 5px 22px;
-  border-radius: 7px;
   font-size: 12px;
+  border-radius: 7px;
   color: #707070;
   cursor: pointer;
   &:hover {
@@ -75,31 +93,67 @@ const SvgIcon = styled.img<SvgIconProps>`
 const ProjectTitle = styled.div`
   font-weight: var(--font-normal);
   color: #3d3d3d;
-  font-size: 12px;
+  font-size: 13px;
 `;
 
 const ProjectFolder: React.FC<ProjectFolderProps> = ({
   project,
   isSelected,
-  onClick,
+  onClickProjectFolder,
   onClickCreateSubFolder,
 }) => {
+  const [expandedSubFolderId, setExpandedSubFolderId] = useState<string | null>(
+    null,
+  );
+
+  const handleClickSubFolder = (subFolderId: string): void => {
+    setExpandedSubFolderId((prevId) => {
+      return prevId === subFolderId ? null : subFolderId;
+    });
+  };
+
   return (
     <Container>
-      <ProjectFolderContainer isSelected={isSelected} onClick={onClick}>
+      <ProjectFolderContainer
+        isSelected={isSelected}
+        onClick={onClickProjectFolder}
+      >
         <SvgIcon src={isSelected ? DownArrowIcon : RightArrowIcon} />
         <SvgIcon src={FolderIcon} />
         <ProjectTitle>{project.name}</ProjectTitle>
       </ProjectFolderContainer>
       {isSelected && (
-        <AddSubFolderButton
-          onClick={(): void => {
-            return onClickCreateSubFolder(project.id);
-          }}
-        >
-          <SvgIcon src={AddIcon} width="12px" height="12px" />
-          하위 폴더 생성
-        </AddSubFolderButton>
+        <>
+          <AddSubFolderButton
+            onClick={(): void => {
+              return onClickCreateSubFolder(project.id);
+            }}
+          >
+            <SvgIcon src={AddIcon} width="12px" height="12px" />
+            하위 폴더 생성
+          </AddSubFolderButton>
+          {project.subFolders.map((subFolder) => {
+            return (
+              <SubFolderContainer
+                key={subFolder.id}
+                isSelected={expandedSubFolderId === subFolder.id}
+                onClick={(): void => {
+                  return handleClickSubFolder(subFolder.id);
+                }}
+              >
+                <SvgIcon
+                  src={
+                    expandedSubFolderId === subFolder.id
+                      ? DownArrowIcon
+                      : RightArrowIcon
+                  }
+                />
+                <SvgIcon src={FolderIcon} />
+                <ProjectTitle>{subFolder.name}</ProjectTitle>
+              </SubFolderContainer>
+            );
+          })}
+        </>
       )}
     </Container>
   );

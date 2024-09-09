@@ -3,13 +3,25 @@ import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '../../assets';
 import MenuItem from '../sidebar/MenuItem';
 import ProjectFolder from '../sidebar/ProjectFolder';
+import Profile from '../sidebar/Profile';
 
 // -- 인터페이스 --
+interface SummaryFile {
+  id: string;
+  name: string;
+}
+
+interface SubFolder {
+  id: string;
+  name: string;
+  summaryFiles: SummaryFile[];
+}
+
 interface Project {
   id: string;
   name: string;
-  summaryFiles: { id: string; name: string }[];
-  subFolders: { id: string; name: string }[];
+  summaryFiles: SummaryFile[];
+  subFolders: SubFolder[];
 }
 
 interface SideBarProps {
@@ -64,6 +76,7 @@ const UserInfoArea = styled.div`
   justify-content: center;
   flex-shrink: 0;
   height: 57px;
+  padding: 0 16px;
   border-top: 0.5px solid #b6b6b6;
   background-color: var(--background-color);
 `;
@@ -161,14 +174,16 @@ const SideBar: React.FC<SideBarProps> = ({
                     project={project}
                     onClickCreateSubFolder={onClickCreateSubFolder}
                     isSelected={selectedProjectId === project.id}
-                    onClick={(): void => {
+                    onClickProjectFolder={(): void => {
                       return onClickProjectFolder(project.id);
                     }}
                   />
                 );
               })}
             </ProjectListArea>
-            <UserInfoArea>Clerker</UserInfoArea>
+            <UserInfoArea>
+              <Profile />
+            </UserInfoArea>
           </>
         )}
       </ContentArea>
