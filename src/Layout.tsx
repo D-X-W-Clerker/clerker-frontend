@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Header from './components/common/Header';
-import Sidebar from './components/common/Sidebar';
+import { Header, Sidebar } from './components';
 
 // -- 인터페이스 --
 interface LayoutProps {

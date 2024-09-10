@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '../../assets';
-import MenuItem from '../sidebar/MenuItem';
-import ProjectFolder from '../sidebar/ProjectFolder';
-import Profile from '../sidebar/Profile';
+import { MenuItem, ProjectFolder, Profile } from '../sidebar';
 
 // -- 인터페이스 --
 interface SummaryFile {
