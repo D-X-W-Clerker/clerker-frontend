@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { LogoutIcon, UserImageIcon } from '../../assets';
+import { LogoutIcon, UserImageIcon } from '../assets';
 
 const Container = styled.div`
   display: flex;

@@ -101,6 +101,7 @@ const ProjectFolder: React.FC<ProjectFolderProps> = ({
               />
             );
           })}
+          {/* 요약 파일 */}
         </>
       )}
     </Container>
