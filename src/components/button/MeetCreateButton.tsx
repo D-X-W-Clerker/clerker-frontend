@@ -1,16 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow, ItemsCenterStartRow } from '../../styles/FlexModule';
 import { AddIcon } from '../../assets';
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-`;
+const Container = styled(ItemsCenterStartRow)``;
 
-const ContentArea = styled.div`
-  display: flex;
-  align-items: center;
+const ContentArea = styled(ItemsCenterRow)`
   background-color: var(--background-color);
   gap: 5px;
   font-size: 12px;

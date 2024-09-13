@@ -1,18 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow, ItemsCenterStartRow } from '../../styles/FlexModule';
 import { MemberAddIcon } from '../../assets';
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
+const Container = styled(ItemsCenterStartRow)`
   padding: 5px;
   border-bottom: 0.5px solid #b6b6b6;
 `;
 
-const ContentArea = styled.div`
-  display: flex;
-  align-items: center;
+const ContentArea = styled(ItemsCenterRow)`
   background-color: #ededed;
   border-radius: 3px;
   padding: 2px;

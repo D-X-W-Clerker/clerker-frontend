@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { CenterRow, FlexCol, ItemsCenterRow } from '../../styles/FlexModule';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '../../assets';
 import { MenuItem, ProjectFolder, Profile } from '../index';
 
@@ -29,19 +30,15 @@ interface SideBarProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
+const Container = styled(FlexCol)`
   width: 175px;
   max-height: 100vh;
   border-right: 0.5px solid #b6b6b6;
   background-color: var(--background-color);
 `;
 
-const ContentArea = styled.div`
+const ContentArea = styled(FlexCol)`
   flex: 1;
-  display: flex;
-  flex-direction: column;
   height: calc(100vh - 50px);
 `;
 
@@ -51,9 +48,7 @@ const SvgIcon = styled.img`
 `;
 
 // 메뉴 탭
-const MenuArea = styled.div`
-  display: flex;
-  flex-direction: column;
+const MenuArea = styled(FlexCol)`
   gap: 4px;
   padding: 14px 8px;
   margin-top: 50px;
@@ -68,10 +63,7 @@ const ProjectListArea = styled.div`
 `;
 
 // 유저 프로필
-const UserInfoArea = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const UserInfoArea = styled(CenterRow)`
   flex-shrink: 0;
   height: 57px;
   padding: 0 16px;
@@ -80,16 +72,12 @@ const UserInfoArea = styled.div`
 `;
 
 // 수신함 목록
-const InboxArea = styled.div`
+const InboxArea = styled(FlexCol)`
   flex: 1;
-  display: flex;
-  flex-direction: column;
   padding: 0 18px;
 `;
 
-const InboxTitle = styled.div`
-  display: flex;
-  align-items: center;
+const InboxTitle = styled(ItemsCenterRow)`
   font-size: 16px;
   color: #262626;
   gap: 8px;
@@ -97,12 +85,10 @@ const InboxTitle = styled.div`
   flex-shrink: 0;
 `;
 
-const InboxContentArea = styled.div`
+const InboxContentArea = styled(FlexCol)`
   flex: 1;
-  display: flex;
-  flex-direction: column;
   gap: 5px;
-  overflow: auto;
+  overflow-y: auto;
 `;
 
 const menuItems = [

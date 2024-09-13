@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { FlexCol, ItemsCenterRow } from '../../styles/FlexModule';
 import { AddIcon } from '../../assets';
 import FolderItem from './FolderItem';
 
@@ -30,14 +31,9 @@ interface ProjectFolderProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const Container = styled(FlexCol)``;
 
-const AddSubFolderButton = styled.div`
-  display: flex;
-  align-items: center;
+const AddSubFolderButton = styled(ItemsCenterRow)`
   gap: 4px;
   padding: 5px 22px;
   font-size: 12px;

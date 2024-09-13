@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { FlexCol, FlexRow, ItemsCenterRow } from '../styles/FlexModule';
 import Layout from '../Layout';
 import { MemberIcon } from '../assets';
 import {
@@ -10,15 +11,12 @@ import {
   MeetCreateButton,
 } from '../components';
 
-const Container = styled.div`
-  display: flex;
+const Container = styled(FlexRow)`
   width: 100%;
   max-width: 1100px;
 `;
 
-const ContentArea = styled.div`
-  display: flex;
-  flex-direction: column;
+const ContentArea = styled(FlexCol)`
   width: 50%;
   overflow-y: auto;
   height: calc(100vh - 50px);
@@ -42,23 +40,18 @@ const LeftContentArea = styled(ContentArea)`
   border-right: 0.5px solid #b6b6b6; /* 영역 구분 되게끔 일부러 표시해둔 거에용 */
 `;
 
-const MemberTableArea = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+const MemberTableArea = styled(FlexCol)``;
 
-const MemberTab = styled.div`
-  display: flex;
-  align-items: center;
+const MemberTab = styled(ItemsCenterRow)`
   gap: 5px;
   padding-left: 3px;
   font-size: 20px;
   color: #3c3c3c;
 `;
 
-const ContentTabArea = styled(MemberTableArea)``;
+const ContentTabArea = styled(FlexCol)``;
 
-const ContentFileArea = styled(MemberTableArea)`
+const ContentFileArea = styled(FlexCol)`
   padding-left: 14px;
   gap: 5px;
 `;

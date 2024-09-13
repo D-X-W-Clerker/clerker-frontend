@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow, ItemsCenterSpaceRow } from '../styles/FlexModule';
 import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '../assets';
 
 // -- 인터페이스 --
@@ -9,25 +10,18 @@ interface HeaderProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div`
-  display: flex;
+const Container = styled(ItemsCenterSpaceRow)`
   height: 33px;
   margin-top: 44px;
-  align-items: center;
-  justify-content: space-between;
   background-color: var(--background-color);
 `;
 
-const TitleArea = styled.div`
-  display: flex;
-  align-items: center;
+const TitleArea = styled(ItemsCenterRow)`
   gap: 12px;
   font-size: 26px;
 `;
 
-const ActionArea = styled.div`
-  display: flex;
-  align-items: center;
+const ActionArea = styled(ItemsCenterRow)`
   gap: 16px;
 `;
 

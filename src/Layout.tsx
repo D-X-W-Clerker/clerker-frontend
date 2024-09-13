@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { FlexRow, CenterRow } from './styles/FlexModule';
 import { Header, Sidebar } from './components';
 
 // -- 인터페이스 --
@@ -26,18 +27,14 @@ interface Project {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div`
-  display: flex;
+const Container = styled(FlexRow)`
   width: 100%;
   max-height: 100vh;
   overflow: hidden;
 `;
 
-const ContentArea = styled.div`
+const ContentArea = styled(CenterRow)`
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   margin-top: 50px;
   height: calc(100vh - 50px);
 `;

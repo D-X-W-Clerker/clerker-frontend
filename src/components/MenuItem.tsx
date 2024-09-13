@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow } from '../styles/FlexModule';
 
 interface MenuItemProps {
   icon: string;
@@ -7,9 +8,7 @@ interface MenuItemProps {
   onClick: () => void;
 }
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
+const Container = styled(ItemsCenterRow)`
   gap: 5px;
   padding: 4px 20px;
   color: #707070;

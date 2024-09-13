@@ -1,17 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow, ItemsCenterSpaceRow } from '../styles/FlexModule';
 import { LogoutIcon, UserImageIcon } from '../assets';
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+const Container = styled(ItemsCenterSpaceRow)`
   width: 100%;
 `;
 
-const UserInfoArea = styled.div`
-  display: flex;
-  align-items: center;
+const UserInfoArea = styled(ItemsCenterRow)`
   gap: 6px;
 `;
 

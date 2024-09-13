@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow } from '../../styles/FlexModule';
 import { DownArrowIcon, RightArrowIcon, FolderIcon } from '../../assets';
 
 // -- 인터페이스 --
@@ -11,12 +12,10 @@ interface FolderItemProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div<{
+const Container = styled(ItemsCenterRow)<{
   isSelected: boolean;
   isSubFolder?: boolean;
 }>`
-  display: flex;
-  align-items: center;
   gap: 4px;
   padding: 4px 3px;
   padding-left: ${(props): string => {
