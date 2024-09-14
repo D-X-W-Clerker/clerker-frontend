@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { ItemsCenterRow } from '../styles/FlexModule';
 import { ContentIcon } from '../assets';
 
 // -- 인터페이스 --
@@ -9,9 +10,7 @@ interface TabContainerProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.div`
-  display: flex;
-  align-items: center;
+const Container = styled(ItemsCenterRow)`
   gap: 5px;
   margin-bottom: 15px;
 `;
