@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow } from '../styles/FlexModule';
-import { ContentIcon } from '../assets';
+import { ItemsCenterRow } from '../../styles/FlexModule';
+import { ContentIcon } from '../../assets';
 
 // -- 인터페이스 --
 interface TabContainerProps {

@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FlexCol, FlexRow, ItemsCenterRow } from '../styles/FlexModule';
+import { FlexCol, FlexRow } from '../styles/FlexModule';
 import Layout from '../Layout';
-import { MemberIcon } from '../assets';
 import {
   MemberTable,
   MemberAddButton,
-  ContentTitle,
-  Tab,
+  TitleTab,
+  MemberTab,
+  EventTab,
   MeetCreateButton,
   EventFile,
 } from '../components';
@@ -31,24 +31,12 @@ const ContentArea = styled(FlexCol)`
   scrollbar-width: none;
 `;
 
-const SvgIcon = styled.img`
-  width: 28px;
-  height: 20px;
-`;
-
 // 왼쪽 영역
 const LeftContentArea = styled(ContentArea)`
   border-right: 0.5px solid #b6b6b6; /* 영역 구분 되게끔 일부러 표시해둔 거에용 */
 `;
 
 const MemberTableArea = styled(FlexCol)``;
-
-const MemberTab = styled(ItemsCenterRow)`
-  gap: 5px;
-  padding-left: 3px;
-  font-size: 20px;
-  color: #3c3c3c;
-`;
 
 const ContentTabArea = styled(FlexCol)``;
 
@@ -94,17 +82,14 @@ const ProjectDetailPage: React.FC = () => {
     <Layout>
       <Container>
         <LeftContentArea>
-          <ContentTitle type="project" title="새로운 프로젝트" />
+          <TitleTab type="project" title="새로운 프로젝트" />
           <MemberTableArea>
-            <MemberTab>
-              <SvgIcon src={MemberIcon} />
-              Member
-            </MemberTab>
+            <MemberTab />
             <MemberTable data={MemberDummyData} />
             <MemberAddButton />
           </MemberTableArea>
           <ContentTabArea>
-            <Tab activeTab={activeTab} onClickTab={setActiveTab} />
+            <EventTab activeTab={activeTab} onClickTab={setActiveTab} />
             <ContentFileArea>
               {activeTab === 'meeting' && (
                 <>

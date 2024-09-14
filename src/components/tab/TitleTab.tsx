@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow, ItemsCenterSpaceRow } from '../styles/FlexModule';
-import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '../assets';
+import { ItemsCenterRow, ItemsCenterSpaceRow } from '../../styles/FlexModule';
+import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '../../assets';
 
 // -- 인터페이스 --
 interface HeaderProps {
@@ -35,7 +35,7 @@ const IconImage = styled.img<{ width: number; height: number }>`
   cursor: pointer;
 `;
 
-const ContentTitle: React.FC<HeaderProps> = ({ type, title }) => {
+const TitleTab: React.FC<HeaderProps> = ({ type, title }) => {
   const isProject = type === 'project';
   // 모달에서도 사용할 수 있게끔 하기
   return (
@@ -64,4 +64,4 @@ const ContentTitle: React.FC<HeaderProps> = ({ type, title }) => {
   );
 };
 
-export default ContentTitle;
+export default TitleTab;

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow } from '../styles/FlexModule';
+import { ItemsCenterRow } from '../../styles/FlexModule';
 
 interface MenuItemProps {
   icon: string;
@@ -25,7 +25,7 @@ const SvgIcon = styled.img`
   height: 14px;
 `;
 
-const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick }) => {
+const MenuTab: React.FC<MenuItemProps> = ({ icon, label, onClick }) => {
   return (
     <Container onClick={onClick}>
       <SvgIcon src={icon} />
@@ -34,4 +34,4 @@ const MenuItem: React.FC<MenuItemProps> = ({ icon, label, onClick }) => {
   );
 };
 
-export default MenuItem;
+export default MenuTab;

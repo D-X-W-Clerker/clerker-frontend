@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '../../styles/FlexModule';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '../../assets';
-import { MenuItem, ProjectFolder, Profile } from '../index';
+import { MenuTab, ProjectFolder, Profile } from '../index';
 
 // -- 인터페이스 --
 interface SummaryFile {
@@ -139,7 +139,7 @@ const SideBar: React.FC<SideBarProps> = ({
             <MenuArea>
               {menuItems.map((item) => {
                 return (
-                  <MenuItem
+                  <MenuTab
                     key={item.id}
                     icon={item.icon}
                     label={item.label}
