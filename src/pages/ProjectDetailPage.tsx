@@ -9,6 +9,7 @@ import {
   ContentTitle,
   Tab,
   MeetCreateButton,
+  EventFile,
 } from '../components';
 
 const Container = styled(FlexRow)`
@@ -52,14 +53,13 @@ const MemberTab = styled(ItemsCenterRow)`
 const ContentTabArea = styled(FlexCol)``;
 
 const ContentFileArea = styled(FlexCol)`
-  padding-left: 14px;
-  gap: 5px;
+  gap: 4px;
 `;
 
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
-const DummyData = [
+const MemberDummyData = [
   {
     name: '박건민',
     role: '디자인',
@@ -71,6 +71,19 @@ const DummyData = [
     role: 'Front',
     email: 'jinwook2765@kookmin.ac.kr',
     contact: '010-4630-2765',
+  },
+];
+
+const MeetingDummyData = [
+  {
+    id: '1',
+    meetingName: '프로젝트 킥오프',
+    dateTime: '2024-09-14T10:30:00',
+  },
+  {
+    id: '2',
+    meetingName: '디자인 리뷰',
+    dateTime: '2024-09-15T14:00:00',
   },
 ];
 
@@ -87,14 +100,26 @@ const ProjectDetailPage: React.FC = () => {
               <SvgIcon src={MemberIcon} />
               Member
             </MemberTab>
-            <MemberTable data={DummyData} />
+            <MemberTable data={MemberDummyData} />
             <MemberAddButton />
           </MemberTableArea>
           <ContentTabArea>
             <Tab activeTab={activeTab} onClickTab={setActiveTab} />
             <ContentFileArea>
-              {activeTab === 'meeting' && <MeetCreateButton />}
-              {/* 파일 컴포넌트 */}
+              {activeTab === 'meeting' && (
+                <>
+                  <MeetCreateButton />
+                  {MeetingDummyData.map((meeting) => {
+                    return (
+                      <EventFile
+                        key={meeting.id}
+                        meetingName={meeting.meetingName}
+                        dateTime={meeting.dateTime}
+                      />
+                    );
+                  })}
+                </>
+              )}
             </ContentFileArea>
           </ContentTabArea>
         </LeftContentArea>

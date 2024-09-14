@@ -9,3 +9,4 @@ export * from './common';
 export * from './folder';
 export * from './table';
 export * from './button';
+export * from './file';
