@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FlexRow, CenterRow } from './styles/FlexModule';
-import { Header, Sidebar } from './components';
+import { FlexRow, CenterRow } from '@styles';
+import { Header, Sidebar } from '@components';
 
 // -- 인터페이스 --
 interface LayoutProps {

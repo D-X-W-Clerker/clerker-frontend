@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterSpaceRow, ItemsCenterRow } from '../../styles/FlexModule';
-import { FileIcon } from '../../assets';
-import FormatDateTime from '../../utils/FormatDataTime';
+import { FileIcon } from '@assets';
+import { ItemsCenterSpaceRow, ItemsCenterRow } from '@styles';
+import { FormatDateTime } from '@utils';
 
 // -- 인터페이스 --
 interface MeetFileProps {

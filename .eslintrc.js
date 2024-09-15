@@ -67,12 +67,20 @@ module.exports = {
         tsx: 'never',
       },
     ],
+    'import/prefer-default-export': 'off',
   },
   settings: {
     'import/resolver': {
-      node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'], // 파일 확장자 해석
-        moduleDirectory: ['node_modules', 'src/'], // 모듈 해석 경로 설정
+      alias: {
+        map: [
+          ['@api', './src/api'],
+          ['@assets', './src/assets'],
+          ['@components', './src/components'],
+          ['@pages', './src/pages'],
+          ['@styles', './src/styles'],
+          ['@utils', './src/utils'],
+        ],
+        extensions: ['.ts', '.tsx', '.js', '.jsx'],
       },
     },
   },

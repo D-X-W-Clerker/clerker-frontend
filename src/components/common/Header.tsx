@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow } from '../../styles/FlexModule';
-import { Clerker } from '../../assets';
+import { Clerker } from '@assets';
+import { ItemsCenterRow } from '@styles';
 
 const Container = styled(ItemsCenterRow)`
   position: fixed;

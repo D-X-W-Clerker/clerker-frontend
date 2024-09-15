@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { CenterRow, FlexCol, ItemsCenterRow } from '../../styles/FlexModule';
-import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '../../assets';
-import { MenuTab, ProjectFolder, Profile } from '../index';
+import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '@assets';
+import { MenuTab, ProjectFolder, Profile } from '@components';
+import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface SummaryFile {

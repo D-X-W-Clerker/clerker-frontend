@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow, ItemsCenterSpaceRow } from '../../styles/FlexModule';
-import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '../../assets';
+import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '@assets';
+import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 // -- 인터페이스 --
 interface HeaderProps {

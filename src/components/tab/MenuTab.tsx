@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow } from '../../styles/FlexModule';
+import { ItemsCenterRow } from '@styles';
 
 interface MenuItemProps {
   icon: string;

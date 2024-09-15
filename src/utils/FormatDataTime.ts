@@ -1,4 +1,4 @@
-const FormatDateTime = (dateTime: string): string => {
+export const FormatDateTime = (dateTime: string): string => {
   const date = new Date(dateTime);
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -7,5 +7,3 @@ const FormatDateTime = (dateTime: string): string => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${year}.${month}.${day} ${hours}:${minutes}`;
 };
-
-export default FormatDateTime;

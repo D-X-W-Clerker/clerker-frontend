@@ -1,6 +1,6 @@
 import React from 'react';
-import { useTable, Column } from 'react-table';
 import styled from 'styled-components';
+import { useTable, Column } from 'react-table';
 
 /* eslint-disable react/jsx-props-no-spreading */
 

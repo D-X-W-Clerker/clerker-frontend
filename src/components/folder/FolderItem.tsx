@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow } from '../../styles/FlexModule';
-import { DownArrowIcon, RightArrowIcon, FolderIcon } from '../../assets';
+import { DownArrowIcon, RightArrowIcon, FolderIcon } from '@assets';
+import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface FolderItemProps {

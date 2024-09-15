@@ -1,4 +1,2 @@
-import MemberAddButton from './MemberAddButton';
-import MeetCreateButton from './MeetCreateButton';
-
-export { MemberAddButton, MeetCreateButton };
+export { default as MemberAddButton } from './MemberAddButton';
+export { default as MeetCreateButton } from './MeetCreateButton';

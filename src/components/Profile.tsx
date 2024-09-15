@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow, ItemsCenterSpaceRow } from '../styles/FlexModule';
-import { LogoutIcon, UserImageIcon } from '../assets';
+import { LogoutIcon, UserImageIcon } from '@assets';
+import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 const Container = styled(ItemsCenterSpaceRow)`
   width: 100%;

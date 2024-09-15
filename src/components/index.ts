@@ -1,6 +1,4 @@
-import Profile from './Profile';
-
-export { Profile };
+export { default as Profile } from './Profile';
 
 export * from './button';
 export * from './common';

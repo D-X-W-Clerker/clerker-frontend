@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FlexCol, FlexRow } from '../styles/FlexModule';
-import Layout from '../Layout';
 import {
   MemberTable,
   MemberAddButton,
@@ -10,7 +8,9 @@ import {
   EventTab,
   MeetCreateButton,
   EventFile,
-} from '../components';
+} from '@components';
+import { FlexCol, FlexRow } from '@styles';
+import Layout from '../Layout';
 
 const Container = styled(FlexRow)`
   width: 100%;

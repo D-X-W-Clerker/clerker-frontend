@@ -1,6 +1,4 @@
-import EventTab from './EventTab';
-import MemberTab from './MemberTab';
-import MenuTab from './MenuTab';
-import TitleTab from './TitleTab';
-
-export { EventTab, MemberTab, MenuTab, TitleTab };
+export { default as EventTab } from './EventTab';
+export { default as MemberTab } from './MemberTab';
+export { default as MenuTab } from './MenuTab';
+export { default as TitleTab } from './TitleTab';

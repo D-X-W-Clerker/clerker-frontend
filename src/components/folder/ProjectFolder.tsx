@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FlexCol, ItemsCenterRow } from '../../styles/FlexModule';
-import { AddIcon } from '../../assets';
-import FolderItem from './FolderItem';
+import { AddIcon } from '@assets';
+import { FolderItem } from '@components';
+import { FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface SummaryFile {

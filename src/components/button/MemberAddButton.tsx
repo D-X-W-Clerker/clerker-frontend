@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ItemsCenterRow, ItemsCenterStartRow } from '../../styles/FlexModule';
-import { MemberAddIcon } from '../../assets';
+import { MemberAddIcon } from '@assets';
+import { ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 
 const Container = styled(ItemsCenterStartRow)`
   padding: 5px;
