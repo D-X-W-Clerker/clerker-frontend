@@ -22,6 +22,8 @@
   },
   "include": [
     "src",
-    ".eslintrc.js"
-  ]
+    ".eslintrc.js",
+    "craco.config.js"
+  ],
+  "extends": "./tsconfig.paths.json"
 }

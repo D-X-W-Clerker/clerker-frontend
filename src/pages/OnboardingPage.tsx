@@ -1,11 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import Header from '../components/common/Header';
+import { ItemsCenterCol } from '../styles/FlexModule';
+import { Header } from '../components';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+const Container = styled(ItemsCenterCol)`
   height: 100vh;
   margin-top: 50px;
   overflow-y: auto;

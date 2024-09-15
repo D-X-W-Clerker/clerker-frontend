@@ -1,12 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import Clerker from '../../assets/Clerker.svg';
+import { Clerker } from '@assets';
+import { ItemsCenterRow } from '@styles';
 
-const Container = styled.div`
+const Container = styled(ItemsCenterRow)`
   position: fixed;
   top: 0;
-  display: flex;
-  align-items: center;
   width: 100%;
   height: 50px;
   padding-left: 130px;
