@@ -47,6 +47,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     return crypto.randomUUID();
   };
 
+  // 샘플 요약 파일 데이터를 생성하는 함수
+  const generateSampleSummaryFiles = (): SummaryFile[] => {
+    return [
+      { id: generateUniqueId(), name: '회의록 1' },
+      { id: generateUniqueId(), name: '회의록 2' },
+    ];
+  };
+
   const createProjectAPI = (): Promise<{ id: string; name: string }> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -67,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {
             id: newProject.id,
             name: newProject.name,
-            summaryFiles: [],
+            summaryFiles: generateSampleSummaryFiles(),
             subFolders: [],
           },
         ];
@@ -88,7 +96,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 {
                   id: generateUniqueId(),
                   name: `새로운 폴더`,
-                  summaryFiles: [],
+                  summaryFiles: generateSampleSummaryFiles(),
                 },
               ],
             }
