@@ -4,20 +4,21 @@ import { AddIcon } from '@assets';
 import { ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 
 const Container = styled(ItemsCenterStartRow)`
-  padding: 3px 17px;
-`;
-
-const ContentArea = styled(ItemsCenterRow)`
+  width: 100%;
+  box-sizing: border-box;
   background-color: var(--background-color);
-  gap: 5px;
-  font-size: 12.6px;
-  color: #707070;
-  padding: 3px 3px;
-  border-radius: 5px;
-  cursor: pointer;
+  padding: 6px 20px;
+  border-radius: 8px;
   &:hover {
     background-color: #f0f0f0;
   }
+`;
+
+const ContentArea = styled(ItemsCenterRow)`
+  gap: 5px;
+  font-size: 12.6px;
+  color: #707070;
+  cursor: pointer;
 `;
 
 const SvgImage = styled.img`
