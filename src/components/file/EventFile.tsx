@@ -14,11 +14,11 @@ interface MeetFileProps {
 const Container = styled(ItemsCenterSpaceRow)`
   width: 100%;
   box-sizing: border-box;
-  padding: 6px 20px;
+  padding: 5px 20px;
   border-radius: 8px;
   cursor: pointer;
   &:hover {
-    background-color: #f0f0f0;
+    background-color: var(--color-gray-50);
   }
 `;
 

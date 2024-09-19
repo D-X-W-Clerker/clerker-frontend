@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { LogoutIcon, UserImageIcon } from '@assets';
+import { SmallModal } from '@components';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 const Container = styled(ItemsCenterSpaceRow)`
@@ -28,13 +29,40 @@ const LogoutButton = styled.img`
 `;
 
 const Profile: React.FC = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const onClickLogoutButton = (): void => {
+    setIsModalOpen(true);
+  };
+
+  const onClickCloseButton = (): void => {
+    setIsModalOpen(false);
+  };
+
+  const onClickConfirmButton = (): void => {
+    // 로그아웃 함수 로직
+    setIsModalOpen(false);
+  };
+
   return (
     <Container>
       <UserInfoArea>
         <ProfileImage src={UserImageIcon} />
         <ProfileName>Clerker</ProfileName>
       </UserInfoArea>
-      <LogoutButton src={LogoutIcon} />
+      <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
+      {isModalOpen && (
+        <SmallModal
+          type="logout"
+          title="로그아웃"
+          message="로그아웃 하시겠습니까?"
+          confirmText="확인"
+          cancelText="취소"
+          onConfirm={onClickConfirmButton}
+          onCancel={onClickCloseButton}
+          isDelete={false}
+        />
+      )}
     </Container>
   );
 };

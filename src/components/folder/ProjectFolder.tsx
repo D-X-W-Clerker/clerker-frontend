@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { AddIcon } from '@assets';
-import { FolderItem } from '@components';
-import { FlexCol, ItemsCenterRow } from '@styles';
+import { FolderItem, AddSubFolderButton, MeetSummaryFile } from '@components';
+import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
 interface SummaryFile {
@@ -33,23 +32,6 @@ interface ProjectFolderProps {
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)``;
 
-const AddSubFolderButton = styled(ItemsCenterRow)`
-  gap: 4px;
-  padding: 5px 22px;
-  font-size: 12px;
-  border-radius: 7px;
-  color: #707070;
-  cursor: pointer;
-  &:hover {
-    background-color: #ececec;
-  }
-`;
-
-const SvgIcon = styled.img`
-  width: 12px;
-  height: 12px;
-`;
-
 const ProjectFolder: React.FC<ProjectFolderProps> = ({
   project,
   isSelected,
@@ -59,10 +41,19 @@ const ProjectFolder: React.FC<ProjectFolderProps> = ({
   const [selectedSubFolderId, setSelectedSubFolderId] = useState<string | null>(
     null,
   );
+  const [selectedSummaryFileId, setSelectedSummaryFileId] = useState<
+    string | null
+  >(null);
 
   const onClickSubFolder = (subFolderId: string): void => {
     setSelectedSubFolderId((prevId) => {
       return prevId === subFolderId ? null : subFolderId;
+    });
+  };
+
+  const onClickSummaryFile = (summaryFileId: string): void => {
+    setSelectedSummaryFileId((prevId) => {
+      return prevId === summaryFileId ? null : summaryFileId;
     });
   };
 
@@ -80,24 +71,51 @@ const ProjectFolder: React.FC<ProjectFolderProps> = ({
             onClick={(): void => {
               return onClickCreateSubFolder(project.id);
             }}
-          >
-            <SvgIcon src={AddIcon} />
-            하위 폴더 생성
-          </AddSubFolderButton>
+          />
           {project.subFolders.map((subFolder) => {
             return (
-              <FolderItem
-                key={subFolder.id}
-                isSelected={selectedSubFolderId === subFolder.id}
+              <>
+                <FolderItem
+                  isSelected={selectedSubFolderId === subFolder.id}
+                  onClick={(): void => {
+                    return onClickSubFolder(subFolder.id);
+                  }}
+                  name={subFolder.name}
+                  isSubFolder
+                />
+
+                {/* 하위 폴더 내 요약 파일 */}
+                {selectedSubFolderId === subFolder.id &&
+                  subFolder.summaryFiles.map((summaryFile) => {
+                    return (
+                      <MeetSummaryFile
+                        key={summaryFile.id}
+                        isSelected={selectedSummaryFileId === summaryFile.id}
+                        onClick={(): void => {
+                          return onClickSummaryFile(summaryFile.id);
+                        }}
+                        name={summaryFile.name}
+                        isSubFolder
+                      />
+                    );
+                  })}
+              </>
+            );
+          })}
+          {/* 프로젝트 내 요약 파일 */}
+          {project.summaryFiles.map((summaryFile) => {
+            return (
+              <MeetSummaryFile
+                key={summaryFile.id}
+                isSelected={selectedSummaryFileId === summaryFile.id}
                 onClick={(): void => {
-                  return onClickSubFolder(subFolder.id);
+                  return onClickSummaryFile(summaryFile.id);
                 }}
-                name={subFolder.name}
-                isSubFolder
+                name={summaryFile.name}
+                isSubFolder={false}
               />
             );
           })}
-          {/* 요약 파일 */}
         </>
       )}
     </Container>

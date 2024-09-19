@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { DownArrowIcon, RightArrowIcon, FolderIcon } from '@assets';
+import { FileIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
-interface FolderItemProps {
+interface MeetSummaryFileProps {
   isSelected: boolean;
   onClick: () => void;
   name: string;
@@ -17,9 +17,9 @@ const Container = styled(ItemsCenterRow)<{
   isSubFolder?: boolean;
 }>`
   gap: 4px;
-  padding: 4px 3px;
+  padding: 4px 3px 4px 20px;
   padding-left: ${(props): string => {
-    return props.isSubFolder ? '20px' : '3px';
+    return props.isSubFolder ? '38px' : '20px';
   }};
   border-radius: 7px;
   cursor: pointer;
@@ -49,7 +49,7 @@ const Title = styled.div`
   overflow: hidden;
 `;
 
-const FolderItem: React.FC<FolderItemProps> = ({
+const MeetSummaryFile: React.FC<MeetSummaryFileProps> = ({
   isSelected,
   onClick,
   name,
@@ -61,11 +61,10 @@ const FolderItem: React.FC<FolderItemProps> = ({
       onClick={onClick}
       isSubFolder={isSubFolder}
     >
-      <SvgIcon src={isSelected ? DownArrowIcon : RightArrowIcon} />
-      <SvgIcon src={FolderIcon} />
+      <SvgIcon src={FileIcon} />
       <Title>{name}</Title>
     </Container>
   );
 };
 
-export default FolderItem;
+export default MeetSummaryFile;

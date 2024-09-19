@@ -11,12 +11,12 @@ interface MenuItemProps {
 const Container = styled(ItemsCenterRow)`
   gap: 5px;
   padding: 4px 20px;
-  color: #707070;
+  color: var(--color-gray-500);
   font-size: 13px;
   cursor: pointer;
   border-radius: 5px;
   &:hover {
-    background-color: #ececec;
+    background-color: var(--color-gray-50);
   }
 `;
 

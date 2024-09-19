@@ -5,16 +5,16 @@ import { ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 
 const Container = styled(ItemsCenterStartRow)`
   padding: 5px;
-  border-bottom: 0.5px solid #b6b6b6;
+  border-bottom: 0.5px solid var(--color-gray-300);
 `;
 
 const ContentArea = styled(ItemsCenterRow)`
-  background-color: #ededed;
+  background-color: var(--color-gray-50);
   border-radius: 3px;
   padding: 2px;
   gap: 1px;
   font-size: 7px;
-  color: #858585;
+  color: var(--color-gray-400);
   cursor: pointer;
 `;
 
