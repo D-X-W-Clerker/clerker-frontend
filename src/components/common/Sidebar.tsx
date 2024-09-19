@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '@assets';
-import { MenuTab, ProjectFolder, Profile } from '@components';
+import { MenuTab, RootFolder, Profile } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
@@ -153,7 +153,7 @@ const SideBar: React.FC<SideBarProps> = ({
             <ProjectListArea>
               {projects.map((project) => {
                 return (
-                  <ProjectFolder
+                  <RootFolder
                     key={project.id}
                     project={project}
                     onClickCreateSubFolder={onClickCreateSubFolder}
