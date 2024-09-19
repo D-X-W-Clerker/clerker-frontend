@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Clerker } from '@assets';
 import { TutorialButton } from '@components';
 import { CenterCol, ItemsCenterRow } from '@styles';
-import Layout from '../Layout';
+import Layout from '../../Layout';
 
 const Container = styled(CenterCol)`
   width: 100%;

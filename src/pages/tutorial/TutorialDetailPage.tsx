@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { ContentDetail } from '@components';
 import { FlexCol, FlexRow } from '@styles';
-import Layout from '../Layout';
+import Layout from '../../Layout';
 
 const Container = styled(FlexCol)`
   width: 100%;
