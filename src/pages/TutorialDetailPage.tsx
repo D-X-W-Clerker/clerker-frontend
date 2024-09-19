@@ -22,7 +22,9 @@ const TutorialDetailPage: React.FC = () => {
 
   return (
     <Layout>
-      <ContentDetail tutorialKey={tutorialKey} />
+      <Container>
+        <ContentDetail tutorialKey={tutorialKey} />
+      </Container>
     </Layout>
   );
 };

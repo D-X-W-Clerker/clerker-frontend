@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FlexCol, FlexRow } from '@styles';
-import TutorialTexts from '../../data/TutorialTexts'; /* Module not found: Error: Can't resolve '@data' 에러해결 안돼서 일단 상대경로로 했어용 */
+import { TutorialTexts } from '@data';
 
 // -- 인터페이스 --
 interface ContentDetailProps {
