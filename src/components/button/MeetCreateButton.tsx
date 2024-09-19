@@ -7,17 +7,17 @@ const Container = styled(ItemsCenterStartRow)`
   width: 100%;
   box-sizing: border-box;
   background-color: var(--background-color);
-  padding: 6px 20px;
+  padding: 5px 20px;
   border-radius: 8px;
   &:hover {
-    background-color: #f0f0f0;
+    background-color: var(--color-gray-50);
   }
 `;
 
 const ContentArea = styled(ItemsCenterRow)`
   gap: 5px;
   font-size: 12.6px;
-  color: #707070;
+  color: var(--color-gray-500);
   cursor: pointer;
 `;
 

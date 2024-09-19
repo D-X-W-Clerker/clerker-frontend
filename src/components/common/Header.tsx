@@ -10,7 +10,7 @@ const Container = styled(ItemsCenterRow)`
   height: 50px;
   padding-left: 130px;
   background-color: var(--background-color);
-  border-bottom: 0.5px solid #b6b6b6;
+  border-bottom: 0.5px solid var(--color-gray-300);
   z-index: 1000;
 `;
 

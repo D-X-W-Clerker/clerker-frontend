@@ -33,7 +33,7 @@ const ContentArea = styled(FlexCol)`
 
 // 왼쪽 영역
 const LeftContentArea = styled(ContentArea)`
-  border-right: 0.5px solid #b6b6b6; /* 영역 구분 되게끔 일부러 표시해둔 거에용 */
+  border-right: 0.5px solid var(--color-gray-300); /* 영역 구분 되게끔 일부러 표시해둔 거에용 */
 `;
 
 const MemberTableArea = styled(FlexCol)``;

@@ -7,7 +7,7 @@ const Container = styled(ItemsCenterRow)`
   gap: 5px;
   padding-left: 3px;
   font-size: 20px;
-  color: #3c3c3c;
+  color: var(--color-gray-600);
 `;
 
 const SvgIcon = styled.img`

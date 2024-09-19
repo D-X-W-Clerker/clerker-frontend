@@ -23,12 +23,12 @@ const Container = styled(ItemsCenterRow)<{
   }};
   border-radius: 7px;
   cursor: pointer;
-  color: #3d3d3d;
+  color: var(--color-gray-600);
   background-color: ${(props): string => {
-    return props.isSelected ? '#ececec' : 'transparent';
+    return props.isSelected ? 'var(--color-gray-50)' : 'transparent';
   }};
   &:hover {
-    background-color: #ececec;
+    background-color: var(--color-gray-50);
     mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
   }
   mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0));
@@ -43,7 +43,7 @@ const SvgIcon = styled.img`
 const Title = styled.div`
   display: block;
   font-weight: var(--font-normal);
-  color: #3d3d3d;
+  color: var(--color-gray-600);
   font-size: 13px;
   white-space: nowrap;
   overflow: hidden;

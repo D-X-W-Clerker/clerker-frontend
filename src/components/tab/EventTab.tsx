@@ -20,7 +20,7 @@ const TabButton = styled.div<{ active: boolean }>`
     return props.active ? '19px' : '15px';
   }};
   color: ${(props): string => {
-    return props.active ? '#3a3a3a' : '#707070';
+    return props.active ? 'var(--color-gray-600)' : 'var(--color-gray-500)';
   }};
   order: ${(props): number => {
     return props.active ? -1 : 0;

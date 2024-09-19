@@ -14,10 +14,10 @@ const Container = styled(ItemsCenterRow)`
   padding: 5px 22px;
   font-size: 12px;
   border-radius: 7px;
-  color: #707070;
+  color: var(--color-gray-500);
   cursor: pointer;
   &:hover {
-    background-color: #ececec;
+    background-color: var(--color-gray-50);
   }
 `;
 
