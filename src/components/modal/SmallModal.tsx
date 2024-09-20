@@ -60,8 +60,8 @@ const SmallModal: React.FC<SmallModalProps> = ({
         <SmallModalTitleTab type={type} title={title} />
         <MessageArea>{message}</MessageArea>
         <ButtonArea>
-          <ModalButton text={confirmText} color="blue" onClick={onConfirm} />
           <ModalButton text={cancelText} color="gray" onClick={onCancel} />
+          <ModalButton text={confirmText} color="blue" onClick={onConfirm} />
         </ButtonArea>
       </Container>
     </Backdrop>
