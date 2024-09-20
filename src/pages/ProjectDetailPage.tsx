@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import {
   MemberTable,
@@ -33,7 +33,7 @@ const ContentArea = styled(FlexCol)`
 
 // 왼쪽 영역
 const LeftContentArea = styled(ContentArea)`
-  border-right: 0.5px solid var(--color-gray-300); /* 영역 구분 되게끔 일부러 표시해둔 거에용 */
+  border-right: 0.5px solid var(--color-gray-300); /* 영역 구분되게 일부러 표시 */
 `;
 
 const MemberTableArea = styled(FlexCol)``;
@@ -64,21 +64,60 @@ const MemberDummyData = [
   },
 ];
 
-const MeetingDummyData = [
-  {
-    id: '1',
-    meetingName: '프로젝트 킥오프',
-    dateTime: '2024-09-14T10:30:00',
-  },
-  {
-    id: '2',
-    meetingName: '디자인 리뷰',
-    dateTime: '2024-09-15T14:00:00',
-  },
-];
+// fetchData 중에서 일부 데이터들
+const fetchEventData = async (): Promise<{
+  schedules: { id: string; meetingName: string; dateTime: string }[];
+  meetings: { id: string; meetingName: string; dateTime: string }[];
+}> => {
+  return {
+    schedules: [
+      {
+        id: '3',
+        meetingName: '프론트 디자인 회의 일정',
+        dateTime: '2024-09-20T10:30:00',
+      },
+      {
+        id: '4',
+        meetingName: '프론트 기능 명세 일정',
+        dateTime: '2024-09-15T14:00:00',
+      },
+    ],
+    meetings: [
+      {
+        id: '1',
+        meetingName: '프로젝트 킥오프',
+        dateTime: '2024-09-14T10:30:00',
+      },
+      {
+        id: '2',
+        meetingName: '디자인 리뷰',
+        dateTime: '2024-09-15T14:00:00',
+      },
+    ],
+  };
+};
 
 const ProjectDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('meeting');
+  const [meetingData, setMeetingData] = useState<
+    { id: string; meetingName: string; dateTime: string }[]
+  >([]);
+  const [scheduleData, setScheduleData] = useState<
+    { id: string; meetingName: string; dateTime: string }[]
+  >([]);
+
+  useEffect((): void => {
+    // 백엔드에서 데이터를 받아옴 (schedules, meetings 함께)
+    const fetchData = async (): Promise<void> => {
+      const { meetings, schedules } = await fetchEventData();
+      setMeetingData(meetings);
+      setScheduleData(schedules);
+    };
+
+    fetchData();
+  }, []);
+
+  const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
 
   return (
     <Layout>
@@ -93,26 +132,20 @@ const ProjectDetailPage: React.FC = () => {
           <ContentTabArea>
             <EventTab activeTab={activeTab} onClickTab={setActiveTab} />
             <ContentFileArea>
-              {activeTab === 'meeting' && (
-                <>
-                  <MeetCreateButton />
-                  {MeetingDummyData.map((meeting) => {
-                    return (
-                      <EventFile
-                        key={meeting.id}
-                        meetingName={meeting.meetingName}
-                        dateTime={meeting.dateTime}
-                      />
-                    );
-                  })}
-                </>
-              )}
+              {activeTab === 'meeting' && <MeetCreateButton />}
+              {eventData.map((event) => {
+                return (
+                  <EventFile
+                    key={event.id}
+                    meetingName={event.meetingName}
+                    dateTime={event.dateTime}
+                  />
+                );
+              })}
             </ContentFileArea>
           </ContentTabArea>
         </LeftContentArea>
-        <RightContentArea>
-          <h3>캘린더 및 when2meet</h3>
-        </RightContentArea>
+        <RightContentArea />
       </Container>
     </Layout>
   );
