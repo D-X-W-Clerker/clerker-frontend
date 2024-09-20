@@ -13,19 +13,19 @@ interface FolderItemProps {
 
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)<{
-  isSelected: boolean;
-  isSubFolder?: boolean;
+  $isSelected: boolean;
+  $isSubFolder?: boolean;
 }>`
   gap: 4px;
   padding: 4px 3px;
   padding-left: ${(props): string => {
-    return props.isSubFolder ? '20px' : '3px';
+    return props.$isSubFolder ? '20px' : '3px';
   }};
   border-radius: 7px;
   cursor: pointer;
   color: var(--color-gray-600);
   background-color: ${(props): string => {
-    return props.isSelected ? 'var(--color-gray-50)' : 'transparent';
+    return props.$isSelected ? 'var(--color-gray-50)' : 'transparent';
   }};
   &:hover {
     background-color: var(--color-gray-50);
@@ -57,9 +57,9 @@ const ProjectFolder: React.FC<FolderItemProps> = ({
 }) => {
   return (
     <Container
-      isSelected={isSelected}
+      $isSelected={isSelected}
       onClick={onClick}
-      isSubFolder={isSubFolder}
+      $isSubFolder={isSubFolder}
     >
       <SvgIcon src={isSelected ? DownArrowIcon : RightArrowIcon} />
       <SvgIcon src={FolderIcon} />

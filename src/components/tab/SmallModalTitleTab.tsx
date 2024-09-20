@@ -5,7 +5,7 @@ import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface SmallModalTitleTabProps {
-  type: 'project' | 'logout';
+  type: string;
   title: string;
 }
 
@@ -16,12 +16,12 @@ const Container = styled(ItemsCenterRow)`
   background-color: var(--background-color);
 `;
 
-const IconImage = styled.img<{ width: number; height: number }>`
+const IconImage = styled.img<{ $width: number; $height: number }>`
   width: ${(props): number => {
-    return props.width;
+    return props.$width;
   }}px;
   height: ${(props): number => {
-    return props.height;
+    return props.$height;
   }}px;
 `;
 
@@ -36,8 +36,8 @@ const SmallModalTitleTab: React.FC<SmallModalTitleTabProps> = ({
       <IconImage
         src={isProject ? FolderIcon : ActiveLogoutIcon}
         alt={isProject ? 'Folder Icon' : 'Logout Icon'}
-        width={isProject ? 24 : 21}
-        height={isProject ? 19 : 19}
+        $width={isProject ? 24 : 21}
+        $height={isProject ? 19 : 19}
       />
       {title}
     </Container>

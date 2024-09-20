@@ -16,14 +16,14 @@ interface SmallModalProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Backdrop = styled(CenterRow)<{ isDelete: boolean }>`
+const Backdrop = styled(CenterRow)<{ $isDelete: boolean }>`
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: ${({ isDelete }): string => {
-    return isDelete ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.7)';
+  background-color: ${({ $isDelete }): string => {
+    return $isDelete ? 'rgba(0, 0, 0, 0.2)' : 'rgba(0, 0, 0, 0.7)';
   }};
   z-index: 1000;
 `;
@@ -55,7 +55,7 @@ const SmallModal: React.FC<SmallModalProps> = ({
   isDelete,
 }) => {
   return (
-    <Backdrop isDelete={isDelete}>
+    <Backdrop $isDelete={isDelete}>
       <Container>
         <SmallModalTitleTab type={type} title={title} />
         <MessageArea>{message}</MessageArea>

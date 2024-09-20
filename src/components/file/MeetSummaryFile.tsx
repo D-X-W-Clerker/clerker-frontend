@@ -13,24 +13,26 @@ interface MeetSummaryFileProps {
 
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)<{
-  isSelected: boolean;
-  isSubFolder?: boolean;
+  $isSelected: boolean;
+  $isSubFolder?: boolean;
 }>`
   gap: 4px;
-  padding: 4px 3px 4px 20px;
-  padding-left: ${(props): string => {
-    return props.isSubFolder ? '38px' : '20px';
-  }};
+  padding: 4px 3px 4px
+    ${(props): string => {
+      return props.$isSubFolder ? '38px' : '20px';
+    }};
   border-radius: 7px;
   cursor: pointer;
   color: var(--color-gray-600);
   background-color: ${(props): string => {
-    return props.isSelected ? 'var(--color-gray-50)' : 'transparent';
+    return props.$isSelected ? 'var(--color-gray-50)' : 'transparent';
   }};
+
   &:hover {
     background-color: var(--color-gray-50);
     mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
   }
+
   mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0));
 `;
 
@@ -57,9 +59,9 @@ const MeetSummaryFile: React.FC<MeetSummaryFileProps> = ({
 }) => {
   return (
     <Container
-      isSelected={isSelected}
+      $isSelected={isSelected}
       onClick={onClick}
-      isSubFolder={isSubFolder}
+      $isSubFolder={isSubFolder}
     >
       <SvgIcon src={FileIcon} />
       <Title>{name}</Title>

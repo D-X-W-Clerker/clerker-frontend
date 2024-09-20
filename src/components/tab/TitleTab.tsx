@@ -5,7 +5,7 @@ import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 // -- 인터페이스 --
 interface HeaderProps {
-  type: 'project' | 'meeting';
+  type: string;
   title: string;
 }
 
@@ -25,39 +25,44 @@ const ActionArea = styled(ItemsCenterRow)`
   gap: 16px;
 `;
 
-const IconImage = styled.img<{ width: number; height: number }>`
+const IconImage = styled.img<{ $width: number; $height: number }>`
   width: ${(props): number => {
-    return props.width;
+    return props.$width;
   }}px;
   height: ${(props): number => {
-    return props.height;
+    return props.$height;
   }}px;
   cursor: pointer;
 `;
 
 const TitleTab: React.FC<HeaderProps> = ({ type, title }) => {
   const isProject = type === 'project';
-  // 모달에서도 사용할 수 있게끔 하기
+
   return (
     <Container>
       <TitleArea>
         <IconImage
           src={isProject ? FolderIcon : FileIcon}
           alt={isProject ? 'Folder Icon' : 'File Icon'}
-          width={isProject ? 34 : 28}
-          height={isProject ? 26 : 33}
+          $width={isProject ? 34 : 28}
+          $height={isProject ? 26 : 33}
         />
         {title}
       </TitleArea>
       <ActionArea>
         {!isProject && (
-          <IconImage src={ShareIcon} alt="Share Icon" width={20} height={22} />
+          <IconImage
+            src={ShareIcon}
+            alt="Share Icon"
+            $width={20}
+            $height={22}
+          />
         )}
         <IconImage
           src={SettingIcon}
           alt="Setting Icon"
-          width={24}
-          height={24}
+          $width={24}
+          $height={24}
         />
       </ActionArea>
     </Container>
