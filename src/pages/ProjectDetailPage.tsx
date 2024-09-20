@@ -49,12 +49,14 @@ const RightContentArea = styled(ContentArea)``;
 
 const MemberDummyData = [
   {
+    id: '1',
     name: '박건민',
     role: '디자인',
     email: 'pkm021118@kookmin.ac.kr',
     contact: '010-4726-9130',
   },
   {
+    id: '2',
     name: '신진욱',
     role: 'Front',
     email: 'jinwook2765@kookmin.ac.kr',
