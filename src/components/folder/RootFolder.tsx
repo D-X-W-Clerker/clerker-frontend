@@ -64,6 +64,7 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
   return (
     <Container>
       <ProjectFolder
+        key={project.id}
         isSelected={isSelected}
         onClick={onClickProjectFolder}
         name={project.name}
@@ -76,10 +77,12 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
               return onClickCreateSubFolder(project.id);
             }}
           />
+          {/* 프로젝트 하위 폴더 */}
           {project.subFolders.map((subFolder) => {
             return (
-              <>
+              <React.Fragment key={subFolder.id}>
                 <ProjectFolder
+                  key={subFolder.id}
                   isSelected={selectedSubFolderId === subFolder.id}
                   onClick={(): void => {
                     return onClickSubFolder(subFolder.id);
@@ -103,7 +106,7 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
                       />
                     );
                   })}
-              </>
+              </React.Fragment>
             );
           })}
           {/* 프로젝트 내 요약 파일 */}
