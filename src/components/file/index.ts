@@ -1,2 +1,2 @@
 export { default as EventFile } from './EventFile';
-export { default as ContentDetail } from './ContentDetail';
+export { default as MeetSummaryFile } from './MeetSummaryFile';

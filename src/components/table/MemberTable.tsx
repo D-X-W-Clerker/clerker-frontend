@@ -12,13 +12,12 @@ const Table = styled.table`
 `;
 
 const Th = styled.th`
-  border-top: 0.5px solid #b6b6b6;
-  border-bottom: 0.5px solid #b6b6b6;
-  border-right: 0.5px solid #b6b6b6;
+  border: 0.5px solid var(--color-gray-300);
+  border-left: none;
   padding: 5px;
   font-weight: var(--font-medium);
   text-align: left;
-  color: #707070;
+  color: var(--color-gray-500);
 
   &:last-child {
     border-right: none;
@@ -26,10 +25,10 @@ const Th = styled.th`
 `;
 
 const Td = styled.td`
-  border-bottom: 0.5px solid #b6b6b6;
-  border-right: 0.5px solid #b6b6b6;
+  border-bottom: 0.5px solid var(--color-gray-300);
+  border-right: 0.5px solid var(--color-gray-300);
   padding: 5px;
-  color: #3a3a3a;
+  color: var(--color-gray-600);
 
   &:last-child {
     border-right: none;

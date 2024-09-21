@@ -33,7 +33,7 @@ interface SideBarProps {
 const Container = styled(FlexCol)`
   width: 175px;
   max-height: 100vh;
-  border-right: 0.5px solid #b6b6b6;
+  border-right: 0.5px solid var(--color-gray-300);
   background-color: var(--background-color);
 `;
 
@@ -67,7 +67,7 @@ const UserInfoArea = styled(CenterRow)`
   flex-shrink: 0;
   height: 57px;
   padding: 0 16px;
-  border-top: 0.5px solid #b6b6b6;
+  border-top: 0.5px solid var(--color-gray-300);
   background-color: var(--background-color);
 `;
 
@@ -79,7 +79,7 @@ const InboxArea = styled(FlexCol)`
 
 const InboxTitle = styled(ItemsCenterRow)`
   font-size: 16px;
-  color: #262626;
+  color: var(--color-gray-700);
   gap: 8px;
   margin: 70px 0 18px;
   flex-shrink: 0;
