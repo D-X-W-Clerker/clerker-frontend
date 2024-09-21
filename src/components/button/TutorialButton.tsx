@@ -22,7 +22,7 @@ const Container = styled(FlexCol)`
   width: 200px;
   height: 100px;
   background-color: var(--background-color);
-  border: 0.5px solid #d2d2d2;
+  border: 0.5px solid var(--color-gray-100);
   border-radius: 33px;
   box-shadow:
     -1px -1px 4px rgba(0, 0, 0, 0.05),
@@ -34,7 +34,7 @@ const Container = styled(FlexCol)`
   &:hover {
     width: 220px;
     height: 110px;
-    border: 0.55px solid #5aa6ff;
+    border: 0.55px solid var(--color-blue-100);
     box-shadow:
       -1.1px -1.1px 4.4px rgba(0, 0, 0, 0.05),
       1.1px 1.1px 4.4px rgba(0, 0, 0, 0.05);
@@ -57,7 +57,7 @@ const Icon = styled.img`
 
 const Text = styled.div`
   font-size: 16px;
-  color: #3a3a3a;
+  color: var(--color-gray-600);
 `;
 
 const TutorialButton: React.FC<TutorialButtonProps> = ({ icon, text }) => {

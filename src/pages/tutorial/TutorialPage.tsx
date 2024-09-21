@@ -23,7 +23,7 @@ const SvgImage = styled.img`
 
 const Title = styled.h1`
   font-size: 36px;
-  color: #242424;
+  color: var(--color-gray-700);
 `;
 
 const ButtonArea = styled(ItemsCenterRow)`
