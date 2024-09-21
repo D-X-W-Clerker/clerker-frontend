@@ -47,41 +47,19 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
-const MemberDummyData = [
-  {
-    id: '1',
-    name: '박건민',
-    role: '디자인',
-    email: 'pkm021118@kookmin.ac.kr',
-    contact: '010-4726-9130',
-  },
-  {
-    id: '2',
-    name: '신진욱',
-    role: 'Front',
-    email: 'jinwook2765@kookmin.ac.kr',
-    contact: '010-4630-2765',
-  },
-];
-
 // fetchData 중에서 일부 데이터들
 const fetchEventData = async (): Promise<{
-  schedules: { id: string; meetingName: string; dateTime: string }[];
   meetings: { id: string; meetingName: string; dateTime: string }[];
+  schedules: { id: string; meetingName: string; dateTime: string }[];
+  members: {
+    id: string;
+    name: string;
+    role: string | null;
+    email: string;
+    permission: string;
+  }[];
 }> => {
   return {
-    schedules: [
-      {
-        id: '3',
-        meetingName: '프론트 디자인 회의 일정',
-        dateTime: '2024-09-20T10:30:00',
-      },
-      {
-        id: '4',
-        meetingName: '프론트 기능 명세 일정',
-        dateTime: '2024-09-15T14:00:00',
-      },
-    ],
     meetings: [
       {
         id: '1',
@@ -94,24 +72,62 @@ const fetchEventData = async (): Promise<{
         dateTime: '2024-09-15T14:00:00',
       },
     ],
+    schedules: [
+      {
+        id: '3',
+        meetingName: '프론트 디자인 회의 일정',
+        dateTime: '2024-09-20T10:30:00',
+      },
+      {
+        id: '4',
+        meetingName: '프론트 기능 명세 일정',
+        dateTime: '2024-09-15T14:00:00',
+      },
+    ],
+    members: [
+      {
+        id: '1',
+        name: '신진욱',
+        role: 'Front',
+        email: 'jinwook2765@kookmin.ac.kr',
+        permission: 'owner',
+      },
+      {
+        id: '2',
+        name: '박건민',
+        role: '디자인',
+        email: 'pkm021118@kookmin.ac.kr',
+        permission: 'member',
+      },
+    ],
   };
 };
 
 const ProjectDetailPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('meeting');
+  const [activeTab, setActiveTab] = useState<string>('meeting');
   const [meetingData, setMeetingData] = useState<
     { id: string; meetingName: string; dateTime: string }[]
   >([]);
   const [scheduleData, setScheduleData] = useState<
     { id: string; meetingName: string; dateTime: string }[]
   >([]);
+  const [memberData, setMemberData] = useState<
+    {
+      id: string;
+      name: string;
+      role: string | null;
+      email: string;
+      permission: string;
+    }[]
+  >([]);
 
   useEffect((): void => {
     // 백엔드에서 데이터를 받아옴 (schedules, meetings 함께)
     const fetchData = async (): Promise<void> => {
-      const { meetings, schedules } = await fetchEventData();
+      const { meetings, schedules, members } = await fetchEventData();
       setMeetingData(meetings);
       setScheduleData(schedules);
+      setMemberData(members);
     };
 
     fetchData();
@@ -126,7 +142,7 @@ const ProjectDetailPage: React.FC = () => {
           <TitleTab type="project" title="새로운 프로젝트" />
           <MemberTableArea>
             <MemberTab />
-            <MemberTable data={MemberDummyData} />
+            <MemberTable data={memberData} />
             <MemberAddButton />
           </MemberTableArea>
           <ContentTabArea>
