@@ -10,7 +10,7 @@ interface ModalButtonProps {
 
 // -- 스타일 컴포넌트 --
 const Container = styled.button<{ $bgColor: string }>`
-  font-size: 12px;
+  font-size: 15px;
   color: var(--background-color);
   background-color: ${({ $bgColor }): string => {
     return $bgColor;

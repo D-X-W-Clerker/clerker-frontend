@@ -12,7 +12,7 @@ interface SmallModalTitleTabProps {
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)`
   gap: 5px;
-  font-size: 19px;
+  font-size: 20px;
   background-color: var(--background-color);
 `;
 
