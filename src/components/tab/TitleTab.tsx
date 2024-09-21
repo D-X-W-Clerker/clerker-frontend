@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FolderIcon, FileIcon, SettingIcon, ShareIcon } from '@assets';
+import { FolderIcon, FileIcon, ShareIcon } from '@assets';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 // -- 인터페이스 --
@@ -19,10 +19,6 @@ const Container = styled(ItemsCenterSpaceRow)`
 const TitleArea = styled(ItemsCenterRow)`
   gap: 12px;
   font-size: 26px;
-`;
-
-const ActionArea = styled(ItemsCenterRow)`
-  gap: 16px;
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
@@ -49,22 +45,9 @@ const TitleTab: React.FC<HeaderProps> = ({ type, title }) => {
         />
         {title}
       </TitleArea>
-      <ActionArea>
-        {!isProject && (
-          <IconImage
-            src={ShareIcon}
-            alt="Share Icon"
-            $width={20}
-            $height={22}
-          />
-        )}
-        <IconImage
-          src={SettingIcon}
-          alt="Setting Icon"
-          $width={24}
-          $height={24}
-        />
-      </ActionArea>
+      {!isProject && (
+        <IconImage src={ShareIcon} alt="Share Icon" $width={20} $height={22} />
+      )}
     </Container>
   );
 };

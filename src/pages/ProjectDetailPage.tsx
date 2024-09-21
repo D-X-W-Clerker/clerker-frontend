@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { ActiveSettingIcon, MemberIcon, MemberAddIcon } from '@assets';
 import {
   MemberTable,
-  MemberAddButton,
   TitleTab,
-  MemberTab,
   EventTab,
   MeetCreateButton,
   EventFile,
 } from '@components';
-import { FlexCol, FlexRow } from '@styles';
+import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
 
+// -- 스타일 컴포넌트 --
 const Container = styled(FlexRow)`
   width: 100%;
   max-width: 1100px;
@@ -31,12 +31,44 @@ const ContentArea = styled(FlexCol)`
   scrollbar-width: none;
 `;
 
+const IconImage = styled.img<{ $width: number; $height: number }>`
+  width: ${(props): number => {
+    return props.$width;
+  }}px;
+  height: ${(props): number => {
+    return props.$height;
+  }}px;
+  cursor: pointer;
+`;
+
 // 왼쪽 영역
 const LeftContentArea = styled(ContentArea)`
   border-right: 0.5px solid var(--color-gray-300); /* 영역 구분되게 일부러 표시 */
 `;
 
-const MemberTableArea = styled(FlexCol)``;
+const MemberArea = styled(FlexCol)``;
+
+const MemberTabArea = styled(ItemsCenterRow)`
+  gap: 6px;
+  padding-left: 3px;
+  font-size: 20px;
+  color: var(--color-gray-600);
+`;
+
+const MemberAddArea = styled(ItemsCenterStartRow)`
+  padding: 5px;
+  border-bottom: 0.5px solid var(--color-gray-300);
+`;
+
+const MemberAddButton = styled(ItemsCenterRow)`
+  background-color: var(--color-gray-50);
+  border-radius: 3px;
+  padding: 2px;
+  gap: 1px;
+  font-size: 7px;
+  color: var(--color-gray-400);
+  cursor: pointer;
+`;
 
 const ContentTabArea = styled(FlexCol)``;
 
@@ -122,14 +154,12 @@ const ProjectDetailPage: React.FC = () => {
   >([]);
 
   useEffect((): void => {
-    // 백엔드에서 데이터를 받아옴 (schedules, meetings 함께)
     const fetchData = async (): Promise<void> => {
       const { meetings, schedules, members } = await fetchEventData();
       setMeetingData(meetings);
       setScheduleData(schedules);
       setMemberData(members);
     };
-
     fetchData();
   }, []);
 
@@ -140,11 +170,20 @@ const ProjectDetailPage: React.FC = () => {
       <Container>
         <LeftContentArea>
           <TitleTab type="project" title="새로운 프로젝트" />
-          <MemberTableArea>
-            <MemberTab />
+          <MemberArea>
+            <MemberTabArea>
+              <IconImage src={MemberIcon} $width={28} $height={20} />
+              Member
+              <IconImage src={ActiveSettingIcon} $width={16} $height={16} />
+            </MemberTabArea>
             <MemberTable data={memberData} />
-            <MemberAddButton />
-          </MemberTableArea>
+            <MemberAddArea>
+              <MemberAddButton>
+                <IconImage src={MemberAddIcon} $width={7} $height={7} />
+                추가하기
+              </MemberAddButton>
+            </MemberAddArea>
+          </MemberArea>
           <ContentTabArea>
             <EventTab activeTab={activeTab} onClickTab={setActiveTab} />
             <ContentFileArea>

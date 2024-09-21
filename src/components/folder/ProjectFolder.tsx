@@ -16,6 +16,8 @@ const Container = styled(ItemsCenterRow)<{
   $isSelected: boolean;
   $isSubFolder?: boolean;
 }>`
+  width: 100%;
+  box-sizing: border-box;
   gap: 4px;
   padding: 4px 3px;
   padding-left: ${(props): string => {
@@ -29,9 +31,7 @@ const Container = styled(ItemsCenterRow)<{
   }};
   &:hover {
     background-color: var(--color-gray-50);
-    mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0));
   }
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 85%, rgba(0, 0, 0, 0));
 `;
 
 const SvgIcon = styled.img`
