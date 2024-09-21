@@ -59,8 +59,8 @@ const SmallModal: React.FC<SmallModalProps> = ({
         <ButtonArea>
           {isDelete ? (
             <>
-              <ModalButton text="취소" color="blue" onClick={onConfirm} />
-              <ModalButton text="확인" color="gray" onClick={onCancel} />
+              <ModalButton text="취소" color="blue" onClick={onCancel} />
+              <ModalButton text="확인" color="gray" onClick={onConfirm} />
             </>
           ) : (
             <>
