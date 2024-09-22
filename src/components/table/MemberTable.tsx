@@ -54,11 +54,27 @@ const Td = styled.td`
   border-right: 0.5px solid var(--color-gray-300);
   padding: 5px;
   color: var(--color-gray-600);
-
   &:last-child {
     border-right: none;
   }
 `;
+
+const TextWithBackground = styled.div<{ $roleColor?: string }>`
+  display: inline-block;
+  background-color: ${(props): string => {
+    return props.$roleColor || 'transparent';
+  }};
+  padding: 2px 5px;
+  border-radius: 4px;
+`;
+
+const roleColorMap: { [key: string]: string } = {
+  PM: 'var(--color-pm)',
+  FE: 'var(--color-fe)',
+  BE: 'var(--color-be)',
+  DE: 'var(--color-de)',
+  AI: 'var(--color-ai)',
+};
 
 const columns: Column<{
   id: string;
@@ -119,10 +135,21 @@ const MemberTable: React.FC<MemberTableProps> = ({ data }) => {
               // 각 행(row)에 고유한 key 로 row.original.id를 사용하여 렌더링 (data 에 있는 id)
               <tr {...row.getRowProps()} key={row.original.id}>
                 {row.cells.map((cell) => {
+                  // role 컬럼일 때만 배경색 적용
+                  const isRoleColumn = cell.column.id === 'role';
+                  const roleColor = isRoleColumn
+                    ? roleColorMap[cell.value]
+                    : undefined;
                   return (
                     // 각 셀(Td)에 고유한 key 부여 및 셀 데이터 렌더링
                     <Td {...cell.getCellProps()} key={cell.column.id}>
-                      {cell.render('Cell')}
+                      {isRoleColumn ? (
+                        <TextWithBackground $roleColor={roleColor}>
+                          {cell.render('Cell')}
+                        </TextWithBackground>
+                      ) : (
+                        cell.render('Cell') // role 컬럼이 아닐 경우 기존 디자인 유지
+                      )}
                     </Td>
                   );
                 })}

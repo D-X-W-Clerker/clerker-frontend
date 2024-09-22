@@ -42,9 +42,7 @@ const IconImage = styled.img<{ $width: number; $height: number }>`
 `;
 
 // 왼쪽 영역
-const LeftContentArea = styled(ContentArea)`
-  border-right: 0.5px solid var(--color-gray-300); /* 영역 구분되게 일부러 표시 */
-`;
+const LeftContentArea = styled(ContentArea)``;
 
 const MemberArea = styled(FlexCol)``;
 
@@ -120,14 +118,14 @@ const fetchEventData = async (): Promise<{
       {
         id: '1',
         name: '신진욱',
-        role: 'Front',
+        role: 'FE',
         email: 'jinwook2765@kookmin.ac.kr',
         permission: 'owner',
       },
       {
         id: '2',
         name: '박건민',
-        role: '디자인',
+        role: 'DE',
         email: 'pkm021118@kookmin.ac.kr',
         permission: 'member',
       },
