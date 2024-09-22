@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { LogoutIcon, UserImageIcon } from '@assets';
+import { LogoutIcon, ClerkerIcon } from '@assets';
 import { SmallModal } from '@components';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
@@ -48,7 +48,7 @@ const Profile: React.FC = () => {
   return (
     <Container>
       <UserInfoArea>
-        <ProfileImage src={UserImageIcon} />
+        <ProfileImage src={ClerkerIcon} />
         <ProfileName>Clerker</ProfileName>
       </UserInfoArea>
       <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
