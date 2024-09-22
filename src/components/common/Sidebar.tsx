@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '@assets';
-import { MenuTab, RootFolder, Profile } from '@components';
+import { ActionButton, RootFolder, Profile } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
@@ -110,9 +110,10 @@ const SideBar: React.FC<SideBarProps> = ({
   const onClickMenuItem = (itemId: number): void => {
     if (itemId === 1) {
       setShowInbox(true);
-    } else if (itemId === 3) {
+    } else if (itemId === 2) {
+      alert('계정 설정');
+    } else {
       onClickCreateProject();
-      setShowInbox(false);
     }
   };
 
@@ -139,7 +140,7 @@ const SideBar: React.FC<SideBarProps> = ({
             <MenuArea>
               {menuItems.map((item) => {
                 return (
-                  <MenuTab
+                  <ActionButton
                     key={item.id}
                     icon={item.icon}
                     label={item.label}

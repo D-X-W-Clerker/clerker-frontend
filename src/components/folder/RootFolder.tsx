@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import {
-  ProjectFolder,
-  AddSubFolderButton,
-  MeetSummaryFile,
-} from '@components';
+import { AddIcon } from '@assets';
+import { ProjectFolder, ActionButton, MeetSummaryFile } from '@components';
 import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
@@ -72,7 +69,9 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
       />
       {isSelected && (
         <>
-          <AddSubFolderButton
+          <ActionButton
+            icon={AddIcon}
+            label="하위 폴더 생성"
             onClick={(): void => {
               return onClickCreateSubFolder(project.id);
             }}

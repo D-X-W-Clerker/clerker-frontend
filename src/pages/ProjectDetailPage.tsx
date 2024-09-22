@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { ActiveSettingIcon, MemberIcon, MemberAddIcon } from '@assets';
+import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
   MemberTable,
   TitleTab,
   EventTab,
-  MeetCreateButton,
+  ActionButton,
   EventFile,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
@@ -153,6 +153,18 @@ const ProjectDetailPage: React.FC = () => {
     }[]
   >([]);
 
+  const onClickMeetCreateButton = (): void => {
+    alert('회의 생성');
+  };
+
+  const onClickMemberSettingButton = (): void => {
+    alert('멤버 설정');
+  };
+
+  const onClickMemberInviteButton = (): void => {
+    alert('멤버 초대');
+  };
+
   useEffect((): void => {
     const fetchData = async (): Promise<void> => {
       const { meetings, schedules, members } = await fetchEventData();
@@ -174,11 +186,16 @@ const ProjectDetailPage: React.FC = () => {
             <MemberTabArea>
               <IconImage src={MemberIcon} $width={28} $height={20} />
               Member
-              <IconImage src={ActiveSettingIcon} $width={16} $height={16} />
+              <IconImage
+                src={ActiveSettingIcon}
+                $width={16}
+                $height={16}
+                onClick={onClickMemberSettingButton}
+              />
             </MemberTabArea>
             <MemberTable data={memberData} />
             <MemberAddArea>
-              <MemberAddButton>
+              <MemberAddButton onClick={onClickMemberInviteButton}>
                 <IconImage src={MemberAddIcon} $width={7} $height={7} />
                 추가하기
               </MemberAddButton>
@@ -187,7 +204,13 @@ const ProjectDetailPage: React.FC = () => {
           <ContentTabArea>
             <EventTab activeTab={activeTab} onClickTab={setActiveTab} />
             <ContentFileArea>
-              {activeTab === 'meeting' && <MeetCreateButton />}
+              {activeTab === 'meeting' && (
+                <ActionButton
+                  icon={AddIcon}
+                  label="회의 생성"
+                  onClick={onClickMeetCreateButton}
+                />
+              )}
               {eventData.map((event) => {
                 return (
                   <EventFile
