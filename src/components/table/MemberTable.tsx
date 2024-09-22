@@ -4,10 +4,34 @@ import { useTable, Column } from 'react-table';
 
 /* eslint-disable react/jsx-props-no-spreading */
 
+// -- 인터페이스 --
+interface MemberTableProps {
+  data: {
+    id: string;
+    name: string;
+    role: string | null;
+    email: string;
+    permission: string;
+  }[];
+}
+
+// -- 스타일 컴포넌트 --
+const Container = styled.div`
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 15px;
+  ::-webkit-scrollbar {
+    height: 0;
+    background: transparent;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
+
 const Table = styled.table`
   width: 100%;
+  min-width: 350px;
   border-collapse: collapse;
-  margin-top: 15px;
   font-size: 10px;
 `;
 
@@ -25,66 +49,116 @@ const Th = styled.th`
 `;
 
 const Td = styled.td`
+  white-space: nowrap;
   border-bottom: 0.5px solid var(--color-gray-300);
   border-right: 0.5px solid var(--color-gray-300);
   padding: 5px;
   color: var(--color-gray-600);
-
   &:last-child {
     border-right: none;
   }
 `;
 
-interface MemberTableProps {
-  data: { name: string; role: string; email: string; contact: string }[];
-}
+const TextWithBackground = styled.div<{ $roleColor?: string }>`
+  display: inline-block;
+  background-color: ${(props): string => {
+    return props.$roleColor || 'transparent';
+  }};
+  padding: 2px 5px;
+  border-radius: 4px;
+`;
+
+const roleColorMap: { [key: string]: string } = {
+  PM: 'var(--color-pm)',
+  FE: 'var(--color-fe)',
+  BE: 'var(--color-be)',
+  DE: 'var(--color-de)',
+  AI: 'var(--color-ai)',
+};
 
 const columns: Column<{
+  id: string;
   name: string;
-  role: string;
+  role: string | null;
   email: string;
-  contact: string;
+  permission: string;
 }>[] = [
-  { Header: '이름', accessor: 'name' },
-  { Header: '업무', accessor: 'role' },
-  { Header: '이메일', accessor: 'email' },
-  { Header: '연락처', accessor: 'contact' },
+  { Header: '이름', accessor: 'name', id: 'name' },
+  { Header: '업무', accessor: 'role', id: 'role' },
+  { Header: '이메일', accessor: 'email', id: 'email' },
+  { Header: '권한', accessor: 'permission', id: 'permission' },
 ];
 
 const MemberTable: React.FC<MemberTableProps> = ({ data }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable({ columns, data });
+    useTable<{
+      id: string;
+      name: string;
+      role: string | null;
+      email: string;
+      permission: string;
+    }>({ columns, data });
 
   return (
-    <Table {...getTableProps()}>
-      <thead>
-        {headerGroups.map((headerGroup) => {
-          return (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => {
-                return (
-                  <Th {...column.getHeaderProps()}>
-                    {column.render('Header')}
-                  </Th>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </thead>
-      <tbody {...getTableBodyProps()}>
-        {rows.map((row) => {
-          prepareRow(row);
-          return (
-            <tr {...row.getRowProps()}>
-              {row.cells.map((cell) => {
-                return <Td {...cell.getCellProps()}>{cell.render('Cell')}</Td>;
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </Table>
+    <Container>
+      <Table {...getTableProps()}>
+        {/* 테이블 헤더 */}
+        <thead>
+          {headerGroups.map((headerGroup) => {
+            return (
+              // 헤더 그룹에 고유한 key 를 부여하여 렌더링
+              <tr
+                {...headerGroup.getHeaderGroupProps()}
+                key={`headerGroup-${headerGroup.headers
+                  .map((header) => {
+                    return header.id; // 각 헤더의 id를 결합해 고유한 key 로 사용
+                  })
+                  .join('-')}`}
+              >
+                {headerGroup.headers.map((column) => {
+                  return (
+                    // 각 헤더 셀(Th)에 고유한 key 부여 및 헤더 내용 렌더링
+                    <Th {...column.getHeaderProps()} key={column.id}>
+                      {column.render('Header')}
+                    </Th>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </thead>
+        {/* 테이블 바디 */}
+        <tbody {...getTableBodyProps()}>
+          {rows.map((row) => {
+            prepareRow(row); // 각 행 준비
+            return (
+              // 각 행(row)에 고유한 key 로 row.original.id를 사용하여 렌더링 (data 에 있는 id)
+              <tr {...row.getRowProps()} key={row.original.id}>
+                {row.cells.map((cell) => {
+                  // role 컬럼일 때만 배경색 적용
+                  const isRoleColumn = cell.column.id === 'role';
+                  const roleColor = isRoleColumn
+                    ? roleColorMap[cell.value]
+                    : undefined;
+                  return (
+                    // 각 셀(Td)에 고유한 key 부여 및 셀 데이터 렌더링
+                    <Td {...cell.getCellProps()} key={cell.column.id}>
+                      {isRoleColumn ? (
+                        <TextWithBackground $roleColor={roleColor}>
+                          {cell.render('Cell')}
+                        </TextWithBackground>
+                      ) : (
+                        cell.render('Cell') // role 컬럼이 아닐 경우 기존 디자인 유지
+                      )}
+                    </Td>
+                  );
+                })}
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+    </Container>
   );
 };
 

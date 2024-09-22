@@ -14,9 +14,10 @@ interface MeetFileProps {
 const Container = styled(ItemsCenterSpaceRow)`
   width: 100%;
   box-sizing: border-box;
-  padding: 5px 20px;
-  border-radius: 8px;
+  padding: 4px 20px;
+  border-radius: 7px;
   cursor: pointer;
+  background-color: var(--background-color);
   &:hover {
     background-color: var(--color-gray-50);
   }
@@ -37,7 +38,7 @@ const DateTime = styled.span`
 `;
 
 const SvgImage = styled.img`
-  width: 12px;
+  width: 14px;
   height: 14px;
 `;
 

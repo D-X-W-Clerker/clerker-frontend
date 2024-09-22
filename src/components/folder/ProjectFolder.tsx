@@ -1,123 +1,69 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { FolderItem, AddSubFolderButton, MeetSummaryFile } from '@components';
-import { FlexCol } from '@styles';
+import { DownArrowIcon, RightArrowIcon, FolderIcon } from '@assets';
+import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
-  id: string;
-  name: string;
-}
-
-interface SubFolder {
-  id: string;
-  name: string;
-  summaryFiles: SummaryFile[];
-}
-
-interface Project {
-  id: string;
-  name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
-}
-
-interface ProjectFolderProps {
-  project: Project;
+interface FolderItemProps {
   isSelected: boolean;
-  onClickProjectFolder: () => void;
-  onClickCreateSubFolder: (projectId: string) => void;
+  onClick: () => void;
+  name: string;
+  isSubFolder: boolean;
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled(FlexCol)``;
+const Container = styled(ItemsCenterRow)<{
+  $isSelected: boolean;
+  $isSubFolder?: boolean;
+}>`
+  width: 100%;
+  box-sizing: border-box;
+  gap: 4px;
+  padding: 4px 3px;
+  padding-left: ${(props): string => {
+    return props.$isSubFolder ? '20px' : '3px';
+  }};
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--color-gray-600);
+  background-color: ${(props): string => {
+    return props.$isSelected ? 'var(--color-gray-50)' : 'transparent';
+  }};
+  &:hover {
+    background-color: var(--color-gray-50);
+  }
+`;
 
-const ProjectFolder: React.FC<ProjectFolderProps> = ({
-  project,
+const SvgIcon = styled.img`
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+`;
+
+const Title = styled.div`
+  display: block;
+  font-weight: var(--font-normal);
+  color: var(--color-gray-600);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+`;
+
+const ProjectFolder: React.FC<FolderItemProps> = ({
   isSelected,
-  onClickProjectFolder,
-  onClickCreateSubFolder,
+  onClick,
+  name,
+  isSubFolder,
 }) => {
-  const [selectedSubFolderId, setSelectedSubFolderId] = useState<string | null>(
-    null,
-  );
-  const [selectedSummaryFileId, setSelectedSummaryFileId] = useState<
-    string | null
-  >(null);
-
-  const onClickSubFolder = (subFolderId: string): void => {
-    setSelectedSubFolderId((prevId) => {
-      return prevId === subFolderId ? null : subFolderId;
-    });
-  };
-
-  const onClickSummaryFile = (summaryFileId: string): void => {
-    setSelectedSummaryFileId((prevId) => {
-      return prevId === summaryFileId ? null : summaryFileId;
-    });
-  };
-
   return (
-    <Container>
-      <FolderItem
-        isSelected={isSelected}
-        onClick={onClickProjectFolder}
-        name={project.name}
-        isSubFolder={false}
-      />
-      {isSelected && (
-        <>
-          <AddSubFolderButton
-            onClick={(): void => {
-              return onClickCreateSubFolder(project.id);
-            }}
-          />
-          {project.subFolders.map((subFolder) => {
-            return (
-              <>
-                <FolderItem
-                  isSelected={selectedSubFolderId === subFolder.id}
-                  onClick={(): void => {
-                    return onClickSubFolder(subFolder.id);
-                  }}
-                  name={subFolder.name}
-                  isSubFolder
-                />
-
-                {/* 하위 폴더 내 요약 파일 */}
-                {selectedSubFolderId === subFolder.id &&
-                  subFolder.summaryFiles.map((summaryFile) => {
-                    return (
-                      <MeetSummaryFile
-                        key={summaryFile.id}
-                        isSelected={selectedSummaryFileId === summaryFile.id}
-                        onClick={(): void => {
-                          return onClickSummaryFile(summaryFile.id);
-                        }}
-                        name={summaryFile.name}
-                        isSubFolder
-                      />
-                    );
-                  })}
-              </>
-            );
-          })}
-          {/* 프로젝트 내 요약 파일 */}
-          {project.summaryFiles.map((summaryFile) => {
-            return (
-              <MeetSummaryFile
-                key={summaryFile.id}
-                isSelected={selectedSummaryFileId === summaryFile.id}
-                onClick={(): void => {
-                  return onClickSummaryFile(summaryFile.id);
-                }}
-                name={summaryFile.name}
-                isSubFolder={false}
-              />
-            );
-          })}
-        </>
-      )}
+    <Container
+      $isSelected={isSelected}
+      onClick={onClick}
+      $isSubFolder={isSubFolder}
+    >
+      <SvgIcon src={isSelected ? DownArrowIcon : RightArrowIcon} />
+      <SvgIcon src={FolderIcon} />
+      <Title>{name}</Title>
     </Container>
   );
 };

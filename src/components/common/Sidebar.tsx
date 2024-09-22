@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '@assets';
-import { MenuTab, ProjectFolder, Profile } from '@components';
+import { ActionButton, RootFolder, Profile } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
@@ -23,15 +23,9 @@ interface Project {
   subFolders: SubFolder[];
 }
 
-interface SideBarProps {
-  projects: Project[];
-  onClickCreateProject: () => void;
-  onClickCreateSubFolder: (projectId: string) => void;
-}
-
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)`
-  width: 175px;
+  min-width: 175px;
   max-height: 100vh;
   border-right: 0.5px solid var(--color-gray-300);
   background-color: var(--background-color);
@@ -42,7 +36,7 @@ const ContentArea = styled(FlexCol)`
   height: calc(100vh - 50px);
 `;
 
-const SvgIcon = styled.img`
+const SvgImage = styled.img`
   width: 16px;
   height: 16px;
 `;
@@ -97,23 +91,72 @@ const menuItems = [
   { id: 3, icon: AddIcon, label: '프로젝트 생성' },
 ];
 
-const SideBar: React.FC<SideBarProps> = ({
-  projects,
-  onClickCreateProject,
-  onClickCreateSubFolder,
-}) => {
+const SideBar: React.FC = () => {
   const [showInbox, setShowInbox] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
 
-  const onClickMenuItem = (itemId: number): void => {
-    if (itemId === 1) {
-      setShowInbox(true);
-    } else if (itemId === 3) {
-      onClickCreateProject();
-      setShowInbox(false);
+  const generateUniqueId = (): string => {
+    return crypto.randomUUID();
+  };
+
+  const generateSampleSummaryFiles = (): SummaryFile[] => {
+    return [
+      { id: generateUniqueId(), name: '회의록 1' },
+      { id: generateUniqueId(), name: '회의록 2' },
+    ];
+  };
+
+  const createProjectAPI = (): Promise<{ id: string; name: string }> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          id: generateUniqueId(),
+          name: `새로운 프로젝트`,
+        });
+      }, 100);
+    });
+  };
+
+  const onClickCreateProject = async (): Promise<void> => {
+    try {
+      const newProject = await createProjectAPI();
+      setProjects((prevProjects) => {
+        return [
+          ...prevProjects,
+          {
+            id: newProject.id,
+            name: newProject.name,
+            summaryFiles: generateSampleSummaryFiles(),
+            subFolders: [],
+          },
+        ];
+      });
+    } catch (error) {
+      console.error('Error creating project:', error);
     }
+  };
+
+  const onClickCreateSubFolder = (projectId: string): void => {
+    setProjects((prevProjects) => {
+      return prevProjects.map((project) => {
+        return project.id === projectId
+          ? {
+              ...project,
+              subFolders: [
+                ...project.subFolders,
+                {
+                  id: generateUniqueId(),
+                  name: `새로운 폴더`,
+                  summaryFiles: generateSampleSummaryFiles(),
+                },
+              ],
+            }
+          : project;
+      });
+    });
   };
 
   const onClickProjectFolder = (projectId: string): void => {
@@ -123,13 +166,23 @@ const SideBar: React.FC<SideBarProps> = ({
     });
   };
 
+  const onClickMenuItem = (itemId: number): void => {
+    if (itemId === 1) {
+      alert('수신함 확인');
+    } else if (itemId === 2) {
+      alert('계정 설정');
+    } else {
+      onClickCreateProject();
+    }
+  };
+
   return (
     <Container>
       <ContentArea>
         {showInbox ? (
           <InboxArea>
             <InboxTitle>
-              <SvgIcon src={ActiveAlarmIcon} />
+              <SvgImage src={ActiveAlarmIcon} />
               수신함
             </InboxTitle>
             <InboxContentArea>Inbox content</InboxContentArea>
@@ -139,7 +192,7 @@ const SideBar: React.FC<SideBarProps> = ({
             <MenuArea>
               {menuItems.map((item) => {
                 return (
-                  <MenuTab
+                  <ActionButton
                     key={item.id}
                     icon={item.icon}
                     label={item.label}
@@ -153,7 +206,7 @@ const SideBar: React.FC<SideBarProps> = ({
             <ProjectListArea>
               {projects.map((project) => {
                 return (
-                  <ProjectFolder
+                  <RootFolder
                     key={project.id}
                     project={project}
                     onClickCreateSubFolder={onClickCreateSubFolder}
