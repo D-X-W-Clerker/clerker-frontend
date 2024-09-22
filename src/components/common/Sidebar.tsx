@@ -31,7 +31,7 @@ interface SideBarProps {
 
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)`
-  width: 175px;
+  min-width: 175px;
   max-height: 100vh;
   border-right: 0.5px solid var(--color-gray-300);
   background-color: var(--background-color);
