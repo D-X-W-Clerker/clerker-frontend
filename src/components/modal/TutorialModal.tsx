@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { SproutIcon, CalendarIcon, WindIcon, LightBulbIcon } from '@assets';
-import { FlexCol } from '@styles';
+import { CenterCol, FlexCol, ItemsCenterStartRow } from '@styles';
 
 // IconMap 객체 생성
 const IconMap: { [key: string]: string } = {
@@ -14,7 +14,7 @@ const IconMap: { [key: string]: string } = {
 // -- 인터페이스 --
 interface TutorialButtonProps {
   icon: string;
-  text: string;
+  text: React.ReactNode;
 }
 
 // -- 스타일 컴포넌트 --
@@ -28,8 +28,8 @@ const Container = styled(FlexCol)`
     -1px -1px 4px rgba(0, 0, 0, 0.05),
     1px 1px 4px rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  padding: 18px;
-  gap: 13px;
+  padding: 15px;
+  gap: 9px;
   flex-shrink: 0;
 
   &:hover {
@@ -39,6 +39,12 @@ const Container = styled(FlexCol)`
       -1.1px -1.1px 4.4px rgba(0, 0, 0, 0.05),
       1.1px 1.1px 4.4px rgba(0, 0, 0, 0.05);
   }
+`;
+
+const IconArea = styled(ItemsCenterStartRow)``;
+
+const TextArea = styled(CenterCol)`
+  text-align: center;
 `;
 
 const Icon = styled.img`
@@ -55,8 +61,12 @@ const TutorialModal: React.FC<TutorialButtonProps> = ({ icon, text }) => {
   const IconSrc = IconMap[icon];
   return (
     <Container>
-      <Icon src={IconSrc} alt={icon} />
-      <Text>{text}</Text>
+      <IconArea>
+        <Icon src={IconSrc} alt={icon} />
+      </IconArea>
+      <TextArea>
+        <Text>{text}</Text>
+      </TextArea>
     </Container>
   );
 };
