@@ -26,6 +26,17 @@ const Title = styled.h1`
 
 const ModalArea = styled(ItemsCenterRow)`
   gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+
+  // 1300px 이하에서 바로 2x2 배치로 변경
+  @media (max-width: 1300px) {
+    gap: 32px;
+    & > div {
+      flex: 1 1 calc(50% - 32px); // 가로로 2개씩 배치
+      max-width: 300px;
+    }
+  }
 `;
 
 const ModalData: {
