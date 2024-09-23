@@ -18,7 +18,10 @@
       "@styles/*": ["styles/*"],
 
       "@utils": ["utils/index.ts"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+
+      "@data": ["data/index.ts"],
+      "@data/*": ["data/*"]
     }
   }
 }
