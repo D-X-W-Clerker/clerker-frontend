@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { AddIcon } from '@assets';
 import { ProjectFolder, ActionButton, MeetSummaryFile } from '@components';
@@ -45,6 +46,7 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
   const [selectedSummaryFileId, setSelectedSummaryFileId] = useState<
     string | null
   >(null);
+  const navigate = useNavigate();
 
   const onClickSubFolder = (subFolderId: string): void => {
     setSelectedSubFolderId((prevId) => {
@@ -56,6 +58,7 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
     setSelectedSummaryFileId((prevId) => {
       return prevId === summaryFileId ? null : summaryFileId;
     });
+    navigate(`/summary/${summaryFileId}`);
   };
 
   return (

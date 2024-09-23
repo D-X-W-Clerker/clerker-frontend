@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { AlarmIcon, SettingIcon, AddIcon, ActiveAlarmIcon } from '@assets';
 import { ActionButton, RootFolder, Profile } from '@components';
@@ -97,39 +98,45 @@ const SideBar: React.FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(
     null,
   );
+  const navigate = useNavigate();
 
-  const generateUniqueId = (): string => {
-    return crypto.randomUUID();
-  };
-
-  const generateSampleSummaryFiles = (): SummaryFile[] => {
-    return [
-      { id: generateUniqueId(), name: '회의록 1' },
-      { id: generateUniqueId(), name: '회의록 2' },
+  useEffect(() => {
+    const initialProjects = [
+      {
+        id: crypto.randomUUID(),
+        name: 'Clerker',
+        summaryFiles: [{ id: crypto.randomUUID(), name: '기획 회의' }],
+        subFolders: [
+          {
+            id: crypto.randomUUID(),
+            name: 'FE',
+            summaryFiles: [],
+          },
+          {
+            id: crypto.randomUUID(),
+            name: 'BE',
+            summaryFiles: [],
+          },
+          {
+            id: crypto.randomUUID(),
+            name: 'AI',
+            summaryFiles: [{ id: crypto.randomUUID(), name: '9월 12일 회의' }],
+          },
+        ],
+      },
     ];
-  };
-
-  const createProjectAPI = (): Promise<{ id: string; name: string }> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          id: generateUniqueId(),
-          name: `새로운 프로젝트`,
-        });
-      }, 100);
-    });
-  };
+    setProjects(initialProjects);
+  }, []);
 
   const onClickCreateProject = async (): Promise<void> => {
     try {
-      const newProject = await createProjectAPI();
       setProjects((prevProjects) => {
         return [
           ...prevProjects,
           {
-            id: newProject.id,
-            name: newProject.name,
-            summaryFiles: generateSampleSummaryFiles(),
+            id: crypto.randomUUID(),
+            name: '새 프로젝트',
+            summaryFiles: [],
             subFolders: [],
           },
         ];
@@ -148,9 +155,9 @@ const SideBar: React.FC = () => {
               subFolders: [
                 ...project.subFolders,
                 {
-                  id: generateUniqueId(),
+                  id: crypto.randomUUID(),
                   name: `새로운 폴더`,
-                  summaryFiles: generateSampleSummaryFiles(),
+                  summaryFiles: [{ id: crypto.randomUUID(), name: '회의록' }],
                 },
               ],
             }
@@ -164,6 +171,7 @@ const SideBar: React.FC = () => {
     setSelectedProjectId((prevSelectedId) => {
       return prevSelectedId === projectId ? null : projectId;
     });
+    navigate(`/project/${projectId}`);
   };
 
   const onClickMenuItem = (itemId: number): void => {

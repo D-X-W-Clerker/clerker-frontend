@@ -77,7 +77,6 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
-// fetchData 중에서 일부 데이터들
 const fetchEventData = async (): Promise<{
   meetings: { id: string; meetingName: string; dateTime: string }[];
   schedules: { id: string; meetingName: string; dateTime: string }[];
@@ -94,12 +93,12 @@ const fetchEventData = async (): Promise<{
       {
         id: '1',
         meetingName: '프로젝트 킥오프',
-        dateTime: '2024-09-14T10:30:00',
+        dateTime: '2024-07-02T10:30:00',
       },
       {
         id: '2',
-        meetingName: '디자인 리뷰',
-        dateTime: '2024-09-15T14:00:00',
+        meetingName: '기획 회의',
+        dateTime: '2024-07-08T14:00:00',
       },
     ],
     schedules: [
@@ -117,13 +116,27 @@ const fetchEventData = async (): Promise<{
     members: [
       {
         id: '1',
-        name: '신진욱',
-        role: 'FE',
-        email: 'jinwook2765@kookmin.ac.kr',
+        name: '이정욱',
+        role: 'BE',
+        email: 'dlwjddnr5438@kookmin.ac.kr',
         permission: 'owner',
       },
       {
         id: '2',
+        name: '신진욱',
+        role: 'FE',
+        email: 'jinwook2765@kookmin.ac.kr',
+        permission: 'member',
+      },
+      {
+        id: '3',
+        name: '임형빈',
+        role: 'AI',
+        email: 'gudqls3157@gmail.com',
+        permission: 'owner',
+      },
+      {
+        id: '4',
         name: '박건민',
         role: 'DE',
         email: 'pkm021118@kookmin.ac.kr',
@@ -179,7 +192,7 @@ const ProjectDetailPage: React.FC = () => {
     <Layout>
       <Container>
         <LeftContentArea>
-          <TitleTab type="project" title="새로운 프로젝트" />
+          <TitleTab type="project" title="Clerker" />
           <MemberArea>
             <MemberTabArea>
               <IconImage src={MemberIcon} $width={28} $height={20} />

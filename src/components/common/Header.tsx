@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Clerker } from '@assets';
 import { ItemsCenterRow } from '@styles';
@@ -20,8 +21,14 @@ const IconImage = styled.img`
 `;
 
 const Header: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
-    <Container>
+    <Container
+      onClick={(): void => {
+        return navigate('/home');
+      }}
+    >
       <IconImage src={Clerker} />
     </Container>
   );
