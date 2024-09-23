@@ -30,23 +30,14 @@ const Container = styled(FlexCol)`
   cursor: pointer;
   padding: 18px;
   gap: 13px;
+  flex-shrink: 0;
 
   &:hover {
-    width: 220px;
-    height: 110px;
+    transform: scale(1.1);
     border: 0.55px solid var(--color-blue-100);
     box-shadow:
       -1.1px -1.1px 4.4px rgba(0, 0, 0, 0.05),
       1.1px 1.1px 4.4px rgba(0, 0, 0, 0.05);
-
-    img {
-      width: 28px;
-      height: 28px;
-    }
-
-    div {
-      font-size: 17px;
-    }
   }
 `;
 
