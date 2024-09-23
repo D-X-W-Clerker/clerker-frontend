@@ -1,14 +1,12 @@
 // TutorialPage.tsx
 import React from 'react';
 import styled from 'styled-components';
-import { Clerker } from '@assets';
+import { Clerker, WhiteAddIcon } from '@assets';
 import { TutorialButton } from '@components';
-import { CenterCol, ItemsCenterRow } from '@styles';
+import { CenterCol, ItemsCenterRow, CenterRow } from '@styles';
 import Layout from '../../Layout';
 
 const Container = styled(CenterCol)`
-  width: 100%;
-  max-width: 1100px;
   gap: 60px;
 `;
 
@@ -16,7 +14,7 @@ const WelcomeArea = styled(ItemsCenterRow)`
   gap: 7px;
 `;
 
-const SvgImage = styled.img`
+const SvgClerkerImage = styled.img`
   width: 160px;
   height: 50px;
 `;
@@ -26,12 +24,12 @@ const Title = styled.h1`
   color: var(--color-gray-700);
 `;
 
-const ButtonArea = styled(ItemsCenterRow)`
+const ModalArea = styled(ItemsCenterRow)`
   gap: 32px;
 `;
 
-const buttonData: {
-  type: 'project' | 'schedule' | 'summary' | 'other';
+const ModalData: {
+  type: string;
   text: string;
 }[] = [
   {
@@ -52,16 +50,35 @@ const buttonData: {
   },
 ];
 
+const ProjectCreateArea = styled(CenterRow)`
+  height: 50px;
+  padding: 0 57px;
+  background-color: var(--color-blue-100);
+  border-radius: 30px;
+  cursor: pointer;
+  gap: 8px;
+`;
+
+const SvgAddImage = styled.img`
+  width: 18px;
+  height: 18px;
+`;
+
+const Content = styled.h3`
+  font-size: 20px;
+  color: var(--background-color);
+`;
+
 const TutorialPage: React.FC = () => {
   return (
     <Layout>
       <Container>
         <WelcomeArea>
-          <SvgImage src={Clerker} />
+          <SvgClerkerImage src={Clerker} />
           <Title>에 오신 것을 환영해요!</Title>
         </WelcomeArea>
-        <ButtonArea>
-          {buttonData.map((button) => {
+        <ModalArea>
+          {ModalData.map((button) => {
             return (
               <TutorialButton
                 key={button.type}
@@ -70,7 +87,11 @@ const TutorialPage: React.FC = () => {
               />
             );
           })}
-        </ButtonArea>
+        </ModalArea>
+        <ProjectCreateArea>
+          <SvgAddImage src={WhiteAddIcon} />
+          <Content>프로젝트 생성</Content>
+        </ProjectCreateArea>
       </Container>
     </Layout>
   );
