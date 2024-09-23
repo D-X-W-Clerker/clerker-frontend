@@ -15,26 +15,25 @@ const Container = styled(ItemsCenterRow)`
   margin-bottom: 15px;
 `;
 
-const TabButton = styled.div<{ active: boolean }>`
+const TabButton = styled.div<{ $active: boolean }>`
   font-size: ${(props): string => {
-    return props.active ? '19px' : '15px';
+    return props.$active ? '19px' : '15px';
   }};
   color: ${(props): string => {
-    return props.active ? 'var(--color-gray-600)' : 'var(--color-gray-500)';
+    return props.$active ? 'var(--color-gray-600)' : 'var(--color-gray-500)';
   }};
   order: ${(props): number => {
-    return props.active ? -1 : 0;
+    return props.$active ? -1 : 0;
   }};
-    ${(props): string => {
-      return props.active
-        ? `&::after {
+  ${(props): string => {
+    return props.$active
+      ? `&::after {
           content: '|';
           margin-left: 5px;
         }`
-        : '';
-    }}
+      : '';
+  }}
   cursor: pointer;
-  }
 `;
 
 const SvgImage = styled.img`
@@ -52,7 +51,7 @@ const TabContainer: React.FC<TabContainerProps> = ({
     <Container>
       <SvgImage src={ContentIcon} />
       <TabButton
-        active={activeTab === 'meeting'}
+        $active={activeTab === 'meeting'}
         onClick={(): void => {
           return onClickTab('meeting');
         }}
@@ -60,7 +59,7 @@ const TabContainer: React.FC<TabContainerProps> = ({
         Meeting
       </TabButton>
       <TabButton
-        active={activeTab === 'schedule'}
+        $active={activeTab === 'schedule'}
         onClick={(): void => {
           return onClickTab('schedule');
         }}

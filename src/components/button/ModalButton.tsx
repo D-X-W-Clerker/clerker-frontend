@@ -4,16 +4,16 @@ import styled from 'styled-components';
 // -- 인터페이스 --
 interface ModalButtonProps {
   text: string;
-  color: 'blue' | 'gray';
+  color: string;
   onClick: () => void;
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.button<{ bgColor: string }>`
-  font-size: 12px;
+const Container = styled.button<{ $bgColor: string }>`
+  font-size: 15px;
   color: var(--background-color);
-  background-color: ${({ bgColor }): string => {
-    return bgColor;
+  background-color: ${({ $bgColor }): string => {
+    return $bgColor;
   }};
   border: none;
   border-radius: 5px;
@@ -30,7 +30,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({ text, color, onClick }) => {
     color === 'blue' ? 'var(--color-blue-200)' : 'var(--color-gray-400)';
 
   return (
-    <Container bgColor={bgColor} onClick={onClick}>
+    <Container $bgColor={bgColor} onClick={onClick}>
       {text}
     </Container>
   );

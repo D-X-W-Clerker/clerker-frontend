@@ -1,7 +1,7 @@
 import Clerker from './Clerker.svg';
-import UserImageIcon from './UserImageIcon.svg';
+import ClerkerIcon from './ClerkerIcon.svg';
 
-export { Clerker, UserImageIcon };
+export { Clerker, ClerkerIcon };
 
 export * from './action';
 export * from './project';

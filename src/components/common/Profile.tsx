@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { LogoutIcon, UserImageIcon } from '@assets';
+import { LogoutIcon, ClerkerIcon } from '@assets';
 import { SmallModal } from '@components';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
+// -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterSpaceRow)`
   width: 100%;
 `;
@@ -47,7 +48,7 @@ const Profile: React.FC = () => {
   return (
     <Container>
       <UserInfoArea>
-        <ProfileImage src={UserImageIcon} />
+        <ProfileImage src={ClerkerIcon} />
         <ProfileName>Clerker</ProfileName>
       </UserInfoArea>
       <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
@@ -56,8 +57,6 @@ const Profile: React.FC = () => {
           type="logout"
           title="로그아웃"
           message="로그아웃 하시겠습니까?"
-          confirmText="확인"
-          cancelText="취소"
           onConfirm={onClickConfirmButton}
           onCancel={onClickCloseButton}
           isDelete={false}

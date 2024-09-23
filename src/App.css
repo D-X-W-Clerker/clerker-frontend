@@ -18,6 +18,12 @@
     --color-blue-300: #0068C8;
     /* color-red */
     --color-red: #FF6464;
+    /* role */
+    --color-pm: #DECEFF;
+    --color-fe: #CEE2F6;
+    --color-be: #FFBFBF;
+    --color-de: #F6F0C1;
+    --color-ai: #E4F6E1;
 
     /* font-weight */
     --font-thin: 100;
