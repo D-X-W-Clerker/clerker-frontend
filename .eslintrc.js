@@ -79,6 +79,7 @@ module.exports = {
           ['@pages', './src/pages'],
           ['@styles', './src/styles'],
           ['@utils', './src/utils'],
+          ['@data', './src/data'],
         ],
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
       },
