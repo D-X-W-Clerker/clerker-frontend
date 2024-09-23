@@ -6,6 +6,7 @@ import {
   ProjectDetailPage,
   TutorialDetailPage,
   TutorialPage,
+  MeetSummaryPage,
 } from '@pages';
 
 const App: React.FC = () => {
@@ -17,6 +18,7 @@ const App: React.FC = () => {
           <Route path="/home" element={<TutorialPage />} />
           <Route path="/tutorial" element={<TutorialDetailPage />} />
           <Route path="/project" element={<ProjectDetailPage />} />
+          <Route path="/summary" element={<MeetSummaryPage />} />
         </Routes>
       </BrowserRouter>
     </div>
