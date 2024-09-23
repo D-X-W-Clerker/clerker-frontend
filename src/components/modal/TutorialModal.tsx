@@ -13,7 +13,7 @@ const IconMap: { [key: string]: string } = {
 
 // -- 인터페이스 --
 interface TutorialButtonProps {
-  icon: 'project' | 'schedule' | 'summary' | 'other';
+  icon: string;
   text: string;
 }
 
@@ -60,7 +60,7 @@ const Text = styled.div`
   color: var(--color-gray-600);
 `;
 
-const TutorialButton: React.FC<TutorialButtonProps> = ({ icon, text }) => {
+const TutorialModal: React.FC<TutorialButtonProps> = ({ icon, text }) => {
   const IconSrc = IconMap[icon];
   return (
     <Container>
@@ -70,4 +70,4 @@ const TutorialButton: React.FC<TutorialButtonProps> = ({ icon, text }) => {
   );
 };
 
-export default TutorialButton;
+export default TutorialModal;
