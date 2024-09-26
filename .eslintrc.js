@@ -77,6 +77,7 @@ module.exports = {
           ['@assets', './src/assets'],
           ['@components', './src/components'],
           ['@pages', './src/pages'],
+          ['@store', './src/store'],
           ['@styles', './src/styles'],
           ['@utils', './src/utils'],
           ['@data', './src/data'],
