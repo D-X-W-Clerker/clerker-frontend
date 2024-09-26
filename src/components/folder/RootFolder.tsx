@@ -61,12 +61,26 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
     navigate(`/summary/${summaryFileId}`);
   };
 
+  const onClickArrow = (folderId: string): void => {
+    alert('화살표 클릭');
+  };
+
+  const onClickMore = (folderId: string): void => {
+    alert('기타 기능 클릭');
+  };
+
   return (
     <Container>
       <ProjectFolder
         key={project.id}
         isSelected={isSelected}
-        onClick={onClickProjectFolder}
+        onClickArrow={(): void => {
+          return onClickArrow(project.id);
+        }}
+        onClickTitle={onClickProjectFolder}
+        onClickMore={(): void => {
+          return onClickMore(project.id);
+        }}
         name={project.name}
         isSubFolder={false}
       />
@@ -86,8 +100,14 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
                 <ProjectFolder
                   key={subFolder.id}
                   isSelected={selectedSubFolderId === subFolder.id}
-                  onClick={(): void => {
+                  onClickArrow={(): void => {
+                    return onClickArrow(project.id);
+                  }}
+                  onClickTitle={(): void => {
                     return onClickSubFolder(subFolder.id);
+                  }}
+                  onClickMore={(): void => {
+                    return onClickMore(project.id);
                   }}
                   name={subFolder.name}
                   isSubFolder

@@ -26,7 +26,7 @@ interface Project {
 
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)`
-  min-width: 175px;
+  width: 175px;
   max-height: 100vh;
   border-right: 0.5px solid var(--color-gray-300);
   background-color: var(--background-color);
@@ -104,12 +104,12 @@ const SideBar: React.FC = () => {
     const initialProjects = [
       {
         id: crypto.randomUUID(),
-        name: 'Clerker',
+        name: 'Clerkerㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ',
         summaryFiles: [{ id: crypto.randomUUID(), name: '기획 회의' }],
         subFolders: [
           {
             id: crypto.randomUUID(),
-            name: 'FE',
+            name: 'FEㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ',
             summaryFiles: [],
           },
           {
@@ -128,22 +128,18 @@ const SideBar: React.FC = () => {
     setProjects(initialProjects);
   }, []);
 
-  const onClickCreateProject = async (): Promise<void> => {
-    try {
-      setProjects((prevProjects) => {
-        return [
-          ...prevProjects,
-          {
-            id: crypto.randomUUID(),
-            name: '새 프로젝트',
-            summaryFiles: [],
-            subFolders: [],
-          },
-        ];
-      });
-    } catch (error) {
-      console.error('Error creating project:', error);
-    }
+  const onClickCreateProject = (): void => {
+    setProjects((prevProjects) => {
+      return [
+        ...prevProjects,
+        {
+          id: crypto.randomUUID(),
+          name: '새 프로젝트',
+          summaryFiles: [],
+          subFolders: [],
+        },
+      ];
+    });
   };
 
   const onClickCreateSubFolder = (projectId: string): void => {
