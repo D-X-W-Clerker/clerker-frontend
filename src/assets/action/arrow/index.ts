@@ -1,5 +1,6 @@
+import BackArrowIcon from './BackArrowIcon.svg';
 import DownArrowIcon from './DownArrowIcon.svg';
 import LeftArrowIcon from './LeftArrowIcon.svg';
 import RightArrowIcon from './RightArrowIcon.svg';
 
-export { DownArrowIcon, LeftArrowIcon, RightArrowIcon };
+export { BackArrowIcon, DownArrowIcon, LeftArrowIcon, RightArrowIcon };
