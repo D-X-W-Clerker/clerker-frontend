@@ -5,5 +5,6 @@ export * from './folder';
 export * from './modal';
 export * from './tab';
 export * from './table';
+export * from './input';
 
 export { default as InboxContentItem } from './InboxContentItem';
