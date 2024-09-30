@@ -1,29 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ContentDetail } from '@components';
-import { FlexCol, FlexRow } from '@styles';
+import { CenterRow } from '@styles';
 import Layout from '../../Layout';
 
-const Container = styled(FlexCol)`
-  width: 100%;
-  max-width: 1100px;
-  align-items: center;
-  padding: 0;
-`;
+const Container = styled(CenterRow)``;
 
-const TutorialDetailArea = styled(FlexRow)`
-  width: 1016px;
-  height: 595px;
-  margin: 35px 45px;
-`;
+const tutorialKeys = [
+  'CreateProject',
+  'ScheduleMeeting',
+  'CreateMeeting',
+  'AISummarize',
+];
 
-const TutorialDetailPage: React.FC = () => {
-  const tutorialKey = 'CreateProject'; // 페이지에 따라 이 값을 동적으로 설정
+const TutorialDetailPage: React.FC = (): React.ReactElement => {
+  const [tutorialId, setTutorialId] = useState(1); // id 상태 관리
+  const [tutorialIndex, setTutorialIndex] = useState(0); // tutorialKey 인덱스 관리
+
+  const handleNext = (): void => {
+    setTutorialId((prevId) => {
+      const nextId = prevId + 1;
+      if (nextId > 2) {
+        // id가 2를 넘으면 다음 tutorialKey로 변경
+        if (tutorialIndex < tutorialKeys.length - 1) {
+          setTutorialIndex((prevIndex) => {
+            return prevIndex + 0.5;
+          });
+          return 1; // id를 다시 1로 리셋
+        }
+      }
+      return nextId;
+    });
+  };
+
+  const currentTutorialKey = tutorialKeys[tutorialIndex]; // 현재 tutorialKey
 
   return (
     <Layout>
       <Container>
-        <ContentDetail tutorialKey={tutorialKey} />
+        <ContentDetail
+          tutorialKey={currentTutorialKey}
+          id={tutorialId}
+          handleNext={handleNext}
+        />
       </Container>
     </Layout>
   );
