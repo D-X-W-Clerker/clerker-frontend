@@ -1,22 +1,29 @@
 import React from 'react';
 import styled from 'styled-components';
-import { DownArrowIcon, RightArrowIcon, FolderIcon, MoreIcon } from '@assets';
+import {
+  FileIcon,
+  DownArrowIcon,
+  RightArrowIcon,
+  FolderIcon,
+  MoreIcon,
+} from '@assets';
 import { CenterRow, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface FolderItemProps {
+  isOpen?: boolean;
   isSelected: boolean;
-  onClickArrow: () => void;
-  onClickTitle: () => void;
+  onClickToggle?: () => void;
+  onClickNav: () => void;
   onClickMore: () => void;
   name: string;
-  isSubFolder: boolean;
+  isSubFolder?: boolean;
 }
 
-// -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)<{
   $isSelected: boolean;
   $isSubFolder?: boolean;
+  $onClickToggle?: () => void;
 }>`
   position: relative;
   width: 100%;
@@ -24,7 +31,8 @@ const Container = styled(ItemsCenterRow)<{
   gap: 4px;
   padding: 4px 3px 4px
     ${(props): string => {
-      return props.$isSubFolder ? '20px' : '3px';
+      if (!props.$onClickToggle) return props.$isSubFolder ? '38px' : '20px'; // 파일에 대한 padding
+      return props.$isSubFolder ? '20px' : '3px'; // 폴더에 대한 padding
     }};
   border-radius: 7px;
   cursor: pointer;
@@ -43,7 +51,7 @@ const MoreIconArea = styled(CenterRow)`
   display: none;
   position: absolute;
   right: 3px;
-  top: 60%;
+  top: 58%;
   transform: translateY(-50%);
 
   ${Container}:hover & {
@@ -51,7 +59,7 @@ const MoreIconArea = styled(CenterRow)`
   }
 `;
 
-const Title = styled(ItemsCenterRow)<{ $isSubFolder: boolean }>`
+const Title = styled(ItemsCenterRow)`
   display: block;
   flex: 1;
   min-width: 0;
@@ -76,7 +84,7 @@ const SvgImage = styled.img`
 `;
 
 const MoreIconImage = styled(SvgImage)`
-  padding: 2px;
+  padding: 1px 2px;
   border-radius: 5px;
   cursor: pointer;
 
@@ -85,22 +93,35 @@ const MoreIconImage = styled(SvgImage)`
   }
 `;
 
-const ProjectFolder: React.FC<FolderItemProps> = ({
+const FolderItem: React.FC<FolderItemProps> = ({
+  isOpen = false,
   isSelected,
-  onClickArrow,
-  onClickTitle,
+  onClickToggle,
+  onClickNav,
   onClickMore,
   name,
-  isSubFolder,
+  isSubFolder = false,
 }) => {
   return (
-    <Container $isSelected={isSelected} $isSubFolder={isSubFolder}>
+    <Container
+      $isSelected={isSelected}
+      $isSubFolder={isSubFolder}
+      $onClickToggle={onClickToggle}
+    >
+      {onClickToggle && (
+        <SvgImage
+          src={isOpen ? DownArrowIcon : RightArrowIcon}
+          onClick={(e): void => {
+            e.stopPropagation();
+            onClickToggle();
+          }}
+        />
+      )}
       <SvgImage
-        src={isSelected ? DownArrowIcon : RightArrowIcon}
-        onClick={onClickArrow}
+        onClick={onClickNav}
+        src={!onClickToggle ? FileIcon : FolderIcon}
       />
-      <SvgImage onDoubleClick={onClickTitle} src={FolderIcon} />
-      <Title onDoubleClick={onClickTitle} $isSubFolder={isSubFolder}>
+      <Title onClick={onClickNav} onDoubleClick={onClickToggle}>
         {name}
       </Title>
       <MoreIconArea onClick={onClickMore}>
@@ -110,4 +131,4 @@ const ProjectFolder: React.FC<FolderItemProps> = ({
   );
 };
 
-export default ProjectFolder;
+export default FolderItem;
