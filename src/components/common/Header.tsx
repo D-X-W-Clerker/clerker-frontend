@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { Clerker } from '@assets';
 import { ItemsCenterRow } from '@styles';
+import { useFolderStore } from '@store';
 
 const Container = styled(ItemsCenterRow)`
   position: fixed;
@@ -23,9 +24,14 @@ const IconImage = styled.img`
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setSelectedId, toggleFolderOpen, openFolderIds } = useFolderStore();
 
   const onClickLogo = (): void => {
     if (location.pathname !== '/') {
+      setSelectedId(null);
+      openFolderIds.forEach((id) => {
+        toggleFolderOpen(id); // 모든 폴더를 닫기 위해 toggleFolderOpen 호출
+      });
       navigate('/home');
     }
   };
