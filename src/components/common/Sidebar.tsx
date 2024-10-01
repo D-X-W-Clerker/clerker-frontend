@@ -78,6 +78,9 @@ const ProjectListArea = styled.div`
   flex: 1;
   padding: 0 8px;
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 2px;
+  }
 `;
 
 // 유저 프로필

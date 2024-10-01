@@ -29,6 +29,7 @@ interface RootFolderProps {
   project: Project;
   onClickCreateSubFolder: (projectId: string) => void;
 }
+
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)``;
 
@@ -50,13 +51,11 @@ const RootFolder: React.FC<RootFolderProps> = ({
     navigate(`/summary/${summaryFileId}`);
   };
 
-  const onClickMore = (folderId: string): void => {
-    alert('기타 기능 클릭');
-  };
-
   return (
     <Container>
       <FolderItem
+        id={project.id}
+        name={project.name}
         isOpen={openFolderIds.includes(project.id)}
         isSelected={selectedId === project.id}
         onClickToggle={(): void => {
@@ -65,11 +64,6 @@ const RootFolder: React.FC<RootFolderProps> = ({
         onClickNav={(): void => {
           return onClickFolder(project.id);
         }}
-        onClickMore={(): void => {
-          return onClickMore(project.id);
-        }}
-        name={project.name}
-        isSubFolder={false}
       />
       {openFolderIds.includes(project.id) && (
         <>
@@ -85,15 +79,12 @@ const RootFolder: React.FC<RootFolderProps> = ({
             return (
               <FolderItem
                 key={summaryFile.id}
+                id={summaryFile.id}
+                name={summaryFile.name}
                 isSelected={selectedId === summaryFile.id}
                 onClickNav={(): void => {
                   return onClickSummaryFile(summaryFile.id);
                 }}
-                onClickMore={(): void => {
-                  return onClickMore(project.id);
-                }}
-                name={summaryFile.name}
-                isSubFolder={false}
               />
             );
           })}
@@ -102,6 +93,8 @@ const RootFolder: React.FC<RootFolderProps> = ({
             return (
               <React.Fragment key={subFolder.id}>
                 <FolderItem
+                  id={subFolder.id}
+                  name={subFolder.name}
                   isSelected={selectedId === subFolder.id}
                   isOpen={openFolderIds.includes(subFolder.id)}
                   onClickToggle={(): void => {
@@ -110,10 +103,6 @@ const RootFolder: React.FC<RootFolderProps> = ({
                   onClickNav={(): void => {
                     return onClickFolder(subFolder.id);
                   }}
-                  onClickMore={(): void => {
-                    return onClickMore(subFolder.id);
-                  }}
-                  name={subFolder.name}
                   isSubFolder
                 />
                 {/* 하위 폴더 내 요약 파일 */}
@@ -122,14 +111,12 @@ const RootFolder: React.FC<RootFolderProps> = ({
                     return (
                       <FolderItem
                         key={summaryFile.id}
+                        id={summaryFile.id}
+                        name={summaryFile.name}
                         isSelected={selectedId === summaryFile.id}
                         onClickNav={(): void => {
                           return onClickSummaryFile(summaryFile.id);
                         }}
-                        onClickMore={(): void => {
-                          return onClickMore(project.id);
-                        }}
-                        name={summaryFile.name}
                         isSubFolder
                       />
                     );

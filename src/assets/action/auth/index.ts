@@ -1,4 +1,5 @@
 import LogoutIcon from './LogoutIcon.svg';
 import ActiveLogoutIcon from './ActiveLogoutIcon.svg';
+import ProjectLogoutIcon from './ProjectLogoutIcon.svg';
 
-export { LogoutIcon, ActiveLogoutIcon };
+export { LogoutIcon, ActiveLogoutIcon, ProjectLogoutIcon };

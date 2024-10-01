@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import {
   FileIcon,
@@ -7,16 +7,17 @@ import {
   FolderIcon,
   MoreIcon,
 } from '@assets';
+import { FolderModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface FolderItemProps {
+  id: string;
+  name: string;
   isOpen?: boolean;
   isSelected: boolean;
   onClickToggle?: () => void;
   onClickNav: () => void;
-  onClickMore: () => void;
-  name: string;
   isSubFolder?: boolean;
 }
 
@@ -47,12 +48,15 @@ const Container = styled(ItemsCenterRow)<{
   }
 `;
 
-const MoreIconArea = styled(CenterRow)`
-  display: none;
+const MoreIconArea = styled(CenterRow)<{ $showModal: boolean }>`
   position: absolute;
   right: 3px;
   top: 58%;
   transform: translateY(-50%);
+  cursor: pointer;
+  display: ${(props): string => {
+    return props.$showModal ? 'block' : 'none';
+  }};
 
   ${Container}:hover & {
     display: block;
@@ -93,15 +97,60 @@ const MoreIconImage = styled(SvgImage)`
   }
 `;
 
+const FolderModalArea = styled.div`
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+`;
+
+const Backdrop = styled.div`
+  position: fixed;
+  z-index: 999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+`;
+
 const FolderItem: React.FC<FolderItemProps> = ({
+  id,
+  name,
   isOpen = false,
   isSelected,
   onClickToggle,
   onClickNav,
-  onClickMore,
-  name,
   isSubFolder = false,
 }) => {
+  const [showModal, setShowModal] = useState(false); // More 모달 관리 상태
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const onClickMoreIcon = (): void => {
+    setShowModal((prev) => {
+      return !prev;
+    });
+  };
+
+  const onCloseModal = (): void => {
+    setShowModal(false);
+  };
+
+  // 외부 클릭 시 모달 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent): void => {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
+        setShowModal(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [modalRef]);
+
   return (
     <Container
       $isSelected={isSelected}
@@ -124,9 +173,27 @@ const FolderItem: React.FC<FolderItemProps> = ({
       <Title onClick={onClickNav} onDoubleClick={onClickToggle}>
         {name}
       </Title>
-      <MoreIconArea onClick={onClickMore}>
+      <MoreIconArea onClick={onClickMoreIcon} $showModal={showModal}>
         <MoreIconImage src={MoreIcon} alt="More Options" />
       </MoreIconArea>
+      {showModal && (
+        <>
+          <FolderModalArea ref={modalRef}>
+            <FolderModal
+              onRename={(): void => {
+                alert('이름 변경');
+              }}
+              onDelete={(): void => {
+                alert('프로젝트 삭제');
+              }}
+              onLeave={(): void => {
+                alert('프로젝트 나가기');
+              }}
+            />
+          </FolderModalArea>
+          <Backdrop onClick={onCloseModal} />
+        </>
+      )}
     </Container>
   );
 };
