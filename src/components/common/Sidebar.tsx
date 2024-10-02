@@ -149,12 +149,12 @@ const SideBar: React.FC = () => {
     const testProjects = [
       {
         id: '1',
-        name: 'Clerker',
+        name: 'Clerkerasdasdasfsagqasdasgsa',
         summaryFiles: [{ id: '6', name: '기획 회의' }],
         subFolders: [
           {
             id: '2',
-            name: 'FE',
+            name: 'FEasfsagasdewdasddsadsad',
             summaryFiles: [],
           },
           {

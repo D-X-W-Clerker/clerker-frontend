@@ -7,7 +7,7 @@ import {
   FolderIcon,
   MoreIcon,
 } from '@assets';
-import { FolderModal } from '@components';
+import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
@@ -48,22 +48,31 @@ const Container = styled(ItemsCenterRow)<{
   }
 `;
 
-const MoreIconArea = styled(CenterRow)<{ $showModal: boolean }>`
+const MoreIconArea = styled(CenterRow)<{
+  $showModal: boolean;
+  $isEditing: boolean;
+}>`
   position: absolute;
   right: 3px;
   top: 58%;
   transform: translateY(-50%);
   cursor: pointer;
   display: ${(props): string => {
+    if (props.$isEditing) return 'none';
     return props.$showModal ? 'block' : 'none';
   }};
 
   ${Container}:hover & {
-    display: block;
+    display: ${(props): string => {
+      return props.$isEditing ? 'none' : 'block';
+    }};
   }
 `;
 
-const Title = styled(ItemsCenterRow)`
+const Title = styled(ItemsCenterRow)<{
+  $isSubFolder: boolean;
+  $hasToggle: boolean;
+}>`
   display: block;
   flex: 1;
   min-width: 0;
@@ -74,11 +83,36 @@ const Title = styled(ItemsCenterRow)`
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
-  max-width: calc(100% - 40px);
+
+  max-width: ${(props): string => {
+    if (!props.$hasToggle) {
+      // 파일일 경우
+      return props.$isSubFolder ? 'calc(100% - 20x)' : 'calc(100% - 23px)';
+    }
+    return props.$isSubFolder ? 'calc(100% - 20px)' : 'calc(100% - 30px)';
+  }};
 
   ${Container}:hover & {
-    max-width: calc(100% - 50px);
+    max-width: ${(props): string => {
+      if (!props.$hasToggle) {
+        // 파일일 경우
+        return props.$isSubFolder ? 'calc(100% - 33px)' : 'calc(100% - 35px)';
+      }
+      return props.$isSubFolder ? 'calc(100% - 55px)' : 'calc(100% - 60px)';
+    }};
   }
+`;
+
+const TitleInput = styled.input`
+  min-width: 0;
+  padding-right: 3px;
+  font-size: 12.6px;
+  font-weight: var(--font-normal);
+  color: var(--color-gray-600);
+  border: none;
+  outline: none;
+  background: none;
+  cursor: pointer;
 `;
 
 const SvgImage = styled.img`
@@ -123,16 +157,43 @@ const FolderItem: React.FC<FolderItemProps> = ({
   isSubFolder = false,
 }) => {
   const [showModal, setShowModal] = useState(false); // More 모달 관리 상태
+  const [showSmallModal, setShowSmallModal] = useState(false);
+  const [smallModalType, setSmallModalType] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false); // 이름 변경 모드 상태
+  const [folderName, setFolderName] = useState(name); // 폴더 이름 상태
   const modalRef = useRef<HTMLDivElement>(null);
 
+  // 폴더 기능 모달 토글 함수
   const onClickMoreIcon = (): void => {
     setShowModal((prev) => {
       return !prev;
     });
   };
 
-  const onCloseModal = (): void => {
+  // 이름 변경 버튼 함수
+  const onClickRename = (): void => {
+    setIsEditing(true);
     setShowModal(false);
+  };
+
+  // 프로젝트 삭제 버튼 함수
+  const onClickDelete = (): void => {
+    setSmallModalType('delete');
+    setShowSmallModal(true);
+    setShowModal(false);
+  };
+
+  // 프로젝트 나가기 버튼 함수
+  const onClickLeave = (): void => {
+    setSmallModalType('leave');
+    setShowSmallModal(true);
+    setShowModal(false);
+  };
+
+  // 취소 버튼 함수
+  const onClickCancel = (): void => {
+    setShowSmallModal(false);
+    setSmallModalType(null);
   };
 
   // 외부 클릭 시 모달 닫기
@@ -150,6 +211,15 @@ const FolderItem: React.FC<FolderItemProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [modalRef]);
+
+  const onChangeName = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setFolderName(e.target.value);
+  };
+
+  const onSaveName = (): void => {
+    setIsEditing(false);
+    // 저장 후 필요한 추가 처리 가능
+  };
 
   return (
     <Container
@@ -170,29 +240,64 @@ const FolderItem: React.FC<FolderItemProps> = ({
         onClick={onClickNav}
         src={!onClickToggle ? FileIcon : FolderIcon}
       />
-      <Title onClick={onClickNav} onDoubleClick={onClickToggle}>
-        {name}
-      </Title>
-      <MoreIconArea onClick={onClickMoreIcon} $showModal={showModal}>
+      {isEditing ? (
+        <TitleInput
+          value={folderName}
+          onChange={onChangeName}
+          onBlur={onSaveName} // 포커스가 벗어날 때 저장
+          onKeyDown={(e): void => {
+            if (e.key === 'Enter') {
+              onSaveName();
+            }
+          }}
+          autoFocus
+        />
+      ) : (
+        <Title
+          $isSubFolder={isSubFolder}
+          $hasToggle={!!onClickToggle}
+          onClick={onClickNav}
+          onDoubleClick={onClickToggle}
+        >
+          {folderName}
+        </Title>
+      )}
+      <MoreIconArea
+        onClick={onClickMoreIcon}
+        $showModal={showModal}
+        $isEditing={isEditing}
+      >
         <MoreIconImage src={MoreIcon} alt="More Options" />
       </MoreIconArea>
       {showModal && (
         <>
           <FolderModalArea ref={modalRef}>
             <FolderModal
-              onRename={(): void => {
-                alert('이름 변경');
-              }}
-              onDelete={(): void => {
-                alert('프로젝트 삭제');
-              }}
-              onLeave={(): void => {
-                alert('프로젝트 나가기');
-              }}
+              onRename={onClickRename}
+              onDelete={onClickDelete}
+              onLeave={onClickLeave}
             />
           </FolderModalArea>
-          <Backdrop onClick={onCloseModal} />
+          <Backdrop
+            onClick={(): void => {
+              return setShowModal(false);
+            }}
+          />
         </>
+      )}
+      {showSmallModal && (
+        <SmallModal
+          type={smallModalType === 'delete' ? 'delete' : 'leave'}
+          title={name}
+          message={
+            smallModalType === 'delete'
+              ? '프로젝트를 삭제하시겠습니까?'
+              : '프로젝트에서 나가시겠습니까?'
+          }
+          onConfirm={(): void => {}} // 확인 버튼 클릭 시 처리
+          onCancel={onClickCancel} // 취소 버튼 클릭 시
+          isDelete={smallModalType === 'delete'}
+        />
       )}
     </Container>
   );
