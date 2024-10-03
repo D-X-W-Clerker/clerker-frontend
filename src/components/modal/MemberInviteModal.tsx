@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { ModalButton, ProjectInput, LargeModalTitleTab } from '@components';
-import { CenterRow, FlexCol, ItemsCenterEndRow, ItemsCenterRow } from '@styles';
+import {
+  ModalButton,
+  ProjectInput,
+  LargeModalTitleTab,
+  MemberInviteItem,
+} from '@components';
+import {
+  CenterRow,
+  FlexCol,
+  ItemsCenterStartRow,
+  ItemsCenterEndRow,
+} from '@styles';
 
 // -- 인터페이스 --
 interface AddUserModalProps {
@@ -33,18 +43,29 @@ const Container = styled(FlexCol)`
 
 const ContentArea = styled(FlexCol)`
   flex: 1;
-  gap: 20px;
+  gap: 10px;
+`;
+
+const UserListArea = styled(FlexCol)`
+  gap: 10px;
+  overflow-y: auto;
+  max-height: 150px;
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
   gap: 10px;
 `;
 
+const Text = styled(ItemsCenterStartRow)`
+  font-size: 10px;
+  color: var(--color-gray-600);
+  padding: 0 10px;
+`;
+
 const MemberInviteModal: React.FC<AddUserModalProps> = ({ onCancel }) => {
   const [email, setEmail] = useState<string>('');
   const [users, setUsers] = useState<string[]>([]);
 
-  // 이메일 추가 처리
   const onAddUser = (): void => {
     if (email) {
       setUsers((prevUsers) => {
@@ -52,6 +73,14 @@ const MemberInviteModal: React.FC<AddUserModalProps> = ({ onCancel }) => {
       });
       setEmail(''); // 이메일 입력 초기화
     }
+  };
+
+  const onRemoveUser = (emailToRemove: string): void => {
+    setUsers(
+      users.filter((user) => {
+        return user !== emailToRemove;
+      }),
+    );
   };
 
   const onClickConfirm = (): void => {
@@ -72,6 +101,20 @@ const MemberInviteModal: React.FC<AddUserModalProps> = ({ onCancel }) => {
             placeholder="이메일 입력"
             onClick={onAddUser}
           />
+          <Text>초대된 사용자</Text>
+          <UserListArea>
+            {users.map((user) => {
+              return (
+                <MemberInviteItem
+                  key={user}
+                  email={user}
+                  onClick={(): void => {
+                    return onRemoveUser(user);
+                  }}
+                />
+              );
+            })}
+          </UserListArea>
         </ContentArea>
         <ButtonArea>
           <ModalButton text="취소" color="gray" onClick={onCancel} />

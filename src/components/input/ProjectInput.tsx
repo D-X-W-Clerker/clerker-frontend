@@ -6,10 +6,10 @@ import { ItemsCenterRow } from '@styles';
 // -- 인터페이스 --
 interface ProjectInputProps {
   type: string;
-  value: string; // 이메일 값
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // 이메일 변경 핸들러
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
-  onClick?: () => void; // 초대 버튼 클릭 핸들러
+  onClick?: () => void;
 }
 
 // -- 스타일 컴포넌트 --
@@ -31,6 +31,7 @@ const EmailInput = styled.input`
 
   ::placeholder {
     color: var(--color-gray-400);
+    font-weight: var(--font-medium);
   }
 
   &:focus {

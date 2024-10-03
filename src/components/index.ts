@@ -8,3 +8,4 @@ export * from './table';
 export * from './input';
 
 export { default as InboxContentItem } from './InboxContentItem';
+export { default as MemberInviteItem } from './MemberInviteItem';
