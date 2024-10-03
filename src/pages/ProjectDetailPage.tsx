@@ -7,6 +7,7 @@ import {
   EventTab,
   ActionButton,
   EventFile,
+  MemberInviteModal,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -163,6 +164,7 @@ const ProjectDetailPage: React.FC = () => {
       permission: string;
     }[]
   >([]);
+  const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
 
   const onClickMeetCreateButton = (): void => {
     alert('회의 생성');
@@ -173,7 +175,7 @@ const ProjectDetailPage: React.FC = () => {
   };
 
   const onClickMemberInviteButton = (): void => {
-    alert('멤버 초대');
+    setShowMemberAddModal(true);
   };
 
   useEffect((): void => {
@@ -236,6 +238,13 @@ const ProjectDetailPage: React.FC = () => {
         </LeftContentArea>
         <RightContentArea />
       </Container>
+      {showMemberAddModal && (
+        <MemberInviteModal
+          onCancel={(): void => {
+            return setShowMemberAddModal(false);
+          }}
+        />
+      )}
     </Layout>
   );
 };
