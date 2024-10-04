@@ -32,7 +32,7 @@ const Backdrop = styled(CenterRow)`
 
 const Container = styled(FlexCol)`
   width: 100%;
-  max-width: 600px;
+  max-width: 520px;
   height: 350px;
   box-sizing: border-box;
   gap: 20px;
