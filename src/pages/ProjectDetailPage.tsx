@@ -8,6 +8,7 @@ import {
   ActionButton,
   EventFile,
   MemberInviteModal,
+  MemberInfoModal,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -50,6 +51,7 @@ const MemberArea = styled(FlexCol)``;
 const MemberTabArea = styled(ItemsCenterRow)`
   gap: 6px;
   padding-left: 3px;
+  margin-bottom: 15px;
   font-size: 20px;
   color: var(--color-gray-600);
 `;
@@ -165,13 +167,15 @@ const ProjectDetailPage: React.FC = () => {
     }[]
   >([]);
   const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
+  const [showMemberInfoModal, setShowMemberInfoModal] =
+    useState<boolean>(false);
 
   const onClickMeetCreateButton = (): void => {
     alert('회의 생성');
   };
 
   const onClickMemberSettingButton = (): void => {
-    alert('멤버 설정');
+    setShowMemberInfoModal(true);
   };
 
   const onClickMemberInviteButton = (): void => {
@@ -242,6 +246,14 @@ const ProjectDetailPage: React.FC = () => {
         <MemberInviteModal
           onCancel={(): void => {
             return setShowMemberAddModal(false);
+          }}
+        />
+      )}
+      {showMemberInfoModal && (
+        <MemberInfoModal
+          data={memberData} // members 데이터를 전달
+          onCancel={(): void => {
+            return setShowMemberInfoModal(false);
           }}
         />
       )}
