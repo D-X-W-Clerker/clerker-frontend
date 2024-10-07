@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ModalButton } from '@components';
-import { ItemsCenterRow } from '@styles';
+import { ItemsCenterEndRow } from '@styles';
 
 // -- 인터페이스 --
 interface ProjectInputProps {
   type: string;
+  label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -13,20 +13,21 @@ interface ProjectInputProps {
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled(ItemsCenterRow)`
+const Container = styled(ItemsCenterEndRow)`
   width: 100%;
   box-sizing: border-box;
-  gap: 10px;
-  padding: 5px 15px;
+  gap: 5px;
+  padding: 6px;
   background-color: var(--color-gray-50);
   border-radius: 5px;
 `;
 
 const Input = styled.input`
-  flex: 1;
+  width: 100%;
   border: none;
-  background-color: var(--color-gray-50);
+  background-color: transparent;
   font-size: 14px;
+  text-align: right;
   box-sizing: border-box;
 
   ::placeholder {
@@ -39,28 +40,25 @@ const Input = styled.input`
   }
 `;
 
-const ProjectInput: React.FC<ProjectInputProps> = ({
+const Label = styled.span`
+  color: var(--color-gray-600);
+  font-size: 14px;
+`;
+
+const DateInput: React.FC<ProjectInputProps> = ({
   type,
+  label,
   value,
   onChange,
   placeholder,
   onClick,
 }) => {
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); // 이메일 유효성 체크
-
   return (
     <Container>
       <Input value={value} onChange={onChange} placeholder={placeholder} />
-      {type === 'invite' && (
-        <ModalButton
-          text="초대"
-          color={isEmailValid ? 'blue' : 'gray'}
-          onClick={isEmailValid ? onClick : undefined} // 이메일이 유효하지 않으면 비활성화
-          disabled={!isEmailValid}
-        />
-      )}
+      <Label>{label}</Label>
     </Container>
   );
 };
 
-export default ProjectInput;
+export default DateInput;

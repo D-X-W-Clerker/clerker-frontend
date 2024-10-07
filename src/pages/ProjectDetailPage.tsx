@@ -9,6 +9,7 @@ import {
   EventFile,
   MemberInviteModal,
   MemberInfoModal,
+  MeetCreateModal,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -169,9 +170,11 @@ const ProjectDetailPage: React.FC = () => {
   const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
   const [showMemberInfoModal, setShowMemberInfoModal] =
     useState<boolean>(false);
+  const [showMeetCreateModal, setShowMeetCreateModal] =
+    useState<boolean>(false);
 
   const onClickMeetCreateButton = (): void => {
-    alert('회의 생성');
+    setShowMeetCreateModal(true);
   };
 
   const onClickMemberSettingButton = (): void => {
@@ -254,6 +257,13 @@ const ProjectDetailPage: React.FC = () => {
           data={memberData} // members 데이터를 전달
           onCancel={(): void => {
             return setShowMemberInfoModal(false);
+          }}
+        />
+      )}
+      {showMeetCreateModal && (
+        <MeetCreateModal
+          onCancel={(): void => {
+            return setShowMeetCreateModal(false);
           }}
         />
       )}

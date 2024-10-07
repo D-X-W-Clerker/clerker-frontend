@@ -5,3 +5,4 @@ export { default as TutorialButton } from './TutorialModal';
 export { default as WelcomeModal } from './WelcomeModal';
 
 export * from './member';
+export * from './meet';
