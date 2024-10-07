@@ -1,12 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { MemberIcon } from '@assets';
-import {
-  ModalButton,
-  LargeModalTitleTab,
-  MemberTable,
-  MemberEditTable,
-} from '@components';
+import { ModalButton, LargeModalTitleTab, MemberEditTable } from '@components';
 import {
   CenterRow,
   FlexCol,
@@ -62,7 +57,7 @@ const TextArea = styled(ItemsCenterRow)`
 
 const MemberTableArea = styled(FlexCol)`
   overflow-y: auto;
-  max-height: 150px;
+  max-height: 170px;
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
@@ -83,11 +78,10 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
   onCancel,
   data,
 }) => {
-  // Role 업데이트 상태 관리
   const [members, setMembers] = useState(data);
 
   // onRoleChange 함수에 useCallback을 사용하여 무한 렌더링 방지
-  const onRoleChange = useCallback((id: string, newRole: string): void => {
+  const onChangeRole = useCallback((id: string, newRole: string): void => {
     setMembers((prevMembers) => {
       return prevMembers.map((member) => {
         // 기존의 역할과 변경된 역할이 다른 경우에만 상태를 업데이트
@@ -97,9 +91,10 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
         return member;
       });
     });
-  }, []); // 의존성 배열을 빈 배열로 설정하여 불필요한 렌더링 방지
+  }, []);
 
   const onClickConfirm = (): void => {
+    console.log('Confirmed members:', members);
     alert('멤버 정보 변경 완료');
   };
 
@@ -113,8 +108,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
             <Text>Member</Text>
           </TextArea>
           <MemberTableArea>
-            <MemberTable data={members} />
-            {/* <MemberEditTable data={members} onRoleChange={onRoleChange} /> */}
+            <MemberEditTable data={members} onChangeRole={onChangeRole} />
           </MemberTableArea>
         </ContentArea>
         <ButtonArea>
