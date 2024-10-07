@@ -8,6 +8,7 @@ import { FormatDateTime } from '@utils';
 interface MeetFileProps {
   meetingName: string;
   dateTime: string; // 백엔드에서 받아오는 날짜와 시간 (ISO 형식)
+  onClick?: () => void;
 }
 
 // -- 스타일 컴포넌트 --
@@ -42,9 +43,13 @@ const SvgImage = styled.img`
   height: 14px;
 `;
 
-const EventFile: React.FC<MeetFileProps> = ({ meetingName, dateTime }) => {
+const EventFile: React.FC<MeetFileProps> = ({
+  meetingName,
+  dateTime,
+  onClick,
+}) => {
   return (
-    <Container>
+    <Container onClick={onClick}>
       <FileInfo>
         <SvgImage src={FileIcon} />
         <MeetingName>{meetingName}</MeetingName>

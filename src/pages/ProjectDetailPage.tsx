@@ -10,6 +10,7 @@ import {
   MemberInviteModal,
   MemberInfoModal,
   MeetCreateModal,
+  MeetJoinModal,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -82,8 +83,17 @@ const ContentFileArea = styled(FlexCol)`
 const RightContentArea = styled(ContentArea)``;
 
 const fetchEventData = async (): Promise<{
-  meetings: { id: string; meetingName: string; dateTime: string }[];
-  schedules: { id: string; meetingName: string; dateTime: string }[];
+  meetings: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url: string;
+  }[];
+  schedules: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+  }[];
   members: {
     id: string;
     name: string;
@@ -98,11 +108,13 @@ const fetchEventData = async (): Promise<{
         id: '1',
         meetingName: '프로젝트 킥오프',
         dateTime: '2024-07-02T10:30:00',
+        url: 'https://meet.google.com/hgq-ncmq-arq',
       },
       {
         id: '2',
         meetingName: '기획 회의',
         dateTime: '2024-07-08T14:00:00',
+        url: 'https://meet.google.com/hgq-ncmq-arq',
       },
     ],
     schedules: [
@@ -153,7 +165,7 @@ const fetchEventData = async (): Promise<{
 const ProjectDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('meeting');
   const [meetingData, setMeetingData] = useState<
-    { id: string; meetingName: string; dateTime: string }[]
+    { id: string; meetingName: string; dateTime: string; url: string }[]
   >([]);
   const [scheduleData, setScheduleData] = useState<
     { id: string; meetingName: string; dateTime: string }[]
@@ -167,11 +179,18 @@ const ProjectDetailPage: React.FC = () => {
       permission: string;
     }[]
   >([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<{
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url?: string;
+  } | null>(null);
   const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
   const [showMemberInfoModal, setShowMemberInfoModal] =
     useState<boolean>(false);
   const [showMeetCreateModal, setShowMeetCreateModal] =
     useState<boolean>(false);
+  const [showMeetJoinModal, setShowMeetJoinModal] = useState<boolean>(false);
 
   const onClickMeetCreateButton = (): void => {
     setShowMeetCreateModal(true);
@@ -183,6 +202,20 @@ const ProjectDetailPage: React.FC = () => {
 
   const onClickMemberInviteButton = (): void => {
     setShowMemberAddModal(true);
+  };
+
+  const onClickEventFile = (event: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url?: string;
+  }): void => {
+    if (activeTab === 'meeting') {
+      setSelectedMeeting(event);
+      setShowMeetJoinModal(true);
+    } else if (activeTab === 'schedule') {
+      console.log('스케줄을 클릭했습니다:', event);
+    }
   };
 
   useEffect((): void => {
@@ -237,6 +270,9 @@ const ProjectDetailPage: React.FC = () => {
                     key={event.id}
                     meetingName={event.meetingName}
                     dateTime={event.dateTime}
+                    onClick={(): void => {
+                      return onClickEventFile(event);
+                    }}
                   />
                 );
               })}
@@ -264,6 +300,14 @@ const ProjectDetailPage: React.FC = () => {
         <MeetCreateModal
           onCancel={(): void => {
             return setShowMeetCreateModal(false);
+          }}
+        />
+      )}
+      {showMeetJoinModal && selectedMeeting && (
+        <MeetJoinModal
+          meeting={selectedMeeting}
+          onCancel={(): void => {
+            return setShowMeetJoinModal(false);
           }}
         />
       )}

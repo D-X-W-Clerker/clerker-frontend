@@ -7,9 +7,10 @@ import { ItemsCenterRow } from '@styles';
 interface ProjectInputProps {
   type: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   onClick?: () => void;
+  isEditable?: boolean;
 }
 
 // -- 스타일 컴포넌트 --
@@ -39,18 +40,28 @@ const Input = styled.input`
   }
 `;
 
+const Value = styled.span`
+  color: var(--color-gray-700);
+  font-size: 14px;
+`;
+
 const ProjectInput: React.FC<ProjectInputProps> = ({
   type,
   value,
   onChange,
   placeholder,
   onClick,
+  isEditable = true,
 }) => {
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); // 이메일 유효성 체크
 
   return (
     <Container>
-      <Input value={value} onChange={onChange} placeholder={placeholder} />
+      {isEditable ? (
+        <Input value={value} onChange={onChange} placeholder={placeholder} />
+      ) : (
+        <Value>{value}</Value>
+      )}
       {type === 'invite' && (
         <ModalButton
           text="초대"
