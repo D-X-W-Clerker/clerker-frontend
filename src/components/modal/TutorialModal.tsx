@@ -5,16 +5,17 @@ import { CenterCol, FlexCol, ItemsCenterStartRow } from '@styles';
 
 // IconMap 객체 생성
 const IconMap: { [key: string]: string } = {
-  project: SproutIcon,
-  schedule: CalendarIcon,
-  summary: WindIcon,
-  other: LightBulbIcon,
+  CreateProject: SproutIcon,
+  ScheduleMeeting: CalendarIcon,
+  CreateMeeting: WindIcon,
+  AISummarize: LightBulbIcon,
 };
 
 // -- 인터페이스 --
 interface TutorialButtonProps {
   icon: string;
   text: React.ReactNode;
+  onClick: () => void; // onClick 추가
 }
 
 // -- 스타일 컴포넌트 --
@@ -57,10 +58,14 @@ const Text = styled.div`
   color: var(--color-gray-600);
 `;
 
-const TutorialModal: React.FC<TutorialButtonProps> = ({ icon, text }) => {
+const TutorialModal: React.FC<TutorialButtonProps> = ({
+  icon,
+  text,
+  onClick,
+}) => {
   const IconSrc = IconMap[icon];
   return (
-    <Container>
+    <Container onClick={onClick}>
       <IconArea>
         <Icon src={IconSrc} alt={icon} />
       </IconArea>

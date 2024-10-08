@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Clerker, WhiteAddIcon } from '@assets';
 import { TutorialModal } from '@components';
 import { CenterCol, ItemsCenterRow, CenterRow } from '@styles';
+import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 Hook
 import Layout from '../../Layout';
 
 // -- 스타일 컴포넌트 --
@@ -71,7 +72,7 @@ const ModalData: {
   text: React.ReactNode;
 }[] = [
   {
-    type: 'project',
+    type: 'CreateProject',
     text: (
       <>
         새로운 프로젝트를 생성하여
@@ -81,7 +82,7 @@ const ModalData: {
     ),
   },
   {
-    type: 'schedule',
+    type: 'ScheduleMeeting',
     text: (
       <>
         회의 일정을 편리하게
@@ -91,7 +92,7 @@ const ModalData: {
     ),
   },
   {
-    type: 'summary',
+    type: 'CreateMeeting',
     text: (
       <>
         회의를 빠르고 간편하게!
@@ -101,7 +102,7 @@ const ModalData: {
     ),
   },
   {
-    type: 'other',
+    type: 'AISummarize',
     text: (
       <>
         귀찮은 회의 정리,
@@ -113,6 +114,13 @@ const ModalData: {
 ];
 
 const TutorialPage: React.FC = () => {
+  const navigate = useNavigate(); // 페이지 이동을 관리하는 Hook을 사용
+
+  // 모달이 클릭됐을 때 실행되는 함수
+  const handleModalClick = (key: string): void => {
+    // 특정 모달을 클릭하면, 해당 모달의 key 값을 경로에 넣어 페이지 이동
+    navigate(`/tutorial/${key}`);
+  };
   return (
     <Layout>
       <Container>
@@ -122,11 +130,15 @@ const TutorialPage: React.FC = () => {
         </WelcomeArea>
         <ModalArea>
           {ModalData.map((button) => {
+            // 각 모달 데이터를 버튼으로 렌더링
             return (
               <TutorialModal
                 key={button.type}
                 icon={button.type}
                 text={button.text}
+                onClick={(): void => {
+                  return handleModalClick(button.type);
+                }} // 버튼 클릭 시 페이지 이동
               />
             );
           })}
