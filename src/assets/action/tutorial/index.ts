@@ -4,8 +4,6 @@ import WindIcon from './WindIcon.svg';
 import LightBulbIcon from './LightBulbIcon.svg';
 import FirstPageIcon from './FirstPageIcon.svg';
 import SecondPageIcon from './SecondPageIcon.svg';
-import NextIcon from './NextIcon.svg';
-import CompleteIcon from './CompleteIcon.svg';
 import ExampleImage from './ExampleImage.svg';
 
 export {
@@ -15,7 +13,5 @@ export {
   LightBulbIcon,
   FirstPageIcon,
   SecondPageIcon,
-  NextIcon,
-  CompleteIcon,
   ExampleImage,
 };
