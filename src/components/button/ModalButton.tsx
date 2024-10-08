@@ -5,11 +5,12 @@ import styled from 'styled-components';
 interface ModalButtonProps {
   text: string;
   color: string;
-  onClick: () => void;
+  onClick?: () => void;
+  disabled?: boolean; // disabled 속성 추가
 }
 
 // -- 스타일 컴포넌트 --
-const Container = styled.button<{ $bgColor: string }>`
+const Container = styled.button<{ $bgColor: string; $disabled: boolean }>`
   font-size: 15px;
   color: var(--background-color);
   background-color: ${({ $bgColor }): string => {
@@ -18,19 +19,36 @@ const Container = styled.button<{ $bgColor: string }>`
   border: none;
   border-radius: 5px;
   padding: 3px 14px;
-  cursor: pointer;
+  cursor: ${({ $disabled }): string => {
+    return $disabled ? 'not-allowed' : 'pointer';
+  }}; // disabled일 때 커서 변경
+  opacity: ${({ $disabled }): number => {
+    return $disabled ? 0.6 : 1;
+  }}; // disabled일 때 투명도 적용
 
   &:hover {
-    opacity: 0.9;
+    opacity: ${({ $disabled }): number => {
+      return $disabled ? 0.6 : 0.9;
+    }}; // disabled일 때 hover 효과 제거
   }
 `;
 
-const ModalButton: React.FC<ModalButtonProps> = ({ text, color, onClick }) => {
+const ModalButton: React.FC<ModalButtonProps> = ({
+  text,
+  color,
+  onClick,
+  disabled = false,
+}) => {
   const bgColor =
     color === 'blue' ? 'var(--color-blue-200)' : 'var(--color-gray-400)';
 
   return (
-    <Container $bgColor={bgColor} onClick={onClick}>
+    <Container
+      $bgColor={bgColor}
+      $disabled={disabled}
+      onClick={!disabled && onClick ? onClick : undefined} // disabled 상태일 때 클릭 이벤트 제거
+      disabled={disabled} // 버튼의 disabled 속성 설정
+    >
       {text}
     </Container>
   );
