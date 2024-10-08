@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { AddIcon } from '@assets';
-import { ProjectFolder, ActionButton, MeetSummaryFile } from '@components';
+import { ActionButton, FolderItem } from '@components';
+import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
@@ -23,51 +25,47 @@ interface Project {
   subFolders: SubFolder[];
 }
 
-interface ProjectFolderProps {
+interface RootFolderProps {
   project: Project;
-  isSelected: boolean;
-  onClickProjectFolder: () => void;
   onClickCreateSubFolder: (projectId: string) => void;
 }
 
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)``;
 
-const RootFolder: React.FC<ProjectFolderProps> = ({
+const RootFolder: React.FC<RootFolderProps> = ({
   project,
-  isSelected,
-  onClickProjectFolder,
   onClickCreateSubFolder,
 }) => {
-  const [selectedSubFolderId, setSelectedSubFolderId] = useState<string | null>(
-    null,
-  );
-  const [selectedSummaryFileId, setSelectedSummaryFileId] = useState<
-    string | null
-  >(null);
+  const { selectedId, setSelectedId, openFolderIds, toggleFolderOpen } =
+    useFolderStore();
+  const navigate = useNavigate();
 
-  const onClickSubFolder = (subFolderId: string): void => {
-    setSelectedSubFolderId((prevId) => {
-      return prevId === subFolderId ? null : subFolderId;
-    });
+  const onClickFolder = (folderId: string): void => {
+    setSelectedId(folderId);
+    navigate(`/project/${folderId}`);
   };
 
   const onClickSummaryFile = (summaryFileId: string): void => {
-    setSelectedSummaryFileId((prevId) => {
-      return prevId === summaryFileId ? null : summaryFileId;
-    });
+    setSelectedId(summaryFileId);
+    navigate(`/summary/${summaryFileId}`);
   };
 
   return (
     <Container>
-      <ProjectFolder
-        key={project.id}
-        isSelected={isSelected}
-        onClick={onClickProjectFolder}
+      <FolderItem
+        id={project.id}
         name={project.name}
-        isSubFolder={false}
+        isOpen={openFolderIds.includes(project.id)}
+        isSelected={selectedId === project.id}
+        onClickToggle={(): void => {
+          return toggleFolderOpen(project.id);
+        }}
+        onClickNav={(): void => {
+          return onClickFolder(project.id);
+        }}
       />
-      {isSelected && (
+      {openFolderIds.includes(project.id) && (
         <>
           <ActionButton
             icon={AddIcon}
@@ -76,50 +74,54 @@ const RootFolder: React.FC<ProjectFolderProps> = ({
               return onClickCreateSubFolder(project.id);
             }}
           />
+          {/* 프로젝트 내 요약 파일 */}
+          {project.summaryFiles.map((summaryFile) => {
+            return (
+              <FolderItem
+                key={summaryFile.id}
+                id={summaryFile.id}
+                name={summaryFile.name}
+                isSelected={selectedId === summaryFile.id}
+                onClickNav={(): void => {
+                  return onClickSummaryFile(summaryFile.id);
+                }}
+              />
+            );
+          })}
           {/* 프로젝트 하위 폴더 */}
           {project.subFolders.map((subFolder) => {
             return (
               <React.Fragment key={subFolder.id}>
-                <ProjectFolder
-                  key={subFolder.id}
-                  isSelected={selectedSubFolderId === subFolder.id}
-                  onClick={(): void => {
-                    return onClickSubFolder(subFolder.id);
-                  }}
+                <FolderItem
+                  id={subFolder.id}
                   name={subFolder.name}
+                  isSelected={selectedId === subFolder.id}
+                  isOpen={openFolderIds.includes(subFolder.id)}
+                  onClickToggle={(): void => {
+                    return toggleFolderOpen(subFolder.id);
+                  }}
+                  onClickNav={(): void => {
+                    return onClickFolder(subFolder.id);
+                  }}
                   isSubFolder
                 />
-
                 {/* 하위 폴더 내 요약 파일 */}
-                {selectedSubFolderId === subFolder.id &&
+                {openFolderIds.includes(subFolder.id) &&
                   subFolder.summaryFiles.map((summaryFile) => {
                     return (
-                      <MeetSummaryFile
+                      <FolderItem
                         key={summaryFile.id}
-                        isSelected={selectedSummaryFileId === summaryFile.id}
-                        onClick={(): void => {
+                        id={summaryFile.id}
+                        name={summaryFile.name}
+                        isSelected={selectedId === summaryFile.id}
+                        onClickNav={(): void => {
                           return onClickSummaryFile(summaryFile.id);
                         }}
-                        name={summaryFile.name}
                         isSubFolder
                       />
                     );
                   })}
               </React.Fragment>
-            );
-          })}
-          {/* 프로젝트 내 요약 파일 */}
-          {project.summaryFiles.map((summaryFile) => {
-            return (
-              <MeetSummaryFile
-                key={summaryFile.id}
-                isSelected={selectedSummaryFileId === summaryFile.id}
-                onClick={(): void => {
-                  return onClickSummaryFile(summaryFile.id);
-                }}
-                name={summaryFile.name}
-                isSubFolder={false}
-              />
             );
           })}
         </>

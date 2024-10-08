@@ -17,8 +17,8 @@ const App: React.FC = () => {
           <Route path="/" element={<OnboardingPage />} />
           <Route path="/home" element={<TutorialPage />} />
           <Route path="/tutorial" element={<TutorialDetailPage />} />
-          <Route path="/project" element={<ProjectDetailPage />} />
-          <Route path="/summary" element={<MeetSummaryPage />} />
+          <Route path="/project/:projectId" element={<ProjectDetailPage />} />
+          <Route path="/summary/:summaryId" element={<MeetSummaryPage />} />
         </Routes>
       </BrowserRouter>
     </div>
