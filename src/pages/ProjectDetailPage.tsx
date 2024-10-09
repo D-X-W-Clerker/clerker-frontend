@@ -11,6 +11,7 @@ import {
   MemberInfoModal,
   MeetCreateModal,
   MeetJoinModal,
+  When2meet,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -279,7 +280,9 @@ const ProjectDetailPage: React.FC = () => {
             </ContentFileArea>
           </ContentTabArea>
         </LeftContentArea>
-        <RightContentArea />
+        <RightContentArea>
+          <When2meet />
+        </RightContentArea>
       </Container>
       {showMemberAddModal && (
         <MemberInviteModal

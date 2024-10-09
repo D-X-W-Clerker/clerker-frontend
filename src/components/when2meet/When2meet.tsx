@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TimeGrid } from '@components';
+import { TimeGrid, MemberTable } from '@components';
 import styled from 'styled-components';
 
 const times: string[] = [
@@ -22,6 +22,8 @@ const dates: string[] = ['0729', '0730', '0731', '0801', '0802'];
 
 const TimeGridContainer = styled.div`
   display: flex;
+  justify-content: center;
+  gap: 25px;
 `;
 
 const When2meet: React.FC = () => {
@@ -53,7 +55,7 @@ const When2meet: React.FC = () => {
         dates={dates}
         selectedTimes={personalAvailable}
         toggleTime={(date, time): void => {
-          toggleTime('personal', date, time); // 반환 타입을 명시적으로 void로 설정
+          return toggleTime('personal', date, time);
         }}
       />
       <TimeGrid
@@ -62,7 +64,7 @@ const When2meet: React.FC = () => {
         dates={dates}
         selectedTimes={meetingAvailable}
         toggleTime={(date, time): void => {
-          toggleTime('meeting', date, time); // 반환 타입을 명시적으로 void로 설정
+          return toggleTime('meeting', date, time);
         }}
       />
     </TimeGridContainer>
