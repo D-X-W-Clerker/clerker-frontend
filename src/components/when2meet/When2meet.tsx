@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { TimeGrid, MemberTable } from '@components';
 import styled from 'styled-components';
+import { JustifyCenterRow } from '@styles';
 
 const times: string[] = [
   '0800',
@@ -20,9 +21,7 @@ const times: string[] = [
 ];
 const dates: string[] = ['0729', '0730', '0731', '0801', '0802'];
 
-const TimeGridContainer = styled.div`
-  display: flex;
-  justify-content: center;
+const TimeGridContainer = styled(JustifyCenterRow)`
   gap: 25px;
 `;
 
