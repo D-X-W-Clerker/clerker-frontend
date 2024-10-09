@@ -7,7 +7,10 @@ import {
   EventTab,
   ActionButton,
   EventFile,
-  When2meet,
+  MemberInviteModal,
+  MemberInfoModal,
+  MeetCreateModal,
+  MeetJoinModal,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
@@ -50,6 +53,7 @@ const MemberArea = styled(FlexCol)``;
 const MemberTabArea = styled(ItemsCenterRow)`
   gap: 6px;
   padding-left: 3px;
+  margin-bottom: 15px;
   font-size: 20px;
   color: var(--color-gray-600);
 `;
@@ -78,10 +82,18 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
-// fetchData 중에서 일부 데이터들
 const fetchEventData = async (): Promise<{
-  meetings: { id: string; meetingName: string; dateTime: string }[];
-  schedules: { id: string; meetingName: string; dateTime: string }[];
+  meetings: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url: string;
+  }[];
+  schedules: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+  }[];
   members: {
     id: string;
     name: string;
@@ -95,12 +107,14 @@ const fetchEventData = async (): Promise<{
       {
         id: '1',
         meetingName: '프로젝트 킥오프',
-        dateTime: '2024-09-14T10:30:00',
+        dateTime: '2024-07-02T10:30:00',
+        url: 'https://meet.google.com/hgq-ncmq-arq',
       },
       {
         id: '2',
-        meetingName: '디자인 리뷰',
-        dateTime: '2024-09-15T14:00:00',
+        meetingName: '기획 회의',
+        dateTime: '2024-07-08T14:00:00',
+        url: 'https://meet.google.com/hgq-ncmq-arq',
       },
     ],
     schedules: [
@@ -118,13 +132,27 @@ const fetchEventData = async (): Promise<{
     members: [
       {
         id: '1',
-        name: '신진욱',
-        role: 'FE',
-        email: 'jinwook2765@kookmin.ac.kr',
+        name: '이정욱',
+        role: 'BE',
+        email: 'dlwjddnr5438@kookmin.ac.kr',
         permission: 'owner',
       },
       {
         id: '2',
+        name: '신진욱',
+        role: 'FE',
+        email: 'jinwook2765@kookmin.ac.kr',
+        permission: 'member',
+      },
+      {
+        id: '3',
+        name: '임형빈',
+        role: 'AI',
+        email: 'gudqls3157@gmail.com',
+        permission: 'owner',
+      },
+      {
+        id: '4',
         name: '박건민',
         role: 'DE',
         email: 'pkm021118@kookmin.ac.kr',
@@ -137,7 +165,7 @@ const fetchEventData = async (): Promise<{
 const ProjectDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('meeting');
   const [meetingData, setMeetingData] = useState<
-    { id: string; meetingName: string; dateTime: string }[]
+    { id: string; meetingName: string; dateTime: string; url: string }[]
   >([]);
   const [scheduleData, setScheduleData] = useState<
     { id: string; meetingName: string; dateTime: string }[]
@@ -151,17 +179,43 @@ const ProjectDetailPage: React.FC = () => {
       permission: string;
     }[]
   >([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<{
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url?: string;
+  } | null>(null);
+  const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
+  const [showMemberInfoModal, setShowMemberInfoModal] =
+    useState<boolean>(false);
+  const [showMeetCreateModal, setShowMeetCreateModal] =
+    useState<boolean>(false);
+  const [showMeetJoinModal, setShowMeetJoinModal] = useState<boolean>(false);
 
   const onClickMeetCreateButton = (): void => {
-    alert('회의 생성');
+    setShowMeetCreateModal(true);
   };
 
   const onClickMemberSettingButton = (): void => {
-    alert('멤버 설정');
+    setShowMemberInfoModal(true);
   };
 
   const onClickMemberInviteButton = (): void => {
-    alert('멤버 초대');
+    setShowMemberAddModal(true);
+  };
+
+  const onClickEventFile = (event: {
+    id: string;
+    meetingName: string;
+    dateTime: string;
+    url?: string;
+  }): void => {
+    if (activeTab === 'meeting') {
+      setSelectedMeeting(event);
+      setShowMeetJoinModal(true);
+    } else if (activeTab === 'schedule') {
+      console.log('스케줄을 클릭했습니다:', event);
+    }
   };
 
   useEffect((): void => {
@@ -180,7 +234,7 @@ const ProjectDetailPage: React.FC = () => {
     <Layout>
       <Container>
         <LeftContentArea>
-          <TitleTab type="project" title="새로운 프로젝트" />
+          <TitleTab type="project" title="Clerker" />
           <MemberArea>
             <MemberTabArea>
               <IconImage src={MemberIcon} $width={28} $height={20} />
@@ -216,16 +270,47 @@ const ProjectDetailPage: React.FC = () => {
                     key={event.id}
                     meetingName={event.meetingName}
                     dateTime={event.dateTime}
+                    onClick={(): void => {
+                      return onClickEventFile(event);
+                    }}
                   />
                 );
               })}
             </ContentFileArea>
           </ContentTabArea>
         </LeftContentArea>
-        <RightContentArea>
-          <When2meet />
-        </RightContentArea>
+        <RightContentArea />
       </Container>
+      {showMemberAddModal && (
+        <MemberInviteModal
+          onCancel={(): void => {
+            return setShowMemberAddModal(false);
+          }}
+        />
+      )}
+      {showMemberInfoModal && (
+        <MemberInfoModal
+          data={memberData} // members 데이터를 전달
+          onCancel={(): void => {
+            return setShowMemberInfoModal(false);
+          }}
+        />
+      )}
+      {showMeetCreateModal && (
+        <MeetCreateModal
+          onCancel={(): void => {
+            return setShowMeetCreateModal(false);
+          }}
+        />
+      )}
+      {showMeetJoinModal && selectedMeeting && (
+        <MeetJoinModal
+          meeting={selectedMeeting}
+          onCancel={(): void => {
+            return setShowMeetJoinModal(false);
+          }}
+        />
+      )}
     </Layout>
   );
 };

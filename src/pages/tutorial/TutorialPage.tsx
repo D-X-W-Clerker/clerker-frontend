@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Clerker, WhiteAddIcon } from '@assets';
-import { TutorialButton } from '@components';
+import { TutorialModal } from '@components';
 import { CenterCol, ItemsCenterRow, CenterRow } from '@styles';
 import Layout from '../../Layout';
 
@@ -123,7 +123,7 @@ const TutorialPage: React.FC = () => {
         <ModalArea>
           {ModalData.map((button) => {
             return (
-              <TutorialButton
+              <TutorialModal
                 key={button.type}
                 icon={button.type}
                 text={button.text}

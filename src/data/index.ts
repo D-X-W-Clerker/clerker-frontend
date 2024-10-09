@@ -1,1 +1,1 @@
-export { default as TutorialTexts } from './TutorialTexts';
+export { default as TutorialData } from './TutorialData';

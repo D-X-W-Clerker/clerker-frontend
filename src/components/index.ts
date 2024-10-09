@@ -5,4 +5,8 @@ export * from './folder';
 export * from './modal';
 export * from './tab';
 export * from './table';
+export * from './input';
 export * from './when2meet';
+
+export { default as InboxContentItem } from './InboxContentItem';
+export { default as MemberInviteItem } from './MemberInviteItem';

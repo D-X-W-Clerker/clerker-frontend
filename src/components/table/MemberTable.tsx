@@ -19,7 +19,6 @@ interface MemberTableProps {
 const Container = styled.div`
   width: 100%;
   overflow-x: auto;
-  margin-top: 15px;
   ::-webkit-scrollbar {
     height: 0;
     background: transparent;
