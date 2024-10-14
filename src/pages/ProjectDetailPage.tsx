@@ -15,6 +15,28 @@ import {
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
 
+// -- 인터페이스 --
+interface MeetingData {
+  id: string;
+  meetingName: string;
+  dateTime: string;
+  url: string;
+}
+
+interface ScheduleData {
+  id: string;
+  meetingName: string;
+  dateTime: string;
+}
+
+interface MemberData {
+  id: string;
+  name: string;
+  role: string | null;
+  email: string;
+  permission: string;
+}
+
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexRow)`
   width: 100%;
@@ -82,25 +104,11 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
+// 미팅,스케쥴 | 멤버 분리하기
 const fetchEventData = async (): Promise<{
-  meetings: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url: string;
-  }[];
-  schedules: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-  }[];
-  members: {
-    id: string;
-    name: string;
-    role: string | null;
-    email: string;
-    permission: string;
-  }[];
+  meetings: MeetingData[];
+  schedules: ScheduleData[];
+  members: MemberData[];
 }> => {
   return {
     meetings: [
@@ -164,55 +172,34 @@ const fetchEventData = async (): Promise<{
 
 const ProjectDetailPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<string>('meeting');
-  const [meetingData, setMeetingData] = useState<
-    { id: string; meetingName: string; dateTime: string; url: string }[]
-  >([]);
-  const [scheduleData, setScheduleData] = useState<
-    { id: string; meetingName: string; dateTime: string }[]
-  >([]);
-  const [memberData, setMemberData] = useState<
-    {
-      id: string;
-      name: string;
-      role: string | null;
-      email: string;
-      permission: string;
-    }[]
-  >([]);
-  const [selectedMeeting, setSelectedMeeting] = useState<{
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url?: string;
-  } | null>(null);
-  const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
-  const [showMemberInfoModal, setShowMemberInfoModal] =
-    useState<boolean>(false);
-  const [showMeetCreateModal, setShowMeetCreateModal] =
-    useState<boolean>(false);
-  const [showMeetJoinModal, setShowMeetJoinModal] = useState<boolean>(false);
+  const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
+  const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
+  const [memberData, setMemberData] = useState<MemberData[]>([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
+    null,
+  );
+  const [modalType, setModalType] = useState<
+    'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
+  >(null); // 어떤 모달이 열릴지 결정하는 상태
 
-  const onClickMeetCreateButton = (): void => {
-    setShowMeetCreateModal(true);
+  const handleOpenModal = (
+    type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
+    meeting?: MeetingData,
+  ): void => {
+    setModalType(type); // 모달 타입을 설정
+    if (meeting) {
+      setSelectedMeeting(meeting); // 미팅 모달일 경우, 선택된 미팅을 설정
+    }
   };
 
-  const onClickMemberSettingButton = (): void => {
-    setShowMemberInfoModal(true);
+  const handleCloseModal = (): void => {
+    setModalType(null); // 모달을 닫을 때 타입 초기화
+    setSelectedMeeting(null); // 선택된 미팅 초기화
   };
 
-  const onClickMemberInviteButton = (): void => {
-    setShowMemberAddModal(true);
-  };
-
-  const onClickEventFile = (event: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url?: string;
-  }): void => {
+  const onClickEventFile = (event: MeetingData | ScheduleData): void => {
     if (activeTab === 'meeting') {
-      setSelectedMeeting(event);
-      setShowMeetJoinModal(true);
+      handleOpenModal('meetJoin', event as MeetingData);
     } else if (activeTab === 'schedule') {
       console.log('스케줄을 클릭했습니다:', event);
     }
@@ -243,12 +230,18 @@ const ProjectDetailPage: React.FC = () => {
                 src={ActiveSettingIcon}
                 $width={16}
                 $height={16}
-                onClick={onClickMemberSettingButton}
+                onClick={(): void => {
+                  return handleOpenModal('memberInfo');
+                }}
               />
             </MemberTabArea>
             <MemberTable data={memberData} />
             <MemberAddArea>
-              <MemberAddButton onClick={onClickMemberInviteButton}>
+              <MemberAddButton
+                onClick={(): void => {
+                  return handleOpenModal('memberAdd');
+                }}
+              >
                 <IconImage src={MemberAddIcon} $width={7} $height={7} />
                 추가하기
               </MemberAddButton>
@@ -261,7 +254,9 @@ const ProjectDetailPage: React.FC = () => {
                 <ActionButton
                   icon={AddIcon}
                   label="회의 생성"
-                  onClick={onClickMeetCreateButton}
+                  onClick={(): void => {
+                    return handleOpenModal('meetCreate');
+                  }}
                 />
               )}
               {eventData.map((event) => {
@@ -281,35 +276,17 @@ const ProjectDetailPage: React.FC = () => {
         </LeftContentArea>
         <RightContentArea />
       </Container>
-      {showMemberAddModal && (
-        <MemberInviteModal
-          onCancel={(): void => {
-            return setShowMemberAddModal(false);
-          }}
-        />
+      {modalType === 'memberAdd' && (
+        <MemberInviteModal onCancel={handleCloseModal} />
       )}
-      {showMemberInfoModal && (
-        <MemberInfoModal
-          data={memberData} // members 데이터를 전달
-          onCancel={(): void => {
-            return setShowMemberInfoModal(false);
-          }}
-        />
+      {modalType === 'memberInfo' && (
+        <MemberInfoModal data={memberData} onCancel={handleCloseModal} />
       )}
-      {showMeetCreateModal && (
-        <MeetCreateModal
-          onCancel={(): void => {
-            return setShowMeetCreateModal(false);
-          }}
-        />
+      {modalType === 'meetCreate' && (
+        <MeetCreateModal onCancel={handleCloseModal} />
       )}
-      {showMeetJoinModal && selectedMeeting && (
-        <MeetJoinModal
-          meeting={selectedMeeting}
-          onCancel={(): void => {
-            return setShowMeetJoinModal(false);
-          }}
-        />
+      {modalType === 'meetJoin' && selectedMeeting && (
+        <MeetJoinModal meeting={selectedMeeting} onCancel={handleCloseModal} />
       )}
     </Layout>
   );
