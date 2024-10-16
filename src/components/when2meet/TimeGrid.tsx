@@ -38,7 +38,7 @@ const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
 
   &:hover {
     background-color: ${({ selected, disabled }): string => {
-      return disabled ? '#d3d3d3' : selected ? '#4169E1' : '#A9A9A9';
+      return selected ? '#6495ED' : disabled ? '#d3d3d3' : '#A9A9A9';
     }};
   }
 
