@@ -114,13 +114,26 @@ const TutorialDetailPage: React.FC = (): React.ReactElement => {
   };
 
   const currentTutorialKey = tutorialKeys[tutorialIndex];
-  const tutorialData = TutorialData[currentTutorialKey]?.find((item) => {
-    return item.id === tutorialId;
-  });
+  const tutorialData = TutorialData[currentTutorialKey]; // 전체 튜토리얼 데이터 객체 가져오기
 
   if (!tutorialData) {
     return <p>해당 튜토리얼 데이터를 찾을 수 없습니다.</p>;
   }
+
+  // tutorialData에서 title과 iconName 가져오기
+  const { title } = tutorialData;
+  const { iconName } = tutorialData;
+
+  // 특정 ID의 데이터 항목 가져오기
+  const tutorialItem = tutorialData.data.find((item) => {
+    return item.id === tutorialId;
+  });
+
+  if (!tutorialItem) {
+    return <p>해당 튜토리얼 데이터를 찾을 수 없습니다.</p>;
+  }
+  const { subtitle } = tutorialItem;
+  const { description } = tutorialItem;
 
   // 아이콘 선택
   const IconComponent = {
@@ -128,7 +141,7 @@ const TutorialDetailPage: React.FC = (): React.ReactElement => {
     CalendarIcon,
     WindIcon,
     LightBulbIcon,
-  }[tutorialData.iconName];
+  }[iconName];
 
   return (
     <Layout>
@@ -139,8 +152,8 @@ const TutorialDetailPage: React.FC = (): React.ReactElement => {
         </TitleArea>
         <ContentArea>
           <Description>
-            <Subtitle>{tutorialData.subtitle}</Subtitle>
-            <Content>{tutorialData.description}</Content>
+            <Subtitle>{subtitle}</Subtitle>
+            <Content>{description}</Content>
           </Description>
           <Image src={ExampleImage} />
         </ContentArea>
