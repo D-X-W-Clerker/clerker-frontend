@@ -46,19 +46,33 @@ const fetchEventData = async (): Promise<{
   return {
     times: [
       '0800',
+      '0830',
       '0900',
+      '0930',
       '1000',
+      '1030',
       '1100',
+      '1130',
       '1200',
+      '1230',
       '1300',
+      '1330',
       '1400',
+      '1430',
       '1500',
+      '1530',
       '1600',
+      '1630',
       '1700',
+      '1730',
       '1800',
+      '1830',
       '1900',
+      '1930',
       '2000',
+      '2030',
       '2100',
+      '2130',
     ],
     dates: ['0729', '0730', '0731', '0801', '0802'],
     members: [
@@ -129,7 +143,6 @@ const When2meet: React.FC = () => {
     loadEventData();
   }, []);
 
-  // personalAvailable이 변경될 때 본인 정보 추가/제거 처리
   useEffect(() => {
     if (personalAvailable.length > 0) {
       if (
@@ -148,7 +161,7 @@ const When2meet: React.FC = () => {
         });
       });
     }
-  }, [personalAvailable, memberData]);
+  }, [personalAvailable]);
 
   const toggleTime = (type: 'personal', date: string, time: string): void => {
     const key = `${date}-${time}`;
@@ -197,6 +210,7 @@ const When2meet: React.FC = () => {
             );
           })}
           toggleTime={(): void => {}} // 회의 시간은 선택 불가
+          isDisabled
         />
       </TimeGridContainer>
 
@@ -210,7 +224,7 @@ const When2meet: React.FC = () => {
         <ModalButton
           text="일정 조율 저장"
           color="blue"
-          disabled={personalAvailable.length === 0} // 선택된 시간이 없으면 비활성화
+          disabled={personalAvailable.length === 0}
         />
       </ButtonContainer>
     </>

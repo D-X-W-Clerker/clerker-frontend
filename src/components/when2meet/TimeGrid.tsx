@@ -6,11 +6,11 @@ const ContentContainer = styled(ItemsCenterRow)`
   flex-direction: column;
 `;
 
-const GridContainer = styled.div<{ dateCount: number }>`
+const GridContainer = styled.div<{ $dateCount: number }>`
   display: grid;
   grid-template-columns: 25px repeat(
-      ${({ dateCount }): number => {
-        return dateCount;
+      ${({ $dateCount }): number => {
+        return $dateCount;
       }},
       1fr
     );
@@ -32,8 +32,6 @@ const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
     return selected ? '#6495ED' : '#d3d3d3';
   }};
   border: none;
-
-  // 반환 타입을 string으로 명시
   cursor: ${({ disabled }): string => {
     return disabled ? 'not-allowed' : 'pointer';
   }};
@@ -42,6 +40,10 @@ const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
     background-color: ${({ selected, disabled }): string => {
       return disabled ? '#d3d3d3' : selected ? '#4169E1' : '#A9A9A9';
     }};
+  }
+
+  &:active {
+    background-color: #1e90ff;
   }
 `;
 
@@ -68,71 +70,55 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   toggleTime,
   isDisabled = false,
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [startTime, setStartTime] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const handleMouseDown = (date: string, time: string): void => {
     if (isDisabled) return;
     setIsDragging(true);
-    toggleTime(date, time); // 드래그 시작 시 첫 번째 선택
-    setStartTime(`${date}-${time}`);
+    toggleTime(date, time);
   };
 
   const handleMouseOver = (date: string, time: string): void => {
     if (isDragging && !isDisabled) {
-      toggleTime(date, time); // 드래그하면서 선택
+      toggleTime(date, time);
     }
   };
 
   const handleMouseUp = (): void => {
-    setIsDragging(false); // 드래그 끝
-    setStartTime(null); // 선택 초기화
+    setIsDragging(false);
+  };
+
+  // 정각인지 30분인지 확인하는 함수
+  const isHalfHour = (time: string): boolean => {
+    return time.endsWith('30');
   };
 
   return (
     <ContentContainer onMouseUp={handleMouseUp}>
       <Title>{title}</Title>
-      <GridContainer dateCount={dates.length}>
-        {/* 날짜 헤더 */}
+      <GridContainer $dateCount={dates.length}>
         <TimeLabel />
         {dates.map((date) => {
           return <TimeLabel key={date}>{date}</TimeLabel>;
         })}
 
-        {/* 시간 및 타임 블록 */}
         {times.map((time) => {
           return (
             <React.Fragment key={time}>
-              {/* 시간 레이블 */}
-              <TimeLabel>{time}</TimeLabel>
-              {/* 첫 번째 행: 00분 타임 블록 */}
+              {/* 정각이면 시간 표시, 30분이면 빈 라벨 */}
+              <TimeLabel>{isHalfHour(time) ? '' : time}</TimeLabel>
               {dates.map((date) => {
+                const timeKey = `${date}-${time}`;
+
                 return (
                   <TimeBlockButton
-                    key={`${date}-${time}-00`}
-                    selected={selectedTimes.includes(`${date}-${time}-00`)}
+                    key={timeKey}
+                    selected={selectedTimes.includes(timeKey)}
                     onMouseDown={(): void => {
-                      return handleMouseDown(date, `${time}-00`);
+                      return handleMouseDown(date, time);
                     }}
                     onMouseOver={(): void => {
-                      return handleMouseOver(date, `${time}-00`);
-                    }}
-                    disabled={isDisabled}
-                  />
-                );
-              })}
-              {/* 두 번째 행: 30분 타임 블록 */}
-              <TimeLabel /> {/* 빈 시간 레이블을 추가하여 맞춤 */}
-              {dates.map((date) => {
-                return (
-                  <TimeBlockButton
-                    key={`${date}-${time}-30`}
-                    selected={selectedTimes.includes(`${date}-${time}-30`)}
-                    onMouseDown={(): void => {
-                      return handleMouseDown(date, `${time}-30`);
-                    }}
-                    onMouseOver={(): void => {
-                      return handleMouseOver(date, `${time}-30`);
+                      return handleMouseOver(date, time);
                     }}
                     disabled={isDisabled}
                   />
