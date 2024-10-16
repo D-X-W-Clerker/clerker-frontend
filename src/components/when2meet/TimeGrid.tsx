@@ -48,7 +48,7 @@ const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
 const TimeLabel = styled(FlexRow)`
   width: 100%;
   font-size: 10px;
-  font-weight: var (--font-normal);
+  font-weight: var(--font-normal);
 `;
 
 type TimeGridProps = {

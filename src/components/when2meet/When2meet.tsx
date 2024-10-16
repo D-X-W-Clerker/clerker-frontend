@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
-import {
-  FlexCol,
-  JustifyCenterRow,
-  ItemsCenterRow,
-  ItemsCenterEndRow,
-} from '@styles';
+import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
 
 // 스타일 컴포넌트 정의
 const TimeGridContainer = styled(JustifyCenterRow)`
@@ -24,17 +19,6 @@ const MemberContainer = styled(FlexCol)``;
 
 const ButtonContainer = styled(ItemsCenterEndRow)`
   gap: 7px;
-`;
-
-const GridContainer = styled.div<{ dateCount: number }>`
-  display: grid;
-  grid-template-columns: 25px repeat(
-      ${({ dateCount }): number => {
-        return dateCount;
-      }},
-      1fr
-    );
-  grid-gap: 2px 5px;
 `;
 
 // API로 이벤트 데이터 가져오기
