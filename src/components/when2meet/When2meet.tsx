@@ -21,6 +21,15 @@ const ButtonContainer = styled(ItemsCenterEndRow)`
   gap: 7px;
 `;
 
+// 임의의 사용자 정보 생성
+const myInfo = {
+  id: '5',
+  name: '황현진',
+  role: 'FE',
+  email: 'jjini6530@kookmin.ac.kr',
+  permission: 'member',
+};
+
 // API로 이벤트 데이터 가져오기
 const fetchEventData = async (): Promise<{
   times: string[];
@@ -120,26 +129,47 @@ const When2meet: React.FC = () => {
     loadEventData();
   }, []);
 
+  // personalAvailable이 변경될 때 본인 정보 추가/제거 처리
+  useEffect(() => {
+    if (personalAvailable.length > 0) {
+      if (
+        !memberData.some((member) => {
+          return member.id === myInfo.id;
+        })
+      ) {
+        setMemberData((prevMembers) => {
+          return [...prevMembers, myInfo];
+        });
+      }
+    } else {
+      setMemberData((prevMembers) => {
+        return prevMembers.filter((member) => {
+          return member.id !== myInfo.id;
+        });
+      });
+    }
+  }, [personalAvailable, memberData]);
+
   const toggleTime = (type: 'personal', date: string, time: string): void => {
     const key = `${date}-${time}`;
 
-    setPersonalAvailable((prev) => {
-      return prev.includes(key)
-        ? prev.filter((t) => {
+    setPersonalAvailable((previous) => {
+      return previous.includes(key)
+        ? previous.filter((t) => {
             return t !== key;
           })
-        : [...prev, key];
+        : [...previous, key];
     });
 
-    setMeetingAvailable((prev) => {
-      const updatedTimes = prev[date] || [];
+    setMeetingAvailable((previousMeeting) => {
+      const updatedTimes = previousMeeting[date] || [];
       const newTimes = updatedTimes.includes(time)
         ? updatedTimes.filter((t) => {
             return t !== time;
           })
         : [...updatedTimes, time];
 
-      return { ...prev, [date]: newTimes };
+      return { ...previousMeeting, [date]: newTimes };
     });
   };
 
