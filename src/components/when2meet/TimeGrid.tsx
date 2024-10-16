@@ -19,19 +19,23 @@ const Title = styled.div`
   margin-top: 44px;
 `;
 
-const TimeBlockButton = styled.button<{ selected: boolean }>`
-  width: 100%; /* 그리드 너비에 맞춤 */
-  height: 11px; /* 블록의 높이 조정 */
+const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
+  width: 100%;
+  height: 11px;
   border-radius: 4px;
   background-color: ${({ selected }): string => {
     return selected ? '#6495ED' : '#d3d3d3';
   }};
   border: none;
-  cursor: pointer;
+
+  // 반환 타입을 string으로 명시
+  cursor: ${({ disabled }): string => {
+    return disabled ? 'not-allowed' : 'pointer';
+  }};
 
   &:hover {
-    background-color: ${({ selected }): string => {
-      return selected ? '#4169E1' : '#A9A9A9';
+    background-color: ${({ selected, disabled }): string => {
+      return disabled ? '#d3d3d3' : selected ? '#4169E1' : '#A9A9A9';
     }};
   }
 `;
@@ -39,7 +43,7 @@ const TimeBlockButton = styled.button<{ selected: boolean }>`
 const TimeLabel = styled(FlexRow)`
   width: 100%;
   font-size: 10px;
-  font-weight: var(--font-normal);
+  font-weight: var (--font-normal);
 `;
 
 type TimeGridProps = {
@@ -48,6 +52,7 @@ type TimeGridProps = {
   dates: string[];
   selectedTimes: string[];
   toggleTime: (date: string, time: string) => void;
+  isDisabled?: boolean;
 };
 
 const TimeGrid: React.FC<TimeGridProps> = ({
@@ -56,18 +61,20 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   dates,
   selectedTimes,
   toggleTime,
+  isDisabled = false,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [startTime, setStartTime] = useState<string | null>(null);
 
   const handleMouseDown = (date: string, time: string): void => {
+    if (isDisabled) return;
     setIsDragging(true);
     toggleTime(date, time); // 드래그 시작 시 첫 번째 선택
     setStartTime(`${date}-${time}`);
   };
 
   const handleMouseOver = (date: string, time: string): void => {
-    if (isDragging) {
+    if (isDragging && !isDisabled) {
       toggleTime(date, time); // 드래그하면서 선택
     }
   };
@@ -79,8 +86,6 @@ const TimeGrid: React.FC<TimeGridProps> = ({
 
   return (
     <ContentContainer onMouseUp={handleMouseUp}>
-      {' '}
-      {/* 드래그가 끝나면 상태를 초기화 */}
       <Title>{title}</Title>
       <GridContainer>
         {/* 날짜 헤더 */}
@@ -107,6 +112,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                     onMouseOver={(): void => {
                       return handleMouseOver(date, `${time}-00`);
                     }}
+                    disabled={isDisabled}
                   />
                 );
               })}
@@ -123,6 +129,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                     onMouseOver={(): void => {
                       return handleMouseOver(date, `${time}-30`);
                     }}
+                    disabled={isDisabled}
                   />
                 );
               })}
