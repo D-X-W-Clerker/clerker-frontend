@@ -32,7 +32,7 @@ const fetchEventData = async (): Promise<{
     email: string;
     permission: string;
   }[];
-  meetingTimes: string[];
+  meetingTimes: Record<string, string[]>;
 }> => {
   return {
     times: [
@@ -82,14 +82,20 @@ const fetchEventData = async (): Promise<{
         permission: 'member',
       },
     ],
-    meetingTimes: ['0729-1000', '0730-1100'],
+    meetingTimes: {
+      '0729': ['0800', '0830', '0900'],
+      '0730': ['0900', '0930'],
+      '0731': ['1130', '1200', '1230', '1300'],
+    },
   };
 };
 
 // When2meet 컴포넌트
 const When2meet: React.FC = () => {
   const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
-  const [meetingAvailable, setMeetingAvailable] = useState<string[]>([]);
+  const [meetingAvailable, setMeetingAvailable] = useState<
+    Record<string, string[]>
+  >({});
   const [memberData, setMemberData] = useState<
     {
       id: string;
@@ -102,7 +108,6 @@ const When2meet: React.FC = () => {
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-  // 데이터 로딩
   useEffect(() => {
     const loadEventData = async (): Promise<void> => {
       const { times, dates, members, meetingTimes } = await fetchEventData();
@@ -115,30 +120,27 @@ const When2meet: React.FC = () => {
     loadEventData();
   }, []);
 
-  // 시간 선택 토글 함수
-  const toggleTime = (
-    type: 'personal' | 'meeting',
-    date: string,
-    time: string,
-  ): void => {
+  const toggleTime = (type: 'personal', date: string, time: string): void => {
     const key = `${date}-${time}`;
 
-    if (type === 'personal') {
-      setPersonalAvailable((prev) => {
-        return prev.includes(key)
-          ? prev.filter((t) => {
-              return t !== key;
-            })
-          : [...prev, key];
-      });
-      setMeetingAvailable((prev) => {
-        return prev.includes(key)
-          ? prev.filter((t) => {
-              return t !== key;
-            })
-          : [...prev, key];
-      });
-    }
+    setPersonalAvailable((prev) => {
+      return prev.includes(key)
+        ? prev.filter((t) => {
+            return t !== key;
+          })
+        : [...prev, key];
+    });
+
+    setMeetingAvailable((prev) => {
+      const updatedTimes = prev[date] || [];
+      const newTimes = updatedTimes.includes(time)
+        ? updatedTimes.filter((t) => {
+            return t !== time;
+          })
+        : [...updatedTimes, time];
+
+      return { ...prev, [date]: newTimes };
+    });
   };
 
   return (
@@ -157,8 +159,14 @@ const When2meet: React.FC = () => {
           title="회의 가능 시간"
           times={availableTimes}
           dates={availableDates}
-          selectedTimes={meetingAvailable}
-          toggleTime={(): void => {}} // 회의 가능 시간은 선택 불가
+          selectedTimes={availableDates.flatMap((date) => {
+            return (
+              meetingAvailable[date]?.map((time) => {
+                return `${date}-${time}`;
+              }) || []
+            );
+          })}
+          toggleTime={(): void => {}} // 회의 시간은 선택 불가
         />
       </TimeGridContainer>
 
@@ -169,7 +177,11 @@ const When2meet: React.FC = () => {
 
       <ButtonContainer>
         <ModalButton text="취소" color="blue" />
-        <ModalButton text="일정 조율 저장" color="blue" />
+        <ModalButton
+          text="일정 조율 저장"
+          color="blue"
+          disabled={personalAvailable.length === 0} // 선택된 시간이 없으면 비활성화
+        />
       </ButtonContainer>
     </>
   );
