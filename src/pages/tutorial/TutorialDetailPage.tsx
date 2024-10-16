@@ -10,20 +10,25 @@ import {
   LightBulbIcon,
 } from '@assets';
 import { TutorialButton } from '@components';
-import { FlexCol, FlexRow, ItemsCenterSpaceRow } from '@styles';
+import {
+  FlexCol,
+  FlexRow,
+  ItemsCenterSpaceRow,
+  SpaceBetweenCol,
+} from '@styles';
 import { TutorialData } from '@data';
 import { useParams, useNavigate } from 'react-router-dom'; // URL 경로에서 파라미터를 가져오는 Hook
 import Layout from '../../Layout';
 
 // -- 스타일 컴포넌트 --
-const Container = styled(FlexCol)`
+const Container = styled(SpaceBetweenCol)`
   max-width: 1000px;
   width: 100%;
   height: 507px;
   padding: 45px;
   border: 0.5px solid var(--color-gray-100);
   border-radius: 33px;
-  gap: 70px;
+  margin: 20px;
 `;
 
 const TitleArea = styled(FlexRow)`
