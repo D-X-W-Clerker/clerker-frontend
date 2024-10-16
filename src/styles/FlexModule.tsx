@@ -47,3 +47,7 @@ export const ItemsCenterCol = styled(FlexCol)`
 export const JustifyCenterCol = styled(FlexCol)`
   justify-content: center;
 `;
+
+export const SpaceBetweenCol = styled(FlexCol)`
+  justify-content: space-between;
+`;
