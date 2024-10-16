@@ -6,9 +6,14 @@ const ContentContainer = styled(ItemsCenterRow)`
   flex-direction: column;
 `;
 
-const GridContainer = styled.div`
+const GridContainer = styled.div<{ dateCount: number }>`
   display: grid;
-  grid-template-columns: 25px repeat(5, 1fr); /* 1개의 시간 열과 5개의 날짜 열 */
+  grid-template-columns: 25px repeat(
+      ${({ dateCount }): number => {
+        return dateCount;
+      }},
+      1fr
+    );
   grid-gap: 2px 5px;
 `;
 
@@ -87,7 +92,7 @@ const TimeGrid: React.FC<TimeGridProps> = ({
   return (
     <ContentContainer onMouseUp={handleMouseUp}>
       <Title>{title}</Title>
-      <GridContainer>
+      <GridContainer dateCount={dates.length}>
         {/* 날짜 헤더 */}
         <TimeLabel />
         {dates.map((date) => {

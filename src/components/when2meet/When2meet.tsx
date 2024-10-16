@@ -8,6 +8,7 @@ import {
   ItemsCenterEndRow,
 } from '@styles';
 
+// 스타일 컴포넌트 정의
 const TimeGridContainer = styled(JustifyCenterRow)`
   gap: 25px;
 `;
@@ -25,6 +26,18 @@ const ButtonContainer = styled(ItemsCenterEndRow)`
   gap: 7px;
 `;
 
+const GridContainer = styled.div<{ dateCount: number }>`
+  display: grid;
+  grid-template-columns: 25px repeat(
+      ${({ dateCount }): number => {
+        return dateCount;
+      }},
+      1fr
+    );
+  grid-gap: 2px 5px;
+`;
+
+// API로 이벤트 데이터 가져오기
 const fetchEventData = async (): Promise<{
   times: string[];
   dates: string[];
@@ -35,7 +48,7 @@ const fetchEventData = async (): Promise<{
     email: string;
     permission: string;
   }[];
-  meetingTimes: string[]; // meetingAvailable 데이터를 받아옴
+  meetingTimes: string[];
 }> => {
   return {
     times: [
@@ -85,13 +98,14 @@ const fetchEventData = async (): Promise<{
         permission: 'member',
       },
     ],
-    meetingTimes: ['0729-1000', '0730-1100'], // 미리 설정된 meeting 시간 데이터
+    meetingTimes: ['0729-1000', '0730-1100'],
   };
 };
 
+// When2meet 컴포넌트
 const When2meet: React.FC = () => {
   const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
-  const [meetingAvailable, setMeetingAvailable] = useState<string[]>([]); // 외부 데이터를 받아옴
+  const [meetingAvailable, setMeetingAvailable] = useState<string[]>([]);
   const [memberData, setMemberData] = useState<
     {
       id: string;
@@ -104,18 +118,20 @@ const When2meet: React.FC = () => {
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
+  // 데이터 로딩
   useEffect(() => {
     const loadEventData = async (): Promise<void> => {
       const { times, dates, members, meetingTimes } = await fetchEventData();
       setAvailableTimes(times);
       setAvailableDates(dates);
       setMemberData(members);
-      setMeetingAvailable(meetingTimes); // 받아온 meeting 데이터를 설정
+      setMeetingAvailable(meetingTimes);
     };
 
     loadEventData();
   }, []);
 
+  // 시간 선택 토글 함수
   const toggleTime = (
     type: 'personal' | 'meeting',
     date: string,
@@ -131,7 +147,6 @@ const When2meet: React.FC = () => {
             })
           : [...prev, key];
       });
-      // personal에서 선택할 때 meeting에도 동일하게 반영
       setMeetingAvailable((prev) => {
         return prev.includes(key)
           ? prev.filter((t) => {
@@ -159,13 +174,15 @@ const When2meet: React.FC = () => {
           times={availableTimes}
           dates={availableDates}
           selectedTimes={meetingAvailable}
-          toggleTime={(): void => {}} // 사용자가 클릭하지 못하도록 빈 함수로 설정
+          toggleTime={(): void => {}} // 회의 가능 시간은 선택 불가
         />
       </TimeGridContainer>
+
       <MemberContainer>
         <Title>참여 인원</Title>
         <MemberTable data={memberData} />
       </MemberContainer>
+
       <ButtonContainer>
         <ModalButton text="취소" color="blue" />
         <ModalButton text="일정 조율 저장" color="blue" />
