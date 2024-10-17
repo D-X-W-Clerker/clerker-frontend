@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
   MemberTable,
@@ -30,11 +31,16 @@ interface ScheduleData {
 }
 
 interface MemberData {
-  id: string;
-  name: string;
-  role: string | null;
+  organizationId: string;
+  username: string;
   email: string;
-  permission: string;
+  type: string | null;
+  role: string;
+}
+
+interface ProjectInfo {
+  projectName: string;
+  members: MemberData[];
 }
 
 // -- 스타일 컴포넌트 --
@@ -104,11 +110,10 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
-// 미팅,스케쥴 | 멤버 분리하기
+// 스케쥴 및 미팅 목록 get 함수
 const fetchEventData = async (): Promise<{
   meetings: MeetingData[];
   schedules: ScheduleData[];
-  members: MemberData[];
 }> => {
   return {
     meetings: [
@@ -137,44 +142,52 @@ const fetchEventData = async (): Promise<{
         dateTime: '2024-09-15T14:00:00',
       },
     ],
+  };
+};
+
+// 프로젝트 정보 조회 함수
+const fetchProjectInfo = async (): Promise<ProjectInfo> => {
+  return {
+    projectName: 'Clerker',
     members: [
       {
-        id: '1',
-        name: '이정욱',
-        role: 'BE',
+        organizationId: '1',
+        username: '이정욱',
         email: 'dlwjddnr5438@kookmin.ac.kr',
-        permission: 'owner',
+        type: 'BE',
+        role: 'owner',
       },
       {
-        id: '2',
-        name: '신진욱',
-        role: 'FE',
+        organizationId: '2',
+        username: '신진욱',
         email: 'jinwook2765@kookmin.ac.kr',
-        permission: 'member',
+        type: 'FE',
+        role: 'member',
       },
       {
-        id: '3',
-        name: '임형빈',
-        role: 'AI',
+        organizationId: '3',
+        username: '임형빈',
         email: 'gudqls3157@gmail.com',
-        permission: 'owner',
+        type: 'AI',
+        role: 'member',
       },
       {
-        id: '4',
-        name: '박건민',
-        role: 'DE',
+        organizationId: '4',
+        username: '박건민',
         email: 'pkm021118@kookmin.ac.kr',
-        permission: 'member',
+        type: 'DE',
+        role: 'member',
       },
     ],
   };
 };
 
 const ProjectDetailPage: React.FC = () => {
+  const { projectId } = useParams<{ projectId: string }>();
   const [activeTab, setActiveTab] = useState<string>('meeting');
+  const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
   const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
-  const [memberData, setMemberData] = useState<MemberData[]>([]);
   const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
     null,
   );
@@ -207,10 +220,11 @@ const ProjectDetailPage: React.FC = () => {
 
   useEffect((): void => {
     const fetchData = async (): Promise<void> => {
-      const { meetings, schedules, members } = await fetchEventData();
+      const { meetings, schedules } = await fetchEventData();
+      const projectInfoData = await fetchProjectInfo();
       setMeetingData(meetings);
       setScheduleData(schedules);
-      setMemberData(members);
+      setProjectInfo(projectInfoData);
     };
     fetchData();
   }, []);
@@ -221,7 +235,7 @@ const ProjectDetailPage: React.FC = () => {
     <Layout>
       <Container>
         <LeftContentArea>
-          <TitleTab type="project" title="Clerker" />
+          <TitleTab type="project" title={projectInfo?.projectName || ''} />
           <MemberArea>
             <MemberTabArea>
               <IconImage src={MemberIcon} $width={28} $height={20} />
@@ -235,7 +249,7 @@ const ProjectDetailPage: React.FC = () => {
                 }}
               />
             </MemberTabArea>
-            <MemberTable data={memberData} />
+            <MemberTable data={projectInfo?.members || []} />
             <MemberAddArea>
               <MemberAddButton
                 onClick={(): void => {
@@ -277,10 +291,16 @@ const ProjectDetailPage: React.FC = () => {
         <RightContentArea />
       </Container>
       {modalType === 'memberAdd' && (
-        <MemberInviteModal onCancel={handleCloseModal} />
+        <MemberInviteModal
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
+        />
       )}
       {modalType === 'memberInfo' && (
-        <MemberInfoModal data={memberData} onCancel={handleCloseModal} />
+        <MemberInfoModal
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
+        />
       )}
       {modalType === 'meetCreate' && (
         <MeetCreateModal onCancel={handleCloseModal} />

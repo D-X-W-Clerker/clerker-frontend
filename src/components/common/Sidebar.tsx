@@ -17,22 +17,23 @@ import {
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
+interface Meeting {
   id: string;
   name: string;
 }
 
-interface SubFolder {
+interface ChildProject {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
+  childProjects: [];
+  meetings: Meeting[];
 }
 
 interface Project {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
+  childProjects: ChildProject[];
+  meetings: Meeting[];
 }
 
 interface InboxItem {
@@ -132,6 +133,7 @@ const SideBar: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
+    // 알림 목록
     const testInboxItems = [
       {
         id: '1',
@@ -146,28 +148,32 @@ const SideBar: React.FC = () => {
       },
     ];
 
-    const testProjects = [
+    // 프로젝트 목록 조회
+    const testProjects: Project[] = [
       {
         id: '1',
         name: 'Clerker',
-        summaryFiles: [{ id: '6', name: '기획 회의' }],
-        subFolders: [
+        childProjects: [
           {
             id: '2',
             name: 'FE',
-            summaryFiles: [],
+            childProjects: [],
+            meetings: [],
           },
           {
             id: '3',
             name: 'BE',
-            summaryFiles: [],
+            childProjects: [],
+            meetings: [],
           },
           {
             id: '4',
             name: 'AI',
-            summaryFiles: [{ id: '5', name: '9월 12일 회의' }],
+            childProjects: [],
+            meetings: [{ id: '5', name: '9월 12일 회의' }],
           },
         ],
+        meetings: [{ id: '6', name: '기획 회의' }],
       },
     ];
 
@@ -175,6 +181,7 @@ const SideBar: React.FC = () => {
     setProjects(testProjects);
   }, []);
 
+  // 프로젝트 생성
   const onClickCreateProject = (): void => {
     setProjects((prevProjects) => {
       return [
@@ -182,25 +189,27 @@ const SideBar: React.FC = () => {
         {
           id: crypto.randomUUID(),
           name: '새 프로젝트',
-          summaryFiles: [],
-          subFolders: [],
+          childProjects: [],
+          meetings: [],
         },
       ];
     });
   };
 
-  const onClickCreateSubFolder = (projectId: string): void => {
+  // 하위 프로젝트 생성
+  const onClickCreateChildProject = (projectId: string): void => {
     setProjects((prevProjects) => {
       return prevProjects.map((project) => {
         return project.id === projectId
           ? {
               ...project,
-              subFolders: [
-                ...project.subFolders,
+              childProjects: [
+                ...project.childProjects,
                 {
                   id: crypto.randomUUID(),
-                  name: `새로운 폴더`,
-                  summaryFiles: [{ id: crypto.randomUUID(), name: '회의록' }],
+                  name: '새로운 폴더',
+                  childProjects: [],
+                  meetings: [{ id: crypto.randomUUID(), name: '회의록' }],
                 },
               ],
             }
@@ -287,7 +296,7 @@ const SideBar: React.FC = () => {
                   <RootFolder
                     key={project.id}
                     project={project}
-                    onClickCreateSubFolder={onClickCreateSubFolder}
+                    onClickCreateSubFolder={onClickCreateChildProject}
                   />
                 );
               })}

@@ -8,16 +8,16 @@ import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface Member {
-  id: string;
-  name: string;
-  role: string | null;
+  organizationId: string;
+  username: string;
   email: string;
-  permission: string;
+  type: string | null;
+  role: string;
 }
 
 interface MemberEditTableProps {
   data: Member[];
-  onChangeRole: (id: string, newRole: string) => void;
+  onChangeType: (id: string, newType: string) => void;
 }
 
 // -- 스타일 컴포넌트 --
@@ -82,9 +82,9 @@ const CustomSelect = styled.select`
   font-size: 10px;
 `;
 
-const roleOptions = ['PM', 'FE', 'BE', 'DE', 'AI'];
+const typeOptions = ['PM', 'FE', 'BE', 'DE', 'AI'];
 
-const roleColorMap: { [key: string]: string } = {
+const typeColorMap: { [key: string]: string } = {
   DE: 'var(--color-de)',
   FE: 'var(--color-fe)',
   BE: 'var(--color-be)',
@@ -95,9 +95,9 @@ const roleColorMap: { [key: string]: string } = {
 const SelectCell: React.FC<{
   id: string;
   value: string | null;
-  onChangeRole: (id: string, newRole: string) => void;
-}> = ({ id, value, onChangeRole }) => {
-  const roleColor = value ? roleColorMap[value] : '#f3f4f6';
+  onChangeType: (id: string, newType: string) => void;
+}> = ({ id, value, onChangeType }) => {
+  const typeColor = value ? typeColorMap[value] : '#f3f4f6';
 
   return (
     <SelectContainer>
@@ -105,13 +105,13 @@ const SelectCell: React.FC<{
       <CustomSelect
         value={value || ''}
         onChange={(e): void => {
-          onChangeRole(id, e.target.value);
+          onChangeType(id, e.target.value);
         }}
       >
-        {roleOptions.map((role) => {
+        {typeOptions.map((type) => {
           return (
-            <option key={role} value={role}>
-              {role}
+            <option key={type} value={type}>
+              {type}
             </option>
           );
         })}
@@ -121,14 +121,14 @@ const SelectCell: React.FC<{
 };
 
 const RoleCell = (
-  onChangeRole: (id: string, newRole: string) => void,
+  onChangeType: (id: string, newType: string) => void,
 ): React.FC<CellProps<Member, string | null>> => {
   return ({ row, value }) => {
     return (
       <SelectCell
-        id={row.original.id}
+        id={row.original.organizationId}
         value={value}
-        onChangeRole={onChangeRole}
+        onChangeType={onChangeType}
       />
     );
   };
@@ -136,22 +136,22 @@ const RoleCell = (
 
 const MemberEditTable: React.FC<MemberEditTableProps> = ({
   data,
-  onChangeRole,
+  onChangeType,
 }) => {
   // useMemo를 사용하여 columns를 캐싱
   const columns = useMemo((): Column<Member>[] => {
     return [
-      { Header: '이름', accessor: 'name', id: 'name' },
+      { Header: '이름', accessor: 'username', id: 'username' },
       {
         Header: '업무',
-        accessor: 'role',
-        id: 'role',
-        Cell: RoleCell(onChangeRole), // 함수 외부로 분리한 RoleCell 사용
+        accessor: 'type',
+        id: 'type',
+        Cell: RoleCell(onChangeType), // 함수 외부로 분리한 RoleCell 사용
       },
       { Header: '이메일', accessor: 'email', id: 'email' },
-      { Header: '권한', accessor: 'permission', id: 'permission' },
+      { Header: '권한', accessor: 'role', id: 'role' },
     ];
-  }, [onChangeRole]);
+  }, [onChangeType]);
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable<Member>({ columns, data });

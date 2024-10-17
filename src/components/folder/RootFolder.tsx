@@ -7,22 +7,23 @@ import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
+interface Meeting {
   id: string;
   name: string;
 }
 
-interface SubFolder {
+interface ChildProject {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
+  childProjects: [];
+  meetings: Meeting[];
 }
 
 interface Project {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
+  childProjects: ChildProject[];
+  meetings: Meeting[];
 }
 
 interface RootFolderProps {
@@ -46,9 +47,9 @@ const RootFolder: React.FC<RootFolderProps> = ({
     navigate(`/project/${folderId}`);
   };
 
-  const onClickSummaryFile = (summaryFileId: string): void => {
-    setSelectedId(summaryFileId);
-    navigate(`/summary/${summaryFileId}`);
+  const onClickMeeting = (meetingId: string): void => {
+    setSelectedId(meetingId);
+    navigate(`/summary/${meetingId}`);
   };
 
   return (
@@ -75,47 +76,47 @@ const RootFolder: React.FC<RootFolderProps> = ({
             }}
           />
           {/* 프로젝트 내 요약 파일 */}
-          {project.summaryFiles.map((summaryFile) => {
+          {project.meetings.map((meeting) => {
             return (
               <FolderItem
-                key={summaryFile.id}
-                id={summaryFile.id}
-                name={summaryFile.name}
-                isSelected={selectedId === summaryFile.id}
+                key={meeting.id}
+                id={meeting.id}
+                name={meeting.name}
+                isSelected={selectedId === meeting.id}
                 onClickNav={(): void => {
-                  return onClickSummaryFile(summaryFile.id);
+                  return onClickMeeting(meeting.id);
                 }}
               />
             );
           })}
           {/* 프로젝트 하위 폴더 */}
-          {project.subFolders.map((subFolder) => {
+          {project.childProjects.map((childProject) => {
             return (
-              <React.Fragment key={subFolder.id}>
+              <React.Fragment key={childProject.id}>
                 <FolderItem
-                  id={subFolder.id}
-                  name={subFolder.name}
-                  isSelected={selectedId === subFolder.id}
-                  isOpen={openFolderIds.includes(subFolder.id)}
+                  id={childProject.id}
+                  name={childProject.name}
+                  isSelected={selectedId === childProject.id}
+                  isOpen={openFolderIds.includes(childProject.id)}
                   onClickToggle={(): void => {
-                    return toggleFolderOpen(subFolder.id);
+                    return toggleFolderOpen(childProject.id);
                   }}
                   onClickNav={(): void => {
-                    return onClickFolder(subFolder.id);
+                    return onClickFolder(childProject.id);
                   }}
                   isSubFolder
                 />
                 {/* 하위 폴더 내 요약 파일 */}
-                {openFolderIds.includes(subFolder.id) &&
-                  subFolder.summaryFiles.map((summaryFile) => {
+                {openFolderIds.includes(childProject.id) &&
+                  childProject.meetings.map((meeting) => {
                     return (
                       <FolderItem
-                        key={summaryFile.id}
-                        id={summaryFile.id}
-                        name={summaryFile.name}
-                        isSelected={selectedId === summaryFile.id}
+                        key={meeting.id}
+                        id={meeting.id}
+                        name={meeting.name}
+                        isSelected={selectedId === meeting.id}
                         onClickNav={(): void => {
-                          return onClickSummaryFile(summaryFile.id);
+                          return onClickMeeting(meeting.id);
                         }}
                         isSubFolder
                       />
