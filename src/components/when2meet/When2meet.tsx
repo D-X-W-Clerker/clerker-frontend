@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
 
-// 스타일 컴포넌트 정의
 const TimeGridContainer = styled(JustifyCenterRow)`
   gap: 25px;
 `;
@@ -21,27 +20,24 @@ const ButtonContainer = styled(ItemsCenterEndRow)`
   gap: 7px;
 `;
 
-// 임의의 사용자 정보 생성
 const myInfo = {
-  id: '5',
-  name: '황현진',
-  role: 'FE',
+  username: '황현진',
   email: 'jjini6530@kookmin.ac.kr',
-  permission: 'member',
+  type: 'member',
+  role: 'FE',
+  timeTables: [],
 };
 
-// API로 이벤트 데이터 가져오기
 const fetchEventData = async (): Promise<{
   times: string[];
   dates: string[];
   members: {
-    id: string;
-    name: string;
-    role: string | null;
+    username: string;
     email: string;
-    permission: string;
+    type: string;
+    role: string;
+    timeTables: { time: string }[];
   }[];
-  meetingTimes: Record<string, string[]>;
 }> => {
   return {
     times: [
@@ -74,117 +70,94 @@ const fetchEventData = async (): Promise<{
       '2100',
       '2130',
     ],
-    dates: ['0729', '0730', '0731', '0801', '0802'],
+    dates: ['1006', '1007', '1008', '1009', '1010'],
     members: [
       {
-        id: '1',
-        name: '이정욱',
+        username: '류건',
+        email: 'sksnsfbjrjs@kookmin.ac.kr',
+        type: 'owner',
         role: 'BE',
-        email: 'dlwjddnr5438@kookmin.ac.kr',
-        permission: 'owner',
+        timeTables: [
+          { time: '2024-10-06 16:00:00' },
+          { time: '2024-10-06 16:30:00' },
+          { time: '2024-10-06 17:00:00' },
+          { time: '2024-10-06 17:30:00' },
+          { time: '2024-10-06 18:00:00' },
+          { time: '2024-10-06 18:30:00' },
+          { time: '2024-10-06 19:00:00' },
+          { time: '2024-10-06 19:30:00' },
+          { time: '2024-10-06 20:00:00' },
+          { time: '2024-10-06 20:30:00' },
+        ],
       },
       {
-        id: '2',
-        name: '신진욱',
-        role: 'FE',
+        username: '신진욱',
         email: 'jinwook2765@kookmin.ac.kr',
-        permission: 'member',
-      },
-      {
-        id: '3',
-        name: '임형빈',
-        role: 'AI',
-        email: 'gudqls3157@gmail.com',
-        permission: 'owner',
-      },
-      {
-        id: '4',
-        name: '박건민',
-        role: 'DE',
-        email: 'pkm021118@kookmin.ac.kr',
-        permission: 'member',
+        type: 'member',
+        role: 'FE',
+        timeTables: [
+          { time: '2024-10-06 16:00:00' },
+          { time: '2024-10-06 16:30:00' },
+          { time: '2024-10-06 17:00:00' },
+          { time: '2024-10-06 17:30:00' },
+          { time: '2024-10-07 16:00:00' },
+          { time: '2024-10-07 16:30:00' },
+          { time: '2024-10-07 17:00:00' },
+          { time: '2024-10-07 17:30:00' },
+        ],
       },
     ],
-    meetingTimes: {
-      '0729': ['0800', '0830', '0900'],
-      '0730': ['0900', '0930'],
-      '0731': ['1130', '1200', '1230', '1300'],
-    },
   };
 };
 
-// When2meet 컴포넌트
 const When2meet: React.FC = () => {
   const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
-  const [meetingAvailable, setMeetingAvailable] = useState<
-    Record<string, string[]>
-  >({});
   const [memberData, setMemberData] = useState<
     {
-      id: string;
-      name: string;
-      role: string | null;
+      username: string;
       email: string;
-      permission: string;
+      type: string;
+      role: string;
+      timeTables: { time: string }[];
     }[]
   >([]);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
+  const formatMeetingTimesWithCounts = (): { [key: string]: number } => {
+    const timeCounts: { [key: string]: number } = {};
+
+    // 개인이 선택한 시간을 카운트에 포함
+    personalAvailable.forEach((time) => {
+      timeCounts[time] = (timeCounts[time] || 0) + 1;
+    });
+
+    memberData.forEach((member) => {
+      member.timeTables.forEach((table) => {
+        if (!table.time) return;
+
+        const [date, time] = table.time.split(' ');
+        const formattedTime = `${date.slice(5, 7)}${date.slice(8, 10)}-${time.slice(0, 2)}${time.slice(3, 5)}`;
+
+        timeCounts[formattedTime] = (timeCounts[formattedTime] || 0) + 1;
+      });
+    });
+
+    console.log('Meeting Time Counts:', timeCounts); // 카운트 결과 출력
+
+    return timeCounts;
+  };
+
   useEffect(() => {
     const loadEventData = async (): Promise<void> => {
-      const { times, dates, members, meetingTimes } = await fetchEventData();
+      const { times, dates, members } = await fetchEventData();
       setAvailableTimes(times);
       setAvailableDates(dates);
       setMemberData(members);
-      setMeetingAvailable(meetingTimes);
     };
 
     loadEventData();
   }, []);
-
-  useEffect(() => {
-    if (personalAvailable.length > 0) {
-      if (
-        !memberData.some((member) => {
-          return member.id === myInfo.id;
-        })
-      ) {
-        setMemberData((prevMembers) => {
-          return [...prevMembers, myInfo];
-        });
-      }
-    } else {
-      setMemberData((prevMembers) => {
-        return prevMembers.filter((member) => {
-          return member.id !== myInfo.id;
-        });
-      });
-    }
-  }, [personalAvailable]);
-
-  const toggleTime = (type: 'personal', date: string, time: string): void => {
-    const key = `${date}-${time}`;
-
-    setPersonalAvailable((previous) => {
-      return previous.includes(key)
-        ? previous.filter((t) => {
-            return t !== key;
-          })
-        : [...previous, key];
-    });
-
-    setMeetingAvailable((previousMeeting) => {
-      const updatedTimes = previousMeeting[date] || [];
-      const newTimes = updatedTimes.includes(time)
-        ? updatedTimes.filter((t) => {
-            return t !== time;
-          })
-        : [...updatedTimes, time];
-
-      return { ...previousMeeting, [date]: newTimes };
-    });
-  };
 
   return (
     <>
@@ -195,28 +168,42 @@ const When2meet: React.FC = () => {
           dates={availableDates}
           selectedTimes={personalAvailable}
           toggleTime={(date, time): void => {
-            return toggleTime('personal', date, time);
+            const key = `${date}-${time}`;
+            setPersonalAvailable((prev) => {
+              return prev.includes(key)
+                ? prev.filter((t) => {
+                    return t !== key;
+                  })
+                : [...prev, key];
+            });
           }}
         />
         <TimeGrid
           title="회의 가능 시간"
           times={availableTimes}
           dates={availableDates}
-          selectedTimes={availableDates.flatMap((date) => {
-            return (
-              meetingAvailable[date]?.map((time) => {
-                return `${date}-${time}`;
-              }) || []
-            );
-          })}
-          toggleTime={(): void => {}} // 회의 시간은 선택 불가
+          selectedTimes={[
+            ...Object.keys(formatMeetingTimesWithCounts()),
+            ...personalAvailable,
+          ]}
+          toggleTime={(): void => {}}
           isDisabled
         />
       </TimeGridContainer>
 
       <MemberContainer>
         <Title>참여 인원</Title>
-        <MemberTable data={memberData} />
+        <MemberTable
+          data={memberData.map((member) => {
+            return {
+              id: member.username,
+              name: member.username,
+              email: member.email,
+              role: member.role,
+              permission: member.type,
+            };
+          })}
+        />
       </MemberContainer>
 
       <ButtonContainer>
