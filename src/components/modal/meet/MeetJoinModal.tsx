@@ -19,13 +19,17 @@ import { SplitDateTime } from '@utils';
 
 // -- 인터페이스 --
 interface MeetJoinModalProps {
-  meeting: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url?: string;
-  };
+  meetingId: string;
   onCancel: () => void;
+}
+
+interface MeetDetailProps {
+  id: string;
+  name: string;
+  url: string;
+  startDate: string;
+  isEnded: boolean;
+  createdAt: string;
 }
 
 // -- 스타일 컴포넌트 --
@@ -92,12 +96,26 @@ const UrlText = styled.span`
   cursor: pointer;
 `;
 
-const MeetJoinModal: React.FC<MeetJoinModalProps> = ({ meeting, onCancel }) => {
-  const dateFields = SplitDateTime(meeting.dateTime);
+// 더미 데이터
+const meeting: MeetDetailProps = {
+  id: '1',
+  name: '9월 12일 회의',
+  url: 'https://meet.google.com/hgq-ncmq-arq',
+  startDate: '2024-09-12T04:11:48.532Z',
+  isEnded: false,
+  createdAt: '2024-09-12T04:11:48.532Z',
+};
+
+const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
+  meetingId,
+  onCancel,
+}) => {
+  const dateFields = SplitDateTime(meeting.startDate);
   const [sendAlert, setSendAlert] = useState<boolean>(false);
 
   const onClickJoinButton = (): void => {
     alert('회의 참여');
+    onCancel();
   };
 
   const onCopyUrl = (): void => {
@@ -112,11 +130,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({ meeting, onCancel }) => {
       <Container>
         <LargeModalTitleTab type="project" title="회의 참여" />
         <ContentArea>
-          <ProjectInput
-            type="text"
-            value={meeting.meetingName}
-            isEditable={false}
-          />
+          <ProjectInput type="text" value={meeting.name} isEditable={false} />
           <DateInputArea>
             {dateFields.map((field) => {
               return (

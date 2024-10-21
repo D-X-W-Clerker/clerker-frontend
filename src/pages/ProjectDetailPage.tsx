@@ -18,16 +18,31 @@ import Layout from '../Layout';
 
 // -- 인터페이스 --
 interface MeetingData {
-  id: string;
+  meetingId: string;
   meetingName: string;
-  dateTime: string;
-  url: string;
+  startDate: string;
+  createdAt: string;
 }
 
 interface ScheduleData {
-  id: string;
-  meetingName: string;
-  dateTime: string;
+  scheduleId: string;
+  scheduleName: string;
+  startDate: string;
+  endDate: string;
+  startTime: {
+    hour: string;
+    minute: string;
+    second: string;
+    nano: string;
+  };
+  endTime: {
+    hour: string;
+    minute: string;
+    second: string;
+    nano: string;
+  };
+  createdAt: string;
+  isEnded: boolean;
 }
 
 interface MemberData {
@@ -112,34 +127,44 @@ const RightContentArea = styled(ContentArea)``;
 
 // 스케쥴 및 미팅 목록 get 함수
 const fetchEventData = async (): Promise<{
-  meetings: MeetingData[];
   schedules: ScheduleData[];
+  meetings: MeetingData[];
 }> => {
   return {
-    meetings: [
-      {
-        id: '1',
-        meetingName: '프로젝트 킥오프',
-        dateTime: '2024-07-02T10:30:00',
-        url: 'https://meet.google.com/hgq-ncmq-arq',
-      },
-      {
-        id: '2',
-        meetingName: '기획 회의',
-        dateTime: '2024-07-08T14:00:00',
-        url: 'https://meet.google.com/hgq-ncmq-arq',
-      },
-    ],
     schedules: [
       {
-        id: '3',
-        meetingName: '프론트 디자인 회의 일정',
-        dateTime: '2024-09-20T10:30:00',
+        scheduleId: '3',
+        scheduleName: '프론트 디자인 회의 일정',
+        startDate: '2024-10-21',
+        endDate: '2024-10-21',
+        startTime: {
+          hour: '10',
+          minute: '20',
+          second: '30',
+          nano: '40',
+        },
+        endTime: {
+          hour: '10',
+          minute: '20',
+          second: '30',
+          nano: '40',
+        },
+        createdAt: '2024-09-20T10:30:00',
+        isEnded: false,
+      },
+    ],
+    meetings: [
+      {
+        meetingId: '1',
+        meetingName: '프로젝트 킥오프',
+        startDate: '2024-07-02T10:30:00',
+        createdAt: '2024-07-02T10:30:00',
       },
       {
-        id: '4',
-        meetingName: '프론트 기능 명세 일정',
-        dateTime: '2024-09-15T14:00:00',
+        meetingId: '2',
+        meetingName: '기획 회의',
+        startDate: '2024-07-08T14:00:00',
+        createdAt: '2024-07-08T14:00:00',
       },
     ],
   };
@@ -274,11 +299,16 @@ const ProjectDetailPage: React.FC = () => {
                 />
               )}
               {eventData.map((event) => {
+                const isMeeting = 'meetingId' in event;
+                const key = isMeeting ? event.meetingId : event.scheduleId;
+                const eventName = isMeeting
+                  ? event.meetingName
+                  : event.scheduleName;
                 return (
                   <EventFile
-                    key={event.id}
-                    meetingName={event.meetingName}
-                    dateTime={event.dateTime}
+                    key={key}
+                    meetingName={eventName}
+                    dateTime={event.createdAt}
                     onClick={(): void => {
                       return onClickEventFile(event);
                     }}
@@ -303,10 +333,16 @@ const ProjectDetailPage: React.FC = () => {
         />
       )}
       {modalType === 'meetCreate' && (
-        <MeetCreateModal onCancel={handleCloseModal} />
+        <MeetCreateModal
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
+        />
       )}
       {modalType === 'meetJoin' && selectedMeeting && (
-        <MeetJoinModal meeting={selectedMeeting} onCancel={handleCloseModal} />
+        <MeetJoinModal
+          meetingId={selectedMeeting.meetingId}
+          onCancel={handleCloseModal}
+        />
       )}
     </Layout>
   );

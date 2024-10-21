@@ -8,7 +8,7 @@ import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
 interface Meeting {
-  id: string;
+  meetingId: string;
   name: string;
 }
 
@@ -20,7 +20,7 @@ interface ChildProject {
 }
 
 interface Project {
-  id: string;
+  projectId: string;
   name: string;
   childProjects: ChildProject[];
   meetings: Meeting[];
@@ -55,36 +55,36 @@ const RootFolder: React.FC<RootFolderProps> = ({
   return (
     <Container>
       <FolderItem
-        id={project.id}
+        id={project.projectId}
         name={project.name}
-        isOpen={openFolderIds.includes(project.id)}
-        isSelected={selectedId === project.id}
+        isOpen={openFolderIds.includes(project.projectId)}
+        isSelected={selectedId === project.projectId}
         onClickToggle={(): void => {
-          return toggleFolderOpen(project.id);
+          return toggleFolderOpen(project.projectId);
         }}
         onClickNav={(): void => {
-          return onClickFolder(project.id);
+          return onClickFolder(project.projectId);
         }}
       />
-      {openFolderIds.includes(project.id) && (
+      {openFolderIds.includes(project.projectId) && (
         <>
           <ActionButton
             icon={AddIcon}
             label="하위 폴더 생성"
             onClick={(): void => {
-              return onClickCreateSubFolder(project.id);
+              return onClickCreateSubFolder(project.projectId);
             }}
           />
           {/* 프로젝트 내 요약 파일 */}
           {project.meetings.map((meeting) => {
             return (
               <FolderItem
-                key={meeting.id}
-                id={meeting.id}
+                key={meeting.meetingId}
+                id={meeting.meetingId}
                 name={meeting.name}
-                isSelected={selectedId === meeting.id}
+                isSelected={selectedId === meeting.meetingId}
                 onClickNav={(): void => {
-                  return onClickMeeting(meeting.id);
+                  return onClickMeeting(meeting.meetingId);
                 }}
               />
             );
@@ -111,12 +111,12 @@ const RootFolder: React.FC<RootFolderProps> = ({
                   childProject.meetings.map((meeting) => {
                     return (
                       <FolderItem
-                        key={meeting.id}
-                        id={meeting.id}
+                        key={meeting.meetingId}
+                        id={meeting.meetingId}
                         name={meeting.name}
-                        isSelected={selectedId === meeting.id}
+                        isSelected={selectedId === meeting.meetingId}
                         onClickNav={(): void => {
-                          return onClickMeeting(meeting.id);
+                          return onClickMeeting(meeting.meetingId);
                         }}
                         isSubFolder
                       />
