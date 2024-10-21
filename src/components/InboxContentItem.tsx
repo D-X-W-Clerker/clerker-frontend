@@ -5,7 +5,6 @@ import { InviteDeleteIcon } from '@assets';
 // -- 인터페이스 --
 interface InboxContentItemProps {
   content: string;
-  isUnread: boolean;
   onClick: () => void;
   onDelete: () => void;
 }
@@ -27,24 +26,30 @@ const Container = styled.div`
   }
 `;
 
-const ContentArea = styled.div<{ $isUnread: boolean }>`
-  position: relative;
+// 읽음 처리 기능 추가하면 사용하세여
+// const ContentArea = styled.div<{ $isUnread: boolean }>`
+//   position: relative;
+//   padding: 10px 10px;
+//   cursor: pointer;
+//
+//   &::before {
+//     content: '';
+//     width: 5px;
+//     height: 5px;
+//     background-color: ${({ $isUnread }): string => {
+//       return $isUnread ? 'var(--color-red)' : 'transparent';
+//     }};
+//     border-radius: 50%;
+//     position: absolute;
+//     left: 3px;
+//     top: 14px;
+//     transform: translateY(-50%);
+//   }
+// `;
+
+const ContentArea = styled.div`
   padding: 10px 10px;
   cursor: pointer;
-
-  &::before {
-    content: '';
-    width: 5px;
-    height: 5px;
-    background-color: ${({ $isUnread }): string => {
-      return $isUnread ? 'var(--color-red)' : 'transparent';
-    }};
-    border-radius: 50%;
-    position: absolute;
-    left: 3px;
-    top: 14px;
-    transform: translateY(-50%);
-  }
 `;
 
 const Content = styled.div`
@@ -71,13 +76,12 @@ const SvgImage = styled.img`
 
 const InboxContentItem: React.FC<InboxContentItemProps> = ({
   content,
-  isUnread,
   onClick,
   onDelete,
 }) => {
   return (
     <Container>
-      <ContentArea $isUnread={isUnread} onClick={onClick}>
+      <ContentArea onClick={onClick}>
         <Content>{content}</Content>
       </ContentArea>
       <SvgImage

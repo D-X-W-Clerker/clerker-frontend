@@ -16,6 +16,7 @@ import {
 
 // -- 인터페이스 --
 interface MeetCreateModalProps {
+  projectId: string;
   onCancel: () => void;
 }
 
@@ -67,7 +68,10 @@ const dateFields = [
   { label: '분', placeholder: 'mm', value: 'minute' },
 ];
 
-const MeetCreateModal: React.FC<MeetCreateModalProps> = ({ onCancel }) => {
+const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
+  projectId,
+  onCancel,
+}) => {
   const [name, setName] = useState<string>('');
   const [dateTime, setDateTime] = useState({
     year: '',
@@ -91,8 +95,23 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({ onCancel }) => {
     };
   };
 
+  const formatDateTime = (): string => {
+    const { year, month, day, hour, minute } = dateTime;
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+  };
+
+  // 회의 생성 함수
   const onClickCreateButton = (): void => {
+    const meetingData = {
+      name,
+      startDateTime: formatDateTime(),
+      isNotify: sendAlert,
+    };
+    console.log('Sending data:', meetingData);
+
+    // 백엔드로 API 요청을 보내는 로직을 여기에 추가합니다.
     alert('회의 생성');
+    onCancel();
   };
 
   return (

@@ -7,22 +7,23 @@ import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
-  id: string;
+interface Meeting {
+  meetingId: string;
   name: string;
 }
 
-interface SubFolder {
+interface ChildProject {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
+  childProjects: [];
+  meetings: Meeting[];
 }
 
 interface Project {
-  id: string;
+  projectId: string;
   name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
+  childProjects: ChildProject[];
+  meetings: Meeting[];
 }
 
 interface RootFolderProps {
@@ -46,76 +47,76 @@ const RootFolder: React.FC<RootFolderProps> = ({
     navigate(`/project/${folderId}`);
   };
 
-  const onClickSummaryFile = (summaryFileId: string): void => {
-    setSelectedId(summaryFileId);
-    navigate(`/summary/${summaryFileId}`);
+  const onClickMeeting = (meetingId: string): void => {
+    setSelectedId(meetingId);
+    navigate(`/summary/${meetingId}`);
   };
 
   return (
     <Container>
       <FolderItem
-        id={project.id}
+        id={project.projectId}
         name={project.name}
-        isOpen={openFolderIds.includes(project.id)}
-        isSelected={selectedId === project.id}
+        isOpen={openFolderIds.includes(project.projectId)}
+        isSelected={selectedId === project.projectId}
         onClickToggle={(): void => {
-          return toggleFolderOpen(project.id);
+          return toggleFolderOpen(project.projectId);
         }}
         onClickNav={(): void => {
-          return onClickFolder(project.id);
+          return onClickFolder(project.projectId);
         }}
       />
-      {openFolderIds.includes(project.id) && (
+      {openFolderIds.includes(project.projectId) && (
         <>
           <ActionButton
             icon={AddIcon}
             label="하위 폴더 생성"
             onClick={(): void => {
-              return onClickCreateSubFolder(project.id);
+              return onClickCreateSubFolder(project.projectId);
             }}
           />
           {/* 프로젝트 내 요약 파일 */}
-          {project.summaryFiles.map((summaryFile) => {
+          {project.meetings.map((meeting) => {
             return (
               <FolderItem
-                key={summaryFile.id}
-                id={summaryFile.id}
-                name={summaryFile.name}
-                isSelected={selectedId === summaryFile.id}
+                key={meeting.meetingId}
+                id={meeting.meetingId}
+                name={meeting.name}
+                isSelected={selectedId === meeting.meetingId}
                 onClickNav={(): void => {
-                  return onClickSummaryFile(summaryFile.id);
+                  return onClickMeeting(meeting.meetingId);
                 }}
               />
             );
           })}
           {/* 프로젝트 하위 폴더 */}
-          {project.subFolders.map((subFolder) => {
+          {project.childProjects.map((childProject) => {
             return (
-              <React.Fragment key={subFolder.id}>
+              <React.Fragment key={childProject.id}>
                 <FolderItem
-                  id={subFolder.id}
-                  name={subFolder.name}
-                  isSelected={selectedId === subFolder.id}
-                  isOpen={openFolderIds.includes(subFolder.id)}
+                  id={childProject.id}
+                  name={childProject.name}
+                  isSelected={selectedId === childProject.id}
+                  isOpen={openFolderIds.includes(childProject.id)}
                   onClickToggle={(): void => {
-                    return toggleFolderOpen(subFolder.id);
+                    return toggleFolderOpen(childProject.id);
                   }}
                   onClickNav={(): void => {
-                    return onClickFolder(subFolder.id);
+                    return onClickFolder(childProject.id);
                   }}
                   isSubFolder
                 />
                 {/* 하위 폴더 내 요약 파일 */}
-                {openFolderIds.includes(subFolder.id) &&
-                  subFolder.summaryFiles.map((summaryFile) => {
+                {openFolderIds.includes(childProject.id) &&
+                  childProject.meetings.map((meeting) => {
                     return (
                       <FolderItem
-                        key={summaryFile.id}
-                        id={summaryFile.id}
-                        name={summaryFile.name}
-                        isSelected={selectedId === summaryFile.id}
+                        key={meeting.meetingId}
+                        id={meeting.meetingId}
+                        name={meeting.name}
+                        isSelected={selectedId === meeting.meetingId}
                         onClickNav={(): void => {
-                          return onClickSummaryFile(summaryFile.id);
+                          return onClickMeeting(meeting.meetingId);
                         }}
                         isSubFolder
                       />

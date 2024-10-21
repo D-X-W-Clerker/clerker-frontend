@@ -43,6 +43,7 @@ const SvgImage = styled.img`
   height: 14px;
 `;
 
+// isEnded로 navigate 조건부 렌더링
 const EventFile: React.FC<MeetFileProps> = ({
   meetingName,
   dateTime,

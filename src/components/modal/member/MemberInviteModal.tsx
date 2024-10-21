@@ -14,7 +14,8 @@ import {
 } from '@styles';
 
 // -- 인터페이스 --
-interface AddUserModalProps {
+interface MemberInviteModalProps {
+  projectId: string;
   onCancel: () => void;
 }
 
@@ -62,29 +63,34 @@ const Text = styled(ItemsCenterStartRow)`
   padding: 0 10px;
 `;
 
-const MemberInviteModal: React.FC<AddUserModalProps> = ({ onCancel }) => {
-  const [email, setEmail] = useState<string>('');
-  const [users, setUsers] = useState<string[]>([]);
+const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
+  projectId,
+  onCancel,
+}) => {
+  const [user, setUsers] = useState<string>('');
+  const [emails, setEmails] = useState<string[]>([]);
 
-  const onAddUser = (): void => {
-    if (email) {
-      setUsers((prevUsers) => {
-        return [...prevUsers, email];
+  const onAddEmail = (): void => {
+    if (user) {
+      setEmails((prevUsers) => {
+        return [...prevUsers, user];
       });
-      setEmail(''); // 이메일 입력 초기화
+      setUsers(''); // 이메일 입력 초기화
     }
   };
 
-  const onRemoveUser = (emailToRemove: string): void => {
-    setUsers(
-      users.filter((user) => {
-        return user !== emailToRemove;
+  const onRemoveEmail = (emailToRemove: string): void => {
+    setEmails(
+      emails.filter((email) => {
+        return email !== emailToRemove;
       }),
     );
   };
 
   const onClickConfirm = (): void => {
+    console.log('emails', emails);
     alert('사용자 초대 완료');
+    onCancel();
   };
 
   return (
@@ -94,22 +100,22 @@ const MemberInviteModal: React.FC<AddUserModalProps> = ({ onCancel }) => {
         <ContentArea>
           <ProjectInput
             type="invite"
-            value={email}
+            value={user}
             onChange={(e): void => {
-              return setEmail(e.target.value);
+              return setUsers(e.target.value);
             }}
             placeholder="이메일 입력"
-            onClick={onAddUser}
+            onClick={onAddEmail}
           />
           <Text>초대된 사용자</Text>
           <UserListArea>
-            {users.map((user) => {
+            {emails.map((email) => {
               return (
                 <MemberInviteItem
-                  key={user}
-                  email={user}
+                  key={email}
+                  email={email}
                   onClick={(): void => {
-                    return onRemoveUser(user);
+                    return onRemoveEmail(email);
                   }}
                 />
               );

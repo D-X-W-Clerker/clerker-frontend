@@ -7,11 +7,11 @@ import { useTable, Column } from 'react-table';
 // -- 인터페이스 --
 interface MemberTableProps {
   data: {
-    id: string;
-    name: string;
-    role: string | null;
+    organizationId: string;
+    username: string;
     email: string;
-    permission: string;
+    type: string | null;
+    role: string;
   }[];
 }
 
@@ -76,26 +76,26 @@ const roleColorMap: { [key: string]: string } = {
 };
 
 const columns: Column<{
-  id: string;
-  name: string;
-  role: string | null;
+  organizationId: string;
+  username: string;
   email: string;
-  permission: string;
+  type: string | null;
+  role: string;
 }>[] = [
-  { Header: '이름', accessor: 'name', id: 'name' },
-  { Header: '업무', accessor: 'role', id: 'role' },
+  { Header: '이름', accessor: 'username', id: 'username' },
+  { Header: '업무', accessor: 'type', id: 'type' },
   { Header: '이메일', accessor: 'email', id: 'email' },
-  { Header: '권한', accessor: 'permission', id: 'permission' },
+  { Header: '권한', accessor: 'role', id: 'role' },
 ];
 
 const MemberTable: React.FC<MemberTableProps> = ({ data }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     useTable<{
-      id: string;
-      name: string;
-      role: string | null;
+      organizationId: string;
+      username: string;
       email: string;
-      permission: string;
+      type: string | null;
+      role: string;
     }>({ columns, data });
 
   return (
@@ -132,10 +132,10 @@ const MemberTable: React.FC<MemberTableProps> = ({ data }) => {
             prepareRow(row); // 각 행 준비
             return (
               // 각 행(row)에 고유한 key 로 row.original.id를 사용하여 렌더링 (data 에 있는 id)
-              <tr {...row.getRowProps()} key={row.original.id}>
+              <tr {...row.getRowProps()} key={row.original.organizationId}>
                 {row.cells.map((cell) => {
-                  // role 컬럼일 때만 배경색 적용
-                  const isRoleColumn = cell.column.id === 'role';
+                  // type 컬럼일 때만 배경색 적용
+                  const isRoleColumn = cell.column.id === 'type';
                   const roleColor = isRoleColumn
                     ? roleColorMap[cell.value]
                     : undefined;

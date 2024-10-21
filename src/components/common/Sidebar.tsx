@@ -17,28 +17,30 @@ import {
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
-  id: string;
+interface Meeting {
+  meetingId: string;
   name: string;
 }
 
-interface SubFolder {
+interface ChildProject {
   id: string;
   name: string;
-  summaryFiles: SummaryFile[];
+  childProjects: [];
+  meetings: Meeting[];
 }
 
 interface Project {
-  id: string;
+  projectId: string;
   name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
+  childProjects: ChildProject[];
+  meetings: Meeting[];
 }
 
 interface InboxItem {
-  id: string;
+  notificationId: string;
   content: string;
-  isUnread: boolean;
+  createdAt: string;
+  // isUnread: boolean; 여유가 되면 백엔드에게 기능 추가 부탁
 }
 
 // -- 스타일 컴포넌트 --
@@ -132,42 +134,49 @@ const SideBar: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    const testInboxItems = [
+    // 알림 목록
+    const testInboxItems: InboxItem[] = [
       {
-        id: '1',
+        notificationId: '1',
         content:
           '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
-        isUnread: true,
+        createdAt: '2024-10-21T02:33:01.603Z',
+        // isUnread: true,
       },
       {
-        id: '2',
+        notificationId: '2',
         content: 'Clerker 프로젝트에 초대 되었습니다.',
-        isUnread: true,
+        createdAt: '2024-10-21T02:33:01.603Z',
+        // isUnread: true,
       },
     ];
 
-    const testProjects = [
+    // 프로젝트 목록 조회
+    const testProjects: Project[] = [
       {
-        id: '1',
-        name: 'Clerkerasdasdasfsagqasdasgsa',
-        summaryFiles: [{ id: '6', name: '기획 회의' }],
-        subFolders: [
+        projectId: '1',
+        name: 'Clerker',
+        childProjects: [
           {
             id: '2',
-            name: 'FEasfsagasdewdasddsadsad',
-            summaryFiles: [],
+            name: 'FE',
+            childProjects: [],
+            meetings: [],
           },
           {
             id: '3',
             name: 'BE',
-            summaryFiles: [],
+            childProjects: [],
+            meetings: [],
           },
           {
             id: '4',
             name: 'AI',
-            summaryFiles: [{ id: '5', name: '9월 12일 회의' }],
+            childProjects: [],
+            meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
           },
         ],
+        meetings: [{ meetingId: '6', name: '기획 회의' }],
       },
     ];
 
@@ -175,32 +184,37 @@ const SideBar: React.FC = () => {
     setProjects(testProjects);
   }, []);
 
+  // 프로젝트 생성
   const onClickCreateProject = (): void => {
     setProjects((prevProjects) => {
       return [
         ...prevProjects,
         {
-          id: crypto.randomUUID(),
+          projectId: crypto.randomUUID(),
           name: '새 프로젝트',
-          summaryFiles: [],
-          subFolders: [],
+          childProjects: [],
+          meetings: [],
         },
       ];
     });
   };
 
-  const onClickCreateSubFolder = (projectId: string): void => {
+  // 하위 프로젝트 생성
+  const onClickCreateChildProject = (projectId: string): void => {
     setProjects((prevProjects) => {
       return prevProjects.map((project) => {
-        return project.id === projectId
+        return project.projectId === projectId
           ? {
               ...project,
-              subFolders: [
-                ...project.subFolders,
+              childProjects: [
+                ...project.childProjects,
                 {
                   id: crypto.randomUUID(),
-                  name: `새로운 폴더`,
-                  summaryFiles: [{ id: crypto.randomUUID(), name: '회의록' }],
+                  name: '새로운 폴더',
+                  childProjects: [],
+                  meetings: [
+                    { meetingId: crypto.randomUUID(), name: '회의록' },
+                  ],
                 },
               ],
             }
@@ -219,15 +233,18 @@ const SideBar: React.FC = () => {
     }
   };
 
+  // 클릭시, 읽음 처리 함수 -> 추후 백엔드와 얘기
   const onClickInboxItem = (itemId: string): void => {
     setInboxItems((prevItems) => {
       return prevItems.map((item) => {
-        return item.id === itemId ? { ...item, isUnread: false } : item;
+        return item.notificationId === itemId
+          ? { ...item, isUnread: false }
+          : item;
       });
     });
   };
 
-  const onClickInboxDelete = (itemId: string): void => {
+  const onClickInboxDelete = (notificationId: string): void => {
     alert('알림 삭제');
   };
 
@@ -244,14 +261,13 @@ const SideBar: React.FC = () => {
               {inboxItems.map((item) => {
                 return (
                   <InboxContentItem
-                    key={item.id}
+                    key={item.notificationId}
                     content={item.content}
-                    isUnread={item.isUnread}
                     onClick={(): void => {
-                      return onClickInboxItem(item.id);
+                      return onClickInboxItem(item.notificationId);
                     }}
                     onDelete={(): void => {
-                      return onClickInboxDelete(item.id);
+                      return onClickInboxDelete(item.notificationId);
                     }}
                   />
                 );
@@ -285,9 +301,9 @@ const SideBar: React.FC = () => {
               {projects.map((project) => {
                 return (
                   <RootFolder
-                    key={project.id}
+                    key={project.projectId}
                     project={project}
-                    onClickCreateSubFolder={onClickCreateSubFolder}
+                    onClickCreateSubFolder={onClickCreateChildProject}
                   />
                 );
               })}

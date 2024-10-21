@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
   MemberTable,
@@ -14,6 +15,48 @@ import {
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
+
+// -- 인터페이스 --
+interface MeetingData {
+  meetingId: string;
+  meetingName: string;
+  startDate: string;
+  createdAt: string;
+}
+
+interface ScheduleData {
+  scheduleId: string;
+  scheduleName: string;
+  startDate: string;
+  endDate: string;
+  startTime: {
+    hour: string;
+    minute: string;
+    second: string;
+    nano: string;
+  };
+  endTime: {
+    hour: string;
+    minute: string;
+    second: string;
+    nano: string;
+  };
+  createdAt: string;
+  isEnded: boolean;
+}
+
+interface MemberData {
+  organizationId: string;
+  username: string;
+  email: string;
+  type: string | null;
+  role: string;
+}
+
+interface ProjectInfo {
+  projectName: string;
+  members: MemberData[];
+}
 
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexRow)`
@@ -82,137 +125,119 @@ const ContentFileArea = styled(FlexCol)`
 // 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
+// 스케쥴 및 미팅 목록 get 함수
 const fetchEventData = async (): Promise<{
-  meetings: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url: string;
-  }[];
-  schedules: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-  }[];
-  members: {
-    id: string;
-    name: string;
-    role: string | null;
-    email: string;
-    permission: string;
-  }[];
+  schedules: ScheduleData[];
+  meetings: MeetingData[];
 }> => {
   return {
-    meetings: [
-      {
-        id: '1',
-        meetingName: '프로젝트 킥오프',
-        dateTime: '2024-07-02T10:30:00',
-        url: 'https://meet.google.com/hgq-ncmq-arq',
-      },
-      {
-        id: '2',
-        meetingName: '기획 회의',
-        dateTime: '2024-07-08T14:00:00',
-        url: 'https://meet.google.com/hgq-ncmq-arq',
-      },
-    ],
     schedules: [
       {
-        id: '3',
-        meetingName: '프론트 디자인 회의 일정',
-        dateTime: '2024-09-20T10:30:00',
-      },
-      {
-        id: '4',
-        meetingName: '프론트 기능 명세 일정',
-        dateTime: '2024-09-15T14:00:00',
+        scheduleId: '3',
+        scheduleName: '프론트 디자인 회의 일정',
+        startDate: '2024-10-21',
+        endDate: '2024-10-21',
+        startTime: {
+          hour: '10',
+          minute: '20',
+          second: '30',
+          nano: '40',
+        },
+        endTime: {
+          hour: '10',
+          minute: '20',
+          second: '30',
+          nano: '40',
+        },
+        createdAt: '2024-09-20T10:30:00',
+        isEnded: false,
       },
     ],
+    meetings: [
+      {
+        meetingId: '1',
+        meetingName: '프로젝트 킥오프',
+        startDate: '2024-07-02T10:30:00',
+        createdAt: '2024-07-02T10:30:00',
+      },
+      {
+        meetingId: '2',
+        meetingName: '기획 회의',
+        startDate: '2024-07-08T14:00:00',
+        createdAt: '2024-07-08T14:00:00',
+      },
+    ],
+  };
+};
+
+// 프로젝트 정보 조회 함수
+const fetchProjectInfo = async (): Promise<ProjectInfo> => {
+  return {
+    projectName: 'Clerker',
     members: [
       {
-        id: '1',
-        name: '이정욱',
-        role: 'BE',
+        organizationId: '1',
+        username: '이정욱',
         email: 'dlwjddnr5438@kookmin.ac.kr',
-        permission: 'owner',
+        type: 'BE',
+        role: 'owner',
       },
       {
-        id: '2',
-        name: '신진욱',
-        role: 'FE',
+        organizationId: '2',
+        username: '신진욱',
         email: 'jinwook2765@kookmin.ac.kr',
-        permission: 'member',
+        type: 'FE',
+        role: 'member',
       },
       {
-        id: '3',
-        name: '임형빈',
-        role: 'AI',
+        organizationId: '3',
+        username: '임형빈',
         email: 'gudqls3157@gmail.com',
-        permission: 'owner',
+        type: 'AI',
+        role: 'member',
       },
       {
-        id: '4',
-        name: '박건민',
-        role: 'DE',
+        organizationId: '4',
+        username: '박건민',
         email: 'pkm021118@kookmin.ac.kr',
-        permission: 'member',
+        type: 'DE',
+        role: 'member',
       },
     ],
   };
 };
 
 const ProjectDetailPage: React.FC = () => {
+  const { projectId } = useParams<{ projectId: string }>();
   const [activeTab, setActiveTab] = useState<string>('meeting');
-  const [meetingData, setMeetingData] = useState<
-    { id: string; meetingName: string; dateTime: string; url: string }[]
-  >([]);
-  const [scheduleData, setScheduleData] = useState<
-    { id: string; meetingName: string; dateTime: string }[]
-  >([]);
-  const [memberData, setMemberData] = useState<
-    {
-      id: string;
-      name: string;
-      role: string | null;
-      email: string;
-      permission: string;
-    }[]
-  >([]);
-  const [selectedMeeting, setSelectedMeeting] = useState<{
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url?: string;
-  } | null>(null);
-  const [showMemberAddModal, setShowMemberAddModal] = useState<boolean>(false);
-  const [showMemberInfoModal, setShowMemberInfoModal] =
-    useState<boolean>(false);
-  const [showMeetCreateModal, setShowMeetCreateModal] =
-    useState<boolean>(false);
-  const [showMeetJoinModal, setShowMeetJoinModal] = useState<boolean>(false);
+  const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
+  const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
+  const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
+  const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
+    null,
+  );
+  const [modalType, setModalType] = useState<
+    'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
+  >(null); // 어떤 모달이 열릴지 결정하는 상태
 
-  const onClickMeetCreateButton = (): void => {
-    setShowMeetCreateModal(true);
+  const handleOpenModal = (
+    type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
+    meeting?: MeetingData,
+  ): void => {
+    setModalType(type); // 모달 타입을 설정
+    if (meeting) {
+      setSelectedMeeting(meeting); // 미팅 모달일 경우, 선택된 미팅을 설정
+    }
   };
 
-  const onClickMemberSettingButton = (): void => {
-    setShowMemberInfoModal(true);
+  const handleCloseModal = (): void => {
+    setModalType(null); // 모달을 닫을 때 타입 초기화
+    setSelectedMeeting(null); // 선택된 미팅 초기화
   };
 
-  const onClickMemberInviteButton = (): void => {
-    setShowMemberAddModal(true);
-  };
-
-  const onClickEventFile = (event: {
-    id: string;
-    meetingName: string;
-    dateTime: string;
-    url?: string;
-  }): void => {
+  const onClickEventFile = (event: MeetingData | ScheduleData): void => {
     if (activeTab === 'meeting') {
-      setSelectedMeeting(event);
-      setShowMeetJoinModal(true);
+      handleOpenModal('meetJoin', event as MeetingData);
     } else if (activeTab === 'schedule') {
       console.log('스케줄을 클릭했습니다:', event);
     }
@@ -220,10 +245,11 @@ const ProjectDetailPage: React.FC = () => {
 
   useEffect((): void => {
     const fetchData = async (): Promise<void> => {
-      const { meetings, schedules, members } = await fetchEventData();
+      const { meetings, schedules } = await fetchEventData();
+      const projectInfoData = await fetchProjectInfo();
       setMeetingData(meetings);
       setScheduleData(schedules);
-      setMemberData(members);
+      setProjectInfo(projectInfoData);
     };
     fetchData();
   }, []);
@@ -234,7 +260,7 @@ const ProjectDetailPage: React.FC = () => {
     <Layout>
       <Container>
         <LeftContentArea>
-          <TitleTab type="project" title="Clerker" />
+          <TitleTab type="project" title={projectInfo?.projectName || ''} />
           <MemberArea>
             <MemberTabArea>
               <IconImage src={MemberIcon} $width={28} $height={20} />
@@ -243,12 +269,18 @@ const ProjectDetailPage: React.FC = () => {
                 src={ActiveSettingIcon}
                 $width={16}
                 $height={16}
-                onClick={onClickMemberSettingButton}
+                onClick={(): void => {
+                  return handleOpenModal('memberInfo');
+                }}
               />
             </MemberTabArea>
-            <MemberTable data={memberData} />
+            <MemberTable data={projectInfo?.members || []} />
             <MemberAddArea>
-              <MemberAddButton onClick={onClickMemberInviteButton}>
+              <MemberAddButton
+                onClick={(): void => {
+                  return handleOpenModal('memberAdd');
+                }}
+              >
                 <IconImage src={MemberAddIcon} $width={7} $height={7} />
                 추가하기
               </MemberAddButton>
@@ -261,15 +293,22 @@ const ProjectDetailPage: React.FC = () => {
                 <ActionButton
                   icon={AddIcon}
                   label="회의 생성"
-                  onClick={onClickMeetCreateButton}
+                  onClick={(): void => {
+                    return handleOpenModal('meetCreate');
+                  }}
                 />
               )}
               {eventData.map((event) => {
+                const isMeeting = 'meetingId' in event;
+                const key = isMeeting ? event.meetingId : event.scheduleId;
+                const eventName = isMeeting
+                  ? event.meetingName
+                  : event.scheduleName;
                 return (
                   <EventFile
-                    key={event.id}
-                    meetingName={event.meetingName}
-                    dateTime={event.dateTime}
+                    key={key}
+                    meetingName={eventName}
+                    dateTime={event.createdAt}
                     onClick={(): void => {
                       return onClickEventFile(event);
                     }}
@@ -281,34 +320,28 @@ const ProjectDetailPage: React.FC = () => {
         </LeftContentArea>
         <RightContentArea />
       </Container>
-      {showMemberAddModal && (
+      {modalType === 'memberAdd' && (
         <MemberInviteModal
-          onCancel={(): void => {
-            return setShowMemberAddModal(false);
-          }}
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
         />
       )}
-      {showMemberInfoModal && (
+      {modalType === 'memberInfo' && (
         <MemberInfoModal
-          data={memberData} // members 데이터를 전달
-          onCancel={(): void => {
-            return setShowMemberInfoModal(false);
-          }}
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
         />
       )}
-      {showMeetCreateModal && (
+      {modalType === 'meetCreate' && (
         <MeetCreateModal
-          onCancel={(): void => {
-            return setShowMeetCreateModal(false);
-          }}
+          projectId={projectId || ''}
+          onCancel={handleCloseModal}
         />
       )}
-      {showMeetJoinModal && selectedMeeting && (
+      {modalType === 'meetJoin' && selectedMeeting && (
         <MeetJoinModal
-          meeting={selectedMeeting}
-          onCancel={(): void => {
-            return setShowMeetJoinModal(false);
-          }}
+          meetingId={selectedMeeting.meetingId}
+          onCancel={handleCloseModal}
         />
       )}
     </Layout>

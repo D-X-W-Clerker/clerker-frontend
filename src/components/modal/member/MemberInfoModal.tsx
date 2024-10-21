@@ -12,14 +12,8 @@ import {
 
 // -- 인터페이스 --
 interface MemberInfoModalProps {
+  projectId: string;
   onCancel: () => void;
-  data: {
-    id: string;
-    name: string;
-    role: string | null;
-    email: string;
-    permission: string;
-  }[];
 }
 
 // -- 스타일 컴포넌트 --
@@ -74,28 +68,81 @@ const SvgImage = styled.img`
   height: 17px;
 `;
 
+const ProjectInfo = {
+  projectName: 'Clerker',
+  members: [
+    {
+      organizationId: '1',
+      username: '이정욱',
+      email: 'dlwjddnr5438@kookmin.ac.kr',
+      type: 'BE',
+      role: 'owner',
+    },
+    {
+      organizationId: '2',
+      username: '신진욱',
+      email: 'jinwook2765@kookmin.ac.kr',
+      type: 'FE',
+      role: 'member',
+    },
+    {
+      organizationId: '3',
+      username: '임형빈',
+      email: 'gudqls3157@gmail.com',
+      type: 'AI',
+      role: 'member',
+    },
+    {
+      organizationId: '4',
+      username: '박건민',
+      email: 'pkm021118@kookmin.ac.kr',
+      type: 'DE',
+      role: 'member',
+    },
+  ],
+};
+
 const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
+  projectId,
   onCancel,
-  data,
 }) => {
-  const [members, setMembers] = useState(data);
+  const [members, setMembers] = useState(ProjectInfo.members);
+  const [originalMembers] = useState(ProjectInfo.members); // 원래 멤버 목록
 
   // onRoleChange 함수에 useCallback을 사용하여 무한 렌더링 방지
-  const onChangeRole = useCallback((id: string, newRole: string): void => {
+  const onChangeType = useCallback((id: string, newType: string): void => {
     setMembers((prevMembers) => {
       return prevMembers.map((member) => {
-        // 기존의 역할과 변경된 역할이 다른 경우에만 상태를 업데이트
-        if (member.id === id && member.role !== newRole) {
-          return { ...member, role: newRole };
+        if (member.organizationId === id && member.type !== newType) {
+          return { ...member, type: newType };
         }
         return member;
       });
     });
   }, []);
 
+  // Confirm 버튼 클릭 시 변경된 멤버의 정보를 콘솔에 찍기
   const onClickConfirm = (): void => {
-    console.log('Confirmed members:', members);
+    // type이 변경된 멤버만 필터링
+    const changedMembers = members.filter((member, index) => {
+      return member.type !== originalMembers[index].type;
+    });
+
+    // 변경된 멤버들의 정보를 해당 형식에 맞춰 배열로 변환
+    const result = {
+      projectName: ProjectInfo.projectName,
+      members: changedMembers.map((member) => {
+        return {
+          organizationId: member.organizationId,
+          role: member.role,
+          type: member.type || '',
+        };
+      }),
+    };
+
+    console.log('변경된 멤버 정보:', result);
     alert('멤버 정보 변경 완료');
+    onCancel();
   };
 
   return (
@@ -108,7 +155,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
             <Text>Member</Text>
           </TextArea>
           <MemberTableArea>
-            <MemberEditTable data={members} onChangeRole={onChangeRole} />
+            <MemberEditTable data={members} onChangeType={onChangeType} />
           </MemberTableArea>
         </ContentArea>
         <ButtonArea>

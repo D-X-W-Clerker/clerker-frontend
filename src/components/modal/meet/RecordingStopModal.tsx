@@ -130,7 +130,7 @@ const RecordingStopModal: React.FC<RecordingStopModalProps> = ({
           </List>
         </SubContentArea>
         <ButtonArea>
-          <ModalButton text="확인" color="blue" onClick={onConfirm} />
+          <ModalButton text="종료" color="blue" onClick={onConfirm} />
         </ButtonArea>
       </Container>
     </Backdrop>
