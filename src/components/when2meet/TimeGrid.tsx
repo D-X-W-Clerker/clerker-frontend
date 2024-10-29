@@ -24,12 +24,17 @@ const Title = styled.div`
   margin-top: 44px;
 `;
 
-const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
+const TimeBlockButton = styled.button<{
+  selectedCount: number;
+  disabled: boolean;
+}>`
   width: 100%;
   height: 11px;
   border-radius: 4px;
-  background-color: ${({ selected }): string => {
-    return selected ? '#6495ED' : '#d3d3d3';
+  background-color: ${({ selectedCount }): string => {
+    return selectedCount > 0
+      ? `rgba(0, 132, 255, ${Math.min(0.1 + selectedCount * 0.3, 1)})`
+      : '#d3d3d3';
   }};
   border: none;
   cursor: ${({ disabled }): string => {
@@ -37,13 +42,11 @@ const TimeBlockButton = styled.button<{ selected: boolean; disabled: boolean }>`
   }};
 
   &:hover {
-    background-color: ${({ selected, disabled }): string => {
-      return selected ? '#6495ED' : disabled ? '#d3d3d3' : '#A9A9A9';
+    background-color: ${({ selectedCount, disabled }): string => {
+      return disabled
+        ? '#d3d3d3'
+        : `rgba(0, 132, 255, ${Math.min(0.1 + selectedCount * 0.3, 1)})`;
     }};
-  }
-
-  &:active {
-    background-color: #1e90ff;
   }
 `;
 
@@ -57,18 +60,22 @@ type TimeGridProps = {
   title: string;
   times: string[];
   dates: string[];
+  timeCounts: Record<string, number>;
   selectedTimes: string[];
   toggleTime: (date: string, time: string) => void;
   isDisabled?: boolean;
+  isPersonal?: boolean;
 };
 
 const TimeGrid: React.FC<TimeGridProps> = ({
   title,
   times,
   dates,
+  timeCounts,
   selectedTimes,
   toggleTime,
   isDisabled = false,
+  isPersonal = false,
 }) => {
   const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -109,11 +116,14 @@ const TimeGrid: React.FC<TimeGridProps> = ({
               <TimeLabel>{isHalfHour(time) ? '' : time}</TimeLabel>
               {dates.map((date) => {
                 const timeKey = `${date}-${time}`;
+                const isSelected = selectedTimes.includes(timeKey);
+                const count = timeCounts[timeKey] || 0;
+                const selectedCount = isPersonal ? (isSelected ? 1 : 0) : count;
 
                 return (
                   <TimeBlockButton
                     key={timeKey}
-                    selected={selectedTimes.includes(timeKey)}
+                    selectedCount={selectedCount}
                     onMouseDown={(): void => {
                       return handleMouseDown(date, time);
                     }}
