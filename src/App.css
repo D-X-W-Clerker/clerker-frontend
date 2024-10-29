@@ -2,28 +2,28 @@
 
 :root {
     /* color */
-    --background-color: #FEFEFE;
+    --background-color: #fefefe;
     /* color-gray */
-    --color-gray-50: #ECECEC;
-    --color-gray-100: #D2D2D2;
-    --color-gray-200: #C8C8C8;
-    --color-gray-300: #B6B6B6;
-    --color-gray-400: #7E7E7E;
+    --color-gray-50: #ececec;
+    --color-gray-100: #d2d2d2;
+    --color-gray-200: #c8c8c8;
+    --color-gray-300: #b6b6b6;
+    --color-gray-400: #7e7e7e;
     --color-gray-500: #707070;
-    --color-gray-600: #3A3A3A;
-    --color-gray-700: #2D2D2D;
+    --color-gray-600: #3a3a3a;
+    --color-gray-700: #2d2d2d;
     /* color-blue */
-    --color-blue-100: #40A3FF;
-    --color-blue-200: #0085FF;
-    --color-blue-300: #0068C8;
+    --color-blue-100: #40a3ff;
+    --color-blue-200: #0085ff;
+    --color-blue-300: #0068c8;
     /* color-red */
-    --color-red: #FF6464;
+    --color-red: #ff6464;
     /* role */
-    --color-pm: #DECEFF;
-    --color-fe: #CEE2F6;
-    --color-be: #FFBFBF;
-    --color-de: #F6F0C1;
-    --color-ai: #E4F6E1;
+    --color-pm: #deceff;
+    --color-fe: #cee2f6;
+    --color-be: #ffbfbf;
+    --color-de: #f6f0c1;
+    --color-ai: #e4f6e1;
 
     /* font-weight */
     --font-thin: 100;

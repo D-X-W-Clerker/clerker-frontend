@@ -1,30 +1,30 @@
 {
-  "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "@api": ["api/index.ts"],
-      "@api/*": ["api/*"],
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "@api": ["api/index.ts"],
+            "@api/*": ["api/*"],
 
-      "@assets": ["assets/index.ts"],
-      "@assets/*": ["assets/*"],
+            "@assets": ["assets/index.ts"],
+            "@assets/*": ["assets/*"],
 
-      "@components": ["components/index.ts"],
-      "@components/*": ["components/*"],
+            "@components": ["components/index.ts"],
+            "@components/*": ["components/*"],
 
-      "@pages": ["pages/index.ts"],
-      "@pages/*": ["pages/*"],
+            "@pages": ["pages/index.ts"],
+            "@pages/*": ["pages/*"],
 
-      "@store": ["store/index.ts"],
-      "@store/*": ["store/*"],
+            "@store": ["store/index.ts"],
+            "@store/*": ["store/*"],
 
-      "@styles": ["styles/index.ts"],
-      "@styles/*": ["styles/*"],
+            "@styles": ["styles/index.ts"],
+            "@styles/*": ["styles/*"],
 
-      "@utils": ["utils/index.ts"],
-      "@utils/*": ["utils/*"],
+            "@utils": ["utils/index.ts"],
+            "@utils/*": ["utils/*"],
 
-      "@data": ["data/index.ts"],
-      "@data/*": ["data/*"]
+            "@data": ["data/index.ts"],
+            "@data/*": ["data/*"]
+        }
     }
-  }
 }

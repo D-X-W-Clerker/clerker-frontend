@@ -4,37 +4,37 @@ import { InviteDeleteIcon } from '@assets';
 import { ItemsCenterSpaceRow } from '@styles';
 
 interface MemberInviteItemProps {
-  email: string;
-  onClick: () => void;
+    email: string;
+    onClick: () => void;
 }
 
 const Container = styled(ItemsCenterSpaceRow)`
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0 15px;
-  background-color: var(--background-color);
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 15px;
+    background-color: var(--background-color);
 `;
 
 const Text = styled.div`
-  font-size: 14px;
+    font-size: 14px;
 `;
 
 const SvgImage = styled.img`
-  width: 9px;
-  height: 9px;
-  cursor: pointer;
+    width: 9px;
+    height: 9px;
+    cursor: pointer;
 `;
 
 const MemberInviteItem: React.FC<MemberInviteItemProps> = ({
-  email,
-  onClick,
+    email,
+    onClick,
 }) => {
-  return (
-    <Container>
-      <Text>{email}</Text>
-      <SvgImage src={InviteDeleteIcon} onClick={onClick} />
-    </Container>
-  );
+    return (
+        <Container>
+            <Text>{email}</Text>
+            <SvgImage src={InviteDeleteIcon} onClick={onClick} />
+        </Container>
+    );
 };
 
 export default MemberInviteItem;
