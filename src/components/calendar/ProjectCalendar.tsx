@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import CalendarButton from './CalendarButton'; // CalendarButton 컴포넌트 import
+import CalendarButton from '../calendar/CalendarButton'; // 경로 수정
 
 const CalendarContainer = styled.div`
     margin-top: 40px;
