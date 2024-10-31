@@ -4,18 +4,18 @@ import { Header } from '@components';
 import { ItemsCenterCol } from '@styles';
 
 const Container = styled(ItemsCenterCol)`
-  height: 100vh;
-  margin-top: 50px;
-  overflow-y: auto;
+    height: 100vh;
+    margin-top: 50px;
+    overflow-y: auto;
 `;
 
 const OnboardingPage: React.FC = () => {
-  return (
-    <Container>
-      <Header />
-      Onboarding Page
-    </Container>
-  );
+    return (
+        <Container>
+            <Header />
+            Onboarding Page
+        </Container>
+    );
 };
 
 export default OnboardingPage;

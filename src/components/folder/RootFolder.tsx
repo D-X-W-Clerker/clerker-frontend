@@ -7,127 +7,137 @@ import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
 
 // -- 인터페이스 --
-interface SummaryFile {
-  id: string;
-  name: string;
+interface Meeting {
+    meetingId: string;
+    name: string;
 }
 
-interface SubFolder {
-  id: string;
-  name: string;
-  summaryFiles: SummaryFile[];
+interface ChildProject {
+    id: string;
+    name: string;
+    childProjects: [];
+    meetings: Meeting[];
 }
 
 interface Project {
-  id: string;
-  name: string;
-  summaryFiles: SummaryFile[];
-  subFolders: SubFolder[];
+    projectId: string;
+    name: string;
+    childProjects: ChildProject[];
+    meetings: Meeting[];
 }
 
 interface RootFolderProps {
-  project: Project;
-  onClickCreateSubFolder: (projectId: string) => void;
+    project: Project;
+    onClickCreateSubFolder: (projectId: string) => void;
 }
 
 // -- 스타일 컴포넌트 --
 const Container = styled(FlexCol)``;
 
 const RootFolder: React.FC<RootFolderProps> = ({
-  project,
-  onClickCreateSubFolder,
+    project,
+    onClickCreateSubFolder,
 }) => {
-  const { selectedId, setSelectedId, openFolderIds, toggleFolderOpen } =
-    useFolderStore();
-  const navigate = useNavigate();
+    const { selectedId, setSelectedId, openFolderIds, toggleFolderOpen } =
+        useFolderStore();
+    const navigate = useNavigate();
 
-  const onClickFolder = (folderId: string): void => {
-    setSelectedId(folderId);
-    navigate(`/project/${folderId}`);
-  };
+    const onClickFolder = (folderId: string): void => {
+        setSelectedId(folderId);
+        navigate(`/project/${folderId}`);
+    };
 
-  const onClickSummaryFile = (summaryFileId: string): void => {
-    setSelectedId(summaryFileId);
-    navigate(`/summary/${summaryFileId}`);
-  };
+    const onClickMeeting = (meetingId: string): void => {
+        setSelectedId(meetingId);
+        navigate(`/summary/${meetingId}`);
+    };
 
-  return (
-    <Container>
-      <FolderItem
-        id={project.id}
-        name={project.name}
-        isOpen={openFolderIds.includes(project.id)}
-        isSelected={selectedId === project.id}
-        onClickToggle={(): void => {
-          return toggleFolderOpen(project.id);
-        }}
-        onClickNav={(): void => {
-          return onClickFolder(project.id);
-        }}
-      />
-      {openFolderIds.includes(project.id) && (
-        <>
-          <ActionButton
-            icon={AddIcon}
-            label="하위 폴더 생성"
-            onClick={(): void => {
-              return onClickCreateSubFolder(project.id);
-            }}
-          />
-          {/* 프로젝트 내 요약 파일 */}
-          {project.summaryFiles.map((summaryFile) => {
-            return (
-              <FolderItem
-                key={summaryFile.id}
-                id={summaryFile.id}
-                name={summaryFile.name}
-                isSelected={selectedId === summaryFile.id}
-                onClickNav={(): void => {
-                  return onClickSummaryFile(summaryFile.id);
+    return (
+        <Container>
+            <FolderItem
+                id={project.projectId}
+                name={project.name}
+                isOpen={openFolderIds.includes(project.projectId)}
+                isSelected={selectedId === project.projectId}
+                onClickToggle={(): void => {
+                    return toggleFolderOpen(project.projectId);
                 }}
-              />
-            );
-          })}
-          {/* 프로젝트 하위 폴더 */}
-          {project.subFolders.map((subFolder) => {
-            return (
-              <React.Fragment key={subFolder.id}>
-                <FolderItem
-                  id={subFolder.id}
-                  name={subFolder.name}
-                  isSelected={selectedId === subFolder.id}
-                  isOpen={openFolderIds.includes(subFolder.id)}
-                  onClickToggle={(): void => {
-                    return toggleFolderOpen(subFolder.id);
-                  }}
-                  onClickNav={(): void => {
-                    return onClickFolder(subFolder.id);
-                  }}
-                  isSubFolder
-                />
-                {/* 하위 폴더 내 요약 파일 */}
-                {openFolderIds.includes(subFolder.id) &&
-                  subFolder.summaryFiles.map((summaryFile) => {
-                    return (
-                      <FolderItem
-                        key={summaryFile.id}
-                        id={summaryFile.id}
-                        name={summaryFile.name}
-                        isSelected={selectedId === summaryFile.id}
-                        onClickNav={(): void => {
-                          return onClickSummaryFile(summaryFile.id);
+                onClickNav={(): void => {
+                    return onClickFolder(project.projectId);
+                }}
+            />
+            {openFolderIds.includes(project.projectId) && (
+                <>
+                    <ActionButton
+                        icon={AddIcon}
+                        label="하위 폴더 생성"
+                        onClick={(): void => {
+                            return onClickCreateSubFolder(project.projectId);
                         }}
-                        isSubFolder
-                      />
-                    );
-                  })}
-              </React.Fragment>
-            );
-          })}
-        </>
-      )}
-    </Container>
-  );
+                    />
+                    {/* 프로젝트 내 요약 파일 */}
+                    {project.meetings.map((meeting) => {
+                        return (
+                            <FolderItem
+                                key={meeting.meetingId}
+                                id={meeting.meetingId}
+                                name={meeting.name}
+                                isSelected={selectedId === meeting.meetingId}
+                                onClickNav={(): void => {
+                                    return onClickMeeting(meeting.meetingId);
+                                }}
+                            />
+                        );
+                    })}
+                    {/* 프로젝트 하위 폴더 */}
+                    {project.childProjects.map((childProject) => {
+                        return (
+                            <React.Fragment key={childProject.id}>
+                                <FolderItem
+                                    id={childProject.id}
+                                    name={childProject.name}
+                                    isSelected={selectedId === childProject.id}
+                                    isOpen={openFolderIds.includes(
+                                        childProject.id,
+                                    )}
+                                    onClickToggle={(): void => {
+                                        return toggleFolderOpen(
+                                            childProject.id,
+                                        );
+                                    }}
+                                    onClickNav={(): void => {
+                                        return onClickFolder(childProject.id);
+                                    }}
+                                    isSubFolder
+                                />
+                                {/* 하위 폴더 내 요약 파일 */}
+                                {openFolderIds.includes(childProject.id) &&
+                                    childProject.meetings.map((meeting) => {
+                                        return (
+                                            <FolderItem
+                                                key={meeting.meetingId}
+                                                id={meeting.meetingId}
+                                                name={meeting.name}
+                                                isSelected={
+                                                    selectedId ===
+                                                    meeting.meetingId
+                                                }
+                                                onClickNav={(): void => {
+                                                    return onClickMeeting(
+                                                        meeting.meetingId,
+                                                    );
+                                                }}
+                                                isSubFolder
+                                            />
+                                        );
+                                    })}
+                            </React.Fragment>
+                        );
+                    })}
+                </>
+            )}
+        </Container>
+    );
 };
 
 export default RootFolder;
