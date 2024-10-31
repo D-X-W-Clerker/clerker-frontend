@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "baseUrl": "src",
+        "paths": {
+            "@api": ["api/index.ts"],
+            "@api/*": ["api/*"],
+
+            "@assets": ["assets/index.ts"],
+            "@assets/*": ["assets/*"],
+
+            "@components": ["components/index.ts"],
+            "@components/*": ["components/*"],
+
+            "@pages": ["pages/index.ts"],
+            "@pages/*": ["pages/*"],
+
+            "@store": ["store/index.ts"],
+            "@store/*": ["store/*"],
+
+            "@styles": ["styles/index.ts"],
+            "@styles/*": ["styles/*"],
+
+            "@utils": ["utils/index.ts"],
+            "@utils/*": ["utils/*"],
+
+            "@data": ["data/index.ts"],
+            "@data/*": ["data/*"]
+        }
+    }
+}
