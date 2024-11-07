@@ -108,31 +108,42 @@ const MeetSummaryPage: React.FC = () => {
                 <TitleTab type="meetSummary" title="9월 12일 AI 회의" />
                 <DomainArea>
                     <DomainArrowIcon src={DomainArrow} />
-                    {domainKeywords.map((keyword, index) => (
-                        <DomainKeyword key={index}>{keyword}</DomainKeyword>
+                    {domainKeywords.map((keyword) => (
+                        <DomainKeyword key={keyword}>{keyword}</DomainKeyword>
                     ))}
                 </DomainArea>
                 <Text>
-                    9월 12일 회의 내용입니다. 인퍼런스용 강의 영상은 논문 발표처럼 무겁지 않게, 컨퍼런스 형식의 영상으로
-                    진행하면 좋습니다. SK에서 진행한 강의 영상처럼 일반 대중을 대상으로 하되, 전문 용어를 적절히 사용하여
-                    이해하기 쉬운 방식으로 진행합니다.
+                    9월 12일 회의 내용입니다. 인퍼런스용 강의 영상은 논문
+                    발표처럼 무겁지 않게, 컨퍼런스 형식의 영상으로 진행하면
+                    좋습니다. SK에서 진행한 강의 영상처럼 일반 대중을 대상으로
+                    하되, 전문 용어를 적절히 사용하여 이해하기 쉬운 방식으로
+                    진행합니다.
                 </Text>
                 {diagramData[0] && (
                     <DiagramContainer>
-                        <DiagramImage src={diagramData[0].diagramUrl} alt={diagramData[0].title} />
+                        <DiagramImage
+                            src={diagramData[0].diagramUrl}
+                            alt={diagramData[0].title}
+                        />
                     </DiagramContainer>
                 )}
                 <Text>
-                    STT에서는 청킹을 넘어갈 때 불용어 처리가 진행됩니다. MP3 파일을 입력하면 NTT 결과와 청킹 결과, 서머리 결과 등이 저장되도록
-                    설정되어 있으며, STT 결과물이 청킹과 서머리 과정에 자동으로 반영됩니다.
+                    STT에서는 청킹을 넘어갈 때 불용어 처리가 진행됩니다. MP3
+                    파일을 입력하면 NTT 결과와 청킹 결과, 서머리 결과 등이
+                    저장되도록 설정되어 있으며, STT 결과물이 청킹과 서머리
+                    과정에 자동으로 반영됩니다.
                 </Text>
                 {diagramData[1] && (
                     <DiagramContainer>
-                        <DiagramImage src={diagramData[1].diagramUrl} alt={diagramData[1].title} />
+                        <DiagramImage
+                            src={diagramData[1].diagramUrl}
+                            alt={diagramData[1].title}
+                        />
                     </DiagramContainer>
                 )}
                 <Text>
-                    현재 코드가 각 청크별로 블로썸을 거쳐 HTML로 연결되는데, 이 과정에서 HTML이 깨지고 시간이 오래 걸립니다.
+                    현재 코드가 각 청크별로 블로썸을 거쳐 HTML로 연결되는데, 이
+                    과정에서 HTML이 깨지고 시간이 오래 걸립니다.
                 </Text>
             </Container>
         </Layout>
