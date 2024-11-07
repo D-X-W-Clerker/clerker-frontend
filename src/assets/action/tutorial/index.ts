@@ -7,11 +7,11 @@ import SecondPageIcon from './SecondPageIcon.svg';
 import ExampleImage from './ExampleImage.svg';
 
 export {
-  SproutIcon,
-  CalendarIcon,
-  WindIcon,
-  LightBulbIcon,
-  FirstPageIcon,
-  SecondPageIcon,
-  ExampleImage,
+    SproutIcon,
+    CalendarIcon,
+    WindIcon,
+    LightBulbIcon,
+    FirstPageIcon,
+    SecondPageIcon,
+    ExampleImage,
 };

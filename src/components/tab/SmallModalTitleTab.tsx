@@ -5,43 +5,43 @@ import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface SmallModalTitleTabProps {
-  type: string;
-  title: string;
+    type: string;
+    title: string;
 }
 
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)`
-  gap: 5px;
-  font-size: 20px;
-  background-color: var(--background-color);
+    gap: 5px;
+    font-size: 20px;
+    background-color: var(--background-color);
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-  width: ${(props): number => {
-    return props.$width;
-  }}px;
-  height: ${(props): number => {
-    return props.$height;
-  }}px;
+    width: ${(props): number => {
+        return props.$width;
+    }}px;
+    height: ${(props): number => {
+        return props.$height;
+    }}px;
 `;
 
 const SmallModalTitleTab: React.FC<SmallModalTitleTabProps> = ({
-  type,
-  title,
+    type,
+    title,
 }) => {
-  const isProject = type === 'project';
+    const isProject = type === 'project';
 
-  return (
-    <Container>
-      <IconImage
-        src={isProject ? FolderIcon : ActiveLogoutIcon}
-        alt={isProject ? 'Folder Icon' : 'Logout Icon'}
-        $width={isProject ? 24 : 21}
-        $height={isProject ? 19 : 19}
-      />
-      {title}
-    </Container>
-  );
+    return (
+        <Container>
+            <IconImage
+                src={isProject ? FolderIcon : ActiveLogoutIcon}
+                alt={isProject ? 'Folder Icon' : 'Logout Icon'}
+                $width={isProject ? 24 : 21}
+                $height={isProject ? 19 : 19}
+            />
+            {title}
+        </Container>
+    );
 };
 
 export default SmallModalTitleTab;
