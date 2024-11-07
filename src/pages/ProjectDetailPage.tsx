@@ -337,7 +337,7 @@ const ProjectDetailPage: React.FC = () => {
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
-                    <ProjectCalendar /> {/* 오른쪽 영역에 캘린더 추가 */}
+                    <When2meet /> {/* 오른쪽 영역에 캘린더 추가 */}
                 </RightContentArea>
             </Container>
             {modalType === 'memberAdd' && (
