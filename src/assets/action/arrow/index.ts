@@ -5,9 +5,9 @@ import RightArrowIcon from './RightArrowIcon.svg';
 import WhiteGrayDownArrowIcon from './WhiteGrayDownArrowIcon.svg';
 
 export {
-  BackArrowIcon,
-  DownArrowIcon,
-  LeftArrowIcon,
-  RightArrowIcon,
-  WhiteGrayDownArrowIcon,
+    BackArrowIcon,
+    DownArrowIcon,
+    LeftArrowIcon,
+    RightArrowIcon,
+    WhiteGrayDownArrowIcon,
 };
