@@ -1,5 +1,3 @@
-// src/pages/ProjectDetailPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
@@ -14,6 +12,7 @@ import {
     MemberInfoModal,
     MeetCreateModal,
     MeetJoinModal,
+    When2meet,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout'; // 실제 경로에 맞게 조정하세요
@@ -338,7 +337,7 @@ const ProjectDetailPage: React.FC = () => {
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
-                    <ProjectCalendar /> {/* 오른쪽 영역에 캘린더 추가 */}
+                    <When2meet /> {/* 오른쪽 영역에 캘린더 추가 */}
                 </RightContentArea>
             </Container>
             {modalType === 'memberAdd' && (
