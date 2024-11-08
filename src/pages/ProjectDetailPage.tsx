@@ -221,6 +221,7 @@ const ProjectDetailPage: React.FC = () => {
     const [modalType, setModalType] = useState<
         'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
     >(null);
+    const [scheduleClicked, setScheduleClicked] = useState(false);
 
     const handleOpenModal = (
         type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
@@ -242,6 +243,7 @@ const ProjectDetailPage: React.FC = () => {
             handleOpenModal('meetJoin', event as MeetingData);
         } else if (activeTab === 'schedule') {
             console.log('스케줄을 클릭했습니다:', event);
+            setScheduleClicked(true);
         }
     };
 
@@ -337,7 +339,15 @@ const ProjectDetailPage: React.FC = () => {
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
-                    <ProjectCalendar /> {/* 오른쪽 영역에 캘린더 추가 */}
+                    {scheduleClicked ? (
+                        <When2meet
+                            onCancel={(): void => {
+                                return setScheduleClicked(false);
+                            }}
+                        />
+                    ) : (
+                        <ProjectCalendar />
+                    )}
                 </RightContentArea>
             </Container>
             {modalType === 'memberAdd' && (
