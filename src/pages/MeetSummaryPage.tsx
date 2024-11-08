@@ -108,9 +108,13 @@ const MeetSummaryPage: React.FC = () => {
                 <TitleTab type="meetSummary" title="9월 12일 AI 회의" />
                 <DomainArea>
                     <DomainArrowIcon src={DomainArrow} />
-                    {domainKeywords.map((keyword) => (
-                        <DomainKeyword key={keyword}>{keyword}</DomainKeyword>
-                    ))}
+                    {domainKeywords.map((keyword) => {
+                        return (
+                            <DomainKeyword key={keyword}>
+                                {keyword}
+                            </DomainKeyword>
+                        );
+                    })}
                 </DomainArea>
                 <Text>
                     9월 12일 회의 내용입니다. 인퍼런스용 강의 영상은 논문
