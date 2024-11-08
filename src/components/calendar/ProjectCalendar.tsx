@@ -50,10 +50,10 @@ const WeekdayCell = styled.div<WeekdayCellProps>`
     width: 14.28%;
     color: ${(props: WeekdayCellProps): string => {
         return props.isSunday
-                ? '#ff4343'
-                : props.isSaturday
-                        ? '#0085ff'
-                        : '#2f2f2f';
+            ? '#ff4343'
+            : props.isSaturday
+              ? '#0085ff'
+              : '#2f2f2f';
     }};
     abbr {
         text-decoration: none;
@@ -95,10 +95,10 @@ const DayCell = styled.div<DayCellProps>`
     cursor: pointer;
     color: ${(props: DayCellProps): string => {
         return props.isSelected
-                ? '#ffffff'
-                : props.isCurrentMonth
-                        ? '#000'
-                        : '#aaa';
+            ? '#ffffff'
+            : props.isCurrentMonth
+              ? '#000'
+              : '#aaa';
     }};
 
     &:hover {
