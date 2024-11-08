@@ -39,6 +39,7 @@ const Container = styled(FlexCol)`
     padding: 20px 20px;
     background-color: var(--background-color);
     border-radius: 10px;
+    position: relative;
 `;
 
 const ContentArea = styled(FlexCol)`
@@ -50,16 +51,18 @@ const DateInputArea = styled(ItemsCenterSpaceRow)`
     gap: 10px;
 `;
 
-const ButtonArea = styled(ItemsCenterEndRow)`
+const ButtonArea = styled.div`
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
     gap: 10px;
 `;
 
-const hourOptions = Array.from({ length: 24 }, (_, i) => {
-    return {
-        label: `${i}시`,
-        value: i.toString().padStart(2, '0'),
-    };
-});
+const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    label: `${i}시`,
+    value: i.toString().padStart(2, '0'),
+}));
 
 const minuteOptions = [
     { label: '00분', value: '00' },
@@ -183,18 +186,14 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 <option value="" disabled>
                                     시
                                 </option>
-                                {hourOptions.map(
-                                    (option): React.ReactElement => {
-                                        return (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        );
-                                    },
-                                )}
+                                {hourOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </StyledSelect>
                             <ArrowIcon src={DownArrowIcon} />
                         </StyledSelectWrapper>
@@ -206,18 +205,14 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 <option value="" disabled>
                                     분
                                 </option>
-                                {minuteOptions.map(
-                                    (option): React.ReactElement => {
-                                        return (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        );
-                                    },
-                                )}
+                                {minuteOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </StyledSelect>
                             <ArrowIcon src={DownArrowIcon} />
                         </StyledSelectWrapper>
@@ -230,18 +225,14 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 <option value="" disabled>
                                     시
                                 </option>
-                                {hourOptions.map(
-                                    (option): React.ReactElement => {
-                                        return (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        );
-                                    },
-                                )}
+                                {hourOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </StyledSelect>
                             <ArrowIcon src={DownArrowIcon} />
                         </StyledSelectWrapper>
@@ -253,18 +244,14 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 <option value="" disabled>
                                     분
                                 </option>
-                                {minuteOptions.map(
-                                    (option): React.ReactElement => {
-                                        return (
-                                            <option
-                                                key={option.value}
-                                                value={option.value}
-                                            >
-                                                {option.label}
-                                            </option>
-                                        );
-                                    },
-                                )}
+                                {minuteOptions.map((option) => (
+                                    <option
+                                        key={option.value}
+                                        value={option.value}
+                                    >
+                                        {option.label}
+                                    </option>
+                                ))}
                             </StyledSelect>
                             <ArrowIcon src={DownArrowIcon} />
                         </StyledSelectWrapper>
@@ -273,9 +260,7 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                         label="멤버들에게 일정 생성 알림을 보낼까요?"
                         name="sendAlert"
                         checked={sendAlert}
-                        onChange={() => {
-                            setSendAlert(!sendAlert);
-                        }}
+                        onChange={() => setSendAlert(!sendAlert)}
                     />
                 </ContentArea>
                 <ButtonArea>
