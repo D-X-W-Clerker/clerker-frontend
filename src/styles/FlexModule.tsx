@@ -45,7 +45,7 @@ export const ItemsCenterCol = styled(FlexCol)`
 `;
 
 export const ItemsStartCol = styled(FlexCol)`
-  align-items: start;
+    align-items: start;
 `;
 
 export const JustifyCenterCol = styled(FlexCol)`

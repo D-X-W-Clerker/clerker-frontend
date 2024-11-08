@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FolderIcon, FileIcon, ShareIcon } from '@assets';
+import { FolderIcon, FileIcon } from '@assets';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
 
 // -- 인터페이스 --
@@ -45,14 +45,6 @@ const TitleTab: React.FC<HeaderProps> = ({ type, title }) => {
                 />
                 {title}
             </TitleArea>
-            {!isProject && (
-                <IconImage
-                    src={ShareIcon}
-                    alt="Share Icon"
-                    $width={20}
-                    $height={22}
-                />
-            )}
         </Container>
     );
 };

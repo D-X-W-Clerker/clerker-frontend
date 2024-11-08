@@ -4,8 +4,8 @@ import When2meetSectionImage from './When2meetSectionImage.svg';
 import ProjectSectionImage from './ProjectSectionImage.svg';
 
 export {
-  FeatureSectionImage,
-  SummarySectionImage,
-  When2meetSectionImage,
-  ProjectSectionImage,
+    FeatureSectionImage,
+    SummarySectionImage,
+    When2meetSectionImage,
+    ProjectSectionImage,
 };
