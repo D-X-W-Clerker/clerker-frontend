@@ -23,6 +23,10 @@ interface EventData {
     members: Member[];
 }
 
+interface When2meetProps {
+    onCancel: () => void;
+}
+
 const TimeGridContainer = styled(JustifyCenterRow)`
     gap: 25px;
 `;
@@ -111,7 +115,7 @@ const fetchEventData = async (): Promise<EventData> => {
     };
 };
 
-const When2meet: React.FC = () => {
+const When2meet: React.FC<When2meetProps> = ({ onCancel }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
@@ -239,7 +243,7 @@ const When2meet: React.FC = () => {
             </MemberContainer>
 
             <ButtonContainer>
-                <ModalButton text="취소" color="blue" />
+                <ModalButton text="취소" color="blue" onClick={onCancel} />
                 <ModalButton
                     text="일정 조율 저장"
                     color="blue"

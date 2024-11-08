@@ -339,7 +339,15 @@ const ProjectDetailPage: React.FC = () => {
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
-                    {scheduleClicked ? <When2meet /> : <ProjectCalendar />}
+                    {scheduleClicked ? (
+                        <When2meet
+                            onCancel={(): void => {
+                                return setScheduleClicked(false);
+                            }}
+                        />
+                    ) : (
+                        <ProjectCalendar />
+                    )}
                 </RightContentArea>
             </Container>
             {modalType === 'memberAdd' && (
