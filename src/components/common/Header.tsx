@@ -1,7 +1,8 @@
+// Header.tsx
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { Clerker } from '@assets';
+import { Clerker, GoogleIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
 import { useFolderStore } from '@store';
 
@@ -21,16 +22,32 @@ const IconImage = styled.img`
     height: 30px;
 `;
 
-const Header: React.FC = () => {
+const GoogleIconImage = styled.img`
+    width: 140px;
+    height: 30px;
+    position: absolute;
+    right: 250px;
+    cursor: pointer;
+`;
+
+interface HeaderProps {
+    showGoogleIcon?: boolean;
+}
+
+const Header: React.FC<HeaderProps> = ({ showGoogleIcon }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const { setSelectedId, toggleFolderOpen, openFolderIds } = useFolderStore();
+
+    const onGoogleLoginClick = (): void => {
+        window.location.href = `${process.env.REACT_APP_BASE_URL}/oauth2/authorization/google`;
+    };
 
     const onClickLogo = (): void => {
         if (location.pathname !== '/') {
             setSelectedId(null);
             openFolderIds.forEach((id) => {
-                toggleFolderOpen(id); // 모든 폴더를 닫기 위해 toggleFolderOpen 호출
+                toggleFolderOpen(id);
             });
             navigate('/home');
         }
@@ -39,6 +56,13 @@ const Header: React.FC = () => {
     return (
         <Container onClick={onClickLogo}>
             <IconImage src={Clerker} />
+            {showGoogleIcon && (
+                <GoogleIconImage
+                    src={GoogleIcon}
+                    onClick={onGoogleLoginClick}
+                />
+            )}{' '}
+            {/* 조건부로 GoogleIcon 렌더링 */}
         </Container>
     );
 };
