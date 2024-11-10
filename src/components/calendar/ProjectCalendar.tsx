@@ -1,9 +1,32 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import CalendarButton from './CalendarButton'; // 경로 수정
-import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal'; // 경로 수정
-import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal'; // 경로 수정
+import CalendarButton from './CalendarButton'; // 실제 경로에 맞게 수정하세요
+import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal'; // 실제 경로에 맞게 수정하세요
+import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal'; // 실제 경로에 맞게 수정하세요
 
+// ScheduleData 인터페이스를 파일 내에서 정의합니다.
+interface ScheduleData {
+    scheduleId: string;
+    scheduleName: string;
+    startDate: string;
+    endDate: string;
+    startTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
+    endTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
+    createdAt: string;
+    isEnded: boolean;
+}
+
+// 스타일 컴포넌트
 const CalendarContainer = styled.div`
     margin-top: 40px;
 `;
@@ -48,12 +71,10 @@ interface WeekdayCellProps {
 
 const WeekdayCell = styled.div<WeekdayCellProps>`
     width: 14.28%;
-    color: ${(props: WeekdayCellProps): string => {
-        return props.isSunday
-            ? '#ff4343'
-            : props.isSaturday
-              ? '#0085ff'
-              : '#2f2f2f';
+    color: ${(props): string => {
+        if (props.isSunday) return '#ff4343';
+        if (props.isSaturday) return '#0085ff';
+        return '#2f2f2f';
     }};
     abbr {
         text-decoration: none;
@@ -80,7 +101,7 @@ const DayCell = styled.div<DayCellProps>`
     flex: 1;
     padding: 15px 15px;
     font-size: 18px;
-    background-color: ${(props: DayCellProps): string => {
+    background-color: ${(props): string => {
         if (props.isSelected) {
             return '#40A3FF';
         }
@@ -93,18 +114,14 @@ const DayCell = styled.div<DayCellProps>`
     text-align: center;
     margin: 10px 5px;
     cursor: pointer;
-    color: ${(props: DayCellProps): string => {
-        return props.isSelected
-            ? '#ffffff'
-            : props.isCurrentMonth
-              ? '#000'
-              : '#aaa';
+    color: ${(props): string => {
+        if (props.isSelected) return '#ffffff';
+        return props.isCurrentMonth ? '#000' : '#aaa';
     }};
 
     &:hover {
-        background-color: ${(props: DayCellProps): string => {
-            return props.isSelected ? '#40A3FF' : '#d4e5f6';
-        }};
+        background-color: ${(props): string =>
+            props.isSelected ? '#40A3FF' : '#d4e5f6'};
     }
 
     position: relative;
@@ -127,7 +144,12 @@ const ScheduleButtonContainer = styled.div`
     margin-top: 20px;
 `;
 
-const ProjectCalendar: React.FC = () => {
+// 인터페이스
+interface ProjectCalendarProps {
+    addSchedule: (newSchedule: ScheduleData) => void;
+}
+
+const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ addSchedule }) => {
     const today: Date = new Date();
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [isSelectingDates, setIsSelectingDates] = useState<boolean>(false);
@@ -151,7 +173,7 @@ const ProjectCalendar: React.FC = () => {
     const eventDates: Date[] = [
         new Date(2024, 9, 14), // 기존 일정
         new Date(2024, 9, 20), // 기존 일정
-        new Date(2024, 10, 15), // 11월 15일 일정 추가 (11월은 10번째 월)
+        new Date(2024, 10, 15), // 11월 15일 일정 추가
     ];
 
     const getMonthYear = (date: Date): string => {
@@ -170,15 +192,9 @@ const ProjectCalendar: React.FC = () => {
         );
     };
 
-    const getWeekdays = (): string[] => [
-        '일',
-        '월',
-        '화',
-        '수',
-        '목',
-        '금',
-        '토',
-    ];
+    const getWeekdays = (): string[] => {
+        return ['일', '월', '화', '수', '목', '금', '토'];
+    };
 
     const generateCalendar = (): Date[][] => {
         const startOfMonth: Date = new Date(
@@ -250,7 +266,7 @@ const ProjectCalendar: React.FC = () => {
     };
 
     const handleScheduleButtonClick = (): void => {
-        if (isSelectingDates && selectedStartDate) {
+        if (isSelectingDates && selectedStartDate && selectedEndDate) {
             setIsModalOpen(true);
             setIsSelectingDates(false);
         } else {
@@ -321,8 +337,14 @@ const ProjectCalendar: React.FC = () => {
                 />
             </ScheduleButtonContainer>
 
-            {isModalOpen && (
-                <ScheduleCreateModal projectId="1234" onCancel={closeModal} />
+            {isModalOpen && selectedStartDate && selectedEndDate && (
+                <ScheduleCreateModal
+                    projectId="1234"
+                    onCancel={closeModal}
+                    onCreate={addSchedule} // 스케줄 추가 함수 전달
+                    startDate={selectedStartDate}
+                    endDate={selectedEndDate}
+                />
             )}
 
             {isCheckModalOpen && (

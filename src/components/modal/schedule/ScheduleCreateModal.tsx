@@ -14,11 +14,37 @@ import {
 } from '@styles';
 import DownArrowIcon from '../../../assets/action/arrow/DownArrowIcon.svg';
 
+// ScheduleData 인터페이스를 파일 내에서 정의합니다.
+interface ScheduleData {
+    scheduleId: string;
+    scheduleName: string;
+    startDate: string;
+    endDate: string;
+    startTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
+    endTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
+    createdAt: string;
+    isEnded: boolean;
+}
+
 interface ScheduleCreateModalProps {
     projectId: string;
     onCancel: () => void;
+    onCreate: (newSchedule: ScheduleData) => void;
+    startDate: Date;
+    endDate: Date;
 }
 
+// 스타일 컴포넌트 정의
 const Backdrop = styled(CenterRow)`
     position: fixed;
     top: 0;
@@ -100,24 +126,17 @@ const ArrowIcon = styled.img`
     height: 12px;
 `;
 
-const LabelText = styled.span`
-    position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: inherit;
-    color: #666;
-`;
-
 const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
     projectId,
     onCancel,
+    onCreate,
+    startDate,
+    endDate,
 }) => {
     const [title, setTitle] = useState<string>('');
-    const [startHour, setStartHour] = useState<string>('');
+    const [startHour, setStartHour] = useState<string>('09');
     const [startMinute, setStartMinute] = useState<string>('00');
-    const [endHour, setEndHour] = useState<string>('');
+    const [endHour, setEndHour] = useState<string>('10');
     const [endMinute, setEndMinute] = useState<string>('00');
     const [sendAlert, setSendAlert] = useState<boolean>(false);
 
@@ -151,17 +170,37 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
         setEndMinute(e.target.value);
     };
 
-    const formatDateTime = (): string => {
-        return `${startHour}:${startMinute} ~ ${endHour}:${endMinute}`;
-    };
-
     const onClickCreateButton = (): void => {
-        const scheduleData = {
-            title,
-            dateTime: formatDateTime(),
-            isNotify: sendAlert,
+        if (!title) {
+            alert('일정 제목을 입력해주세요.');
+            return;
+        }
+
+        const scheduleId = Date.now().toString();
+        const newSchedule: ScheduleData = {
+            scheduleId,
+            scheduleName: title,
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0],
+            startTime: {
+                hour: startHour,
+                minute: startMinute,
+                second: '0',
+                nano: '0',
+            },
+            endTime: {
+                hour: endHour,
+                minute: endMinute,
+                second: '0',
+                nano: '0',
+            },
+            createdAt: new Date().toISOString(),
+            isEnded: false,
         };
-        console.log('Schedule data:', scheduleData);
+
+        // 새로운 스케줄 추가
+        onCreate(newSchedule);
+
         alert('일정이 생성되었습니다!');
         onCancel();
     };
@@ -183,9 +222,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 value={startHour}
                                 onChange={handleStartHourChange}
                             >
-                                <option value="" disabled>
-                                    시
-                                </option>
                                 {hourOptions.map((option) => (
                                     <option
                                         key={option.value}
@@ -202,9 +238,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 value={startMinute}
                                 onChange={handleStartMinuteChange}
                             >
-                                <option value="" disabled>
-                                    분
-                                </option>
                                 {minuteOptions.map((option) => (
                                     <option
                                         key={option.value}
@@ -222,9 +255,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 value={endHour}
                                 onChange={handleEndHourChange}
                             >
-                                <option value="" disabled>
-                                    시
-                                </option>
                                 {hourOptions.map((option) => (
                                     <option
                                         key={option.value}
@@ -241,9 +271,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                                 value={endMinute}
                                 onChange={handleEndMinuteChange}
                             >
-                                <option value="" disabled>
-                                    분
-                                </option>
                                 {minuteOptions.map((option) => (
                                     <option
                                         key={option.value}
