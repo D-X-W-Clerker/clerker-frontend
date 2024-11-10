@@ -15,6 +15,8 @@ import {
     AccountSettingModal,
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
+import { useQuery, useMutation } from 'react-query';
+import { getNotification, deleteNotification } from '../../apis';
 
 // -- 인터페이스 --
 interface Meeting {
@@ -130,27 +132,38 @@ const menuItems = [
 const SideBar: React.FC = () => {
     const [showInbox, setShowInbox] = useState(false);
     const [showSettingModal, setShowSettingModal] = useState(false);
-    const [inboxItems, setInboxItems] = useState<InboxItem[]>([]);
+    // const [inboxItems, setInboxItems] = useState<InboxItem[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
 
-    useEffect(() => {
-        // 알림 목록
-        const testInboxItems: InboxItem[] = [
-            {
-                notificationId: '1',
-                content:
-                    '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
-                createdAt: '2024-10-21T02:33:01.603Z',
-                // isUnread: true,
+    const { data: inboxItems = [], refetch } = useQuery<InboxItem[]>(
+        'notifications',
+        getNotification,
+        {
+            enabled: false,
+            staleTime: 5 * 60 * 1000,
+            onError: (error) => {
+                console.error('알림 데이터를 불러오는 데 실패했습니다:', error);
             },
-            {
-                notificationId: '2',
-                content: 'Clerker 프로젝트에 초대 되었습니다.',
-                createdAt: '2024-10-21T02:33:01.603Z',
-                // isUnread: true,
-            },
-        ];
+        },
+    );
 
+    // React Query: 알림 삭제
+    const deleteMutation = useMutation(deleteNotification, {
+        onSuccess: () => {
+            alert('알림이 삭제되었습니다.');
+            refetch(); // 삭제 후 알림 목록 다시 가져오기
+        },
+        onError: (error) => {
+            console.error('알림 삭제 실패:', error);
+            alert('알림 삭제에 실패했습니다.');
+        },
+    });
+
+    const onClickInboxDelete = (notificationId: string): void => {
+        deleteMutation.mutate(notificationId); // 알림 삭제 호출
+    };
+
+    useEffect(() => {
         // 프로젝트 목록 조회
         const testProjects: Project[] = [
             {
@@ -180,7 +193,6 @@ const SideBar: React.FC = () => {
             },
         ];
 
-        setInboxItems(testInboxItems);
         setProjects(testProjects);
     }, []);
 
@@ -229,6 +241,7 @@ const SideBar: React.FC = () => {
     const onClickMenuItem = (itemId: string): void => {
         if (itemId === '1') {
             setShowInbox(true);
+            refetch();
         } else if (itemId === '2') {
             setShowSettingModal(true);
         } else {
@@ -238,17 +251,13 @@ const SideBar: React.FC = () => {
 
     // 클릭시, 읽음 처리 함수 -> 추후 백엔드와 얘기
     const onClickInboxItem = (itemId: string): void => {
-        setInboxItems((prevItems) => {
-            return prevItems.map((item) => {
-                return item.notificationId === itemId
-                    ? { ...item, isUnread: false }
-                    : item;
-            });
-        });
-    };
-
-    const onClickInboxDelete = (notificationId: string): void => {
-        alert('알림 삭제');
+        // setInboxItems((prevItems) => {
+        //     return prevItems.map((item) => {
+        //         return item.notificationId === itemId
+        //             ? { ...item, isUnread: false }
+        //             : item;
+        //     });
+        // });
     };
 
     return (
