@@ -247,6 +247,11 @@ const ProjectDetailPage: React.FC = () => {
         }
     };
 
+    // 새로운 스케줄을 추가하는 함수
+    const addSchedule = (newSchedule: ScheduleData): void => {
+        setScheduleData((prevData) => [...prevData, newSchedule]);
+    };
+
     useEffect((): void => {
         const fetchData = async (): Promise<void> => {
             const { meetings, schedules } = await fetchEventData();
@@ -346,7 +351,8 @@ const ProjectDetailPage: React.FC = () => {
                             }}
                         />
                     ) : (
-                        <ProjectCalendar />
+                        // addSchedule 함수를 전달합니다.
+                        <ProjectCalendar addSchedule={addSchedule} />
                     )}
                 </RightContentArea>
             </Container>

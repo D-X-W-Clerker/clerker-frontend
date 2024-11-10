@@ -124,7 +124,6 @@ const StartButton = styled.div`
     position: absolute;
     top: 80%;
     text-align: center;
-    //transform: translateX(-50%);
     cursor: pointer;
 `;
 
@@ -186,7 +185,7 @@ const Content = styled.div<{
 const OnboardingPage: React.FC = () => {
     return (
         <Container>
-            <Header />
+            <Header showGoogleIcon />
             <IntroSection>
                 <TitleWrapper>
                     <TitleText $top="20%" $left="20%">
