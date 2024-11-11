@@ -85,7 +85,7 @@ const Circle = styled.div<{
         return props.$opacity;
     }};
     border: 1px solid rgba(60, 60, 60, 0.02);
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
     backdrop-filter: blur(4px);
 `;
 
