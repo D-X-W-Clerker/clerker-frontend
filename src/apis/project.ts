@@ -59,3 +59,22 @@ export const createChildProject = async (
         throw new Error(`하위 project 생성에 실패했습니다: ${error}`);
     }
 };
+
+export const deleteProject = async (projectID: string): Promise<void> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.delete(
+            `${apiUrl}/api/project/${projectID}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { projectID },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`project 삭제에 실패했습니다: ${error}`);
+    }
+};

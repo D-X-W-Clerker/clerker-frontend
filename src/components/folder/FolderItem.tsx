@@ -9,6 +9,8 @@ import {
 } from '@assets';
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
+import { useMutation, useQueryClient } from 'react-query';
+import { deleteProject } from '../../apis';
 
 // -- 인터페이스 --
 interface FolderItemProps {
@@ -169,6 +171,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
     const [isEditing, setIsEditing] = useState(false); // 이름 변경 모드 상태
     const [folderName, setFolderName] = useState(name); // 폴더 이름 상태
     const modalRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
 
     // 폴더 기능 모달 토글 함수
     const onClickMoreIcon = (): void => {
@@ -181,6 +184,22 @@ const FolderItem: React.FC<FolderItemProps> = ({
     const onClickRename = (): void => {
         setIsEditing(true);
         setShowModal(false);
+    };
+
+    const deleteMutation = useMutation(deleteProject, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('projects'); // 'projects' 데이터를 새로고침
+            alert('프로젝트가 성공적으로 삭제되었습니다.');
+        },
+        onError: (error) => {
+            console.error('프로젝트 삭제 실패:', error);
+            alert('프로젝트 삭제에 실패했습니다.');
+        },
+    });
+
+    const onConfirmDelete = (): void => {
+        setShowSmallModal(false);
+        deleteMutation.mutate(id);
     };
 
     // 프로젝트 삭제 버튼 함수
@@ -301,7 +320,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
                             ? '프로젝트를 삭제하시겠습니까?'
                             : '프로젝트에서 나가시겠습니까?'
                     }
-                    onConfirm={(): void => {}} // 확인 버튼 클릭 시 처리
+                    onConfirm={onConfirmDelete} // 확인 버튼 클릭 시 처리
                     onCancel={onClickCancel} // 취소 버튼 클릭 시
                     isDelete={smallModalType === 'delete'}
                 />
