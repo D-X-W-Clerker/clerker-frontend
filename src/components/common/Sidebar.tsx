@@ -16,28 +16,16 @@ import {
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 import { useQuery, useMutation } from 'react-query';
-import { getNotification, deleteNotification } from '../../apis';
+import {
+    getNotification,
+    deleteNotification,
+    getProject,
+    createProject,
+    createChildProject,
+} from '../../apis';
+import { Project, Meeting, ChildProject } from '../../types';
 
 // -- 인터페이스 --
-interface Meeting {
-    meetingId: string;
-    name: string;
-}
-
-interface ChildProject {
-    id: string;
-    name: string;
-    childProjects: [];
-    meetings: Meeting[];
-}
-
-interface Project {
-    projectId: string;
-    name: string;
-    childProjects: ChildProject[];
-    meetings: Meeting[];
-}
-
 interface InboxItem {
     notificationId: string;
     content: string;
@@ -132,8 +120,15 @@ const menuItems = [
 const SideBar: React.FC = () => {
     const [showInbox, setShowInbox] = useState(false);
     const [showSettingModal, setShowSettingModal] = useState(false);
-    // const [inboxItems, setInboxItems] = useState<InboxItem[]>([]);
-    const [projects, setProjects] = useState<Project[]>([]);
+
+    const { data: projects = [], refetch: refetchProjects } = useQuery<
+        Project[]
+    >('projects', getProject, {
+        staleTime: 5 * 60 * 1000, // 5분 동안 데이터가 신선한 상태로 유지
+        onError: (error) => {
+            console.error('프로젝트 데이터를 불러오는 데 실패했습니다:', error);
+        },
+    });
 
     const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
         'notifications',
@@ -147,7 +142,7 @@ const SideBar: React.FC = () => {
         },
     );
 
-    // React Query: 알림 삭제
+    // 알림 삭제
     const deleteMutation = useMutation(deleteNotification, {
         onSuccess: () => {
             alert('알림이 삭제되었습니다.');
@@ -173,7 +168,7 @@ const SideBar: React.FC = () => {
         },
     ];
 
-    // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용)
+    // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
     const inboxItems =
         fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
 
@@ -181,79 +176,60 @@ const SideBar: React.FC = () => {
         deleteMutation.mutate(notificationId); // 알림 삭제 호출
     };
 
-    useEffect(() => {
-        // 프로젝트 목록 조회
-        const testProjects: Project[] = [
-            {
-                projectId: '1',
-                name: 'Clerker',
-                childProjects: [
-                    {
-                        id: '2',
-                        name: 'FE',
-                        childProjects: [],
-                        meetings: [],
-                    },
-                    {
-                        id: '3',
-                        name: 'BE',
-                        childProjects: [],
-                        meetings: [],
-                    },
-                    {
-                        id: '4',
-                        name: 'AI',
-                        childProjects: [],
-                        meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
-                    },
-                ],
-                meetings: [{ meetingId: '6', name: '기획 회의' }],
-            },
-        ];
-
-        setProjects(testProjects);
-    }, []);
+    // useEffect(() => {
+    //     // 프로젝트 목록 조회
+    //     const testProjects: Project[] = [
+    //         {
+    //             projectId: '1',
+    //             name: 'Clerker',
+    //             childProjects: [
+    //                 {
+    //                     id: '2',
+    //                     name: 'FE',
+    //                     childProjects: [],
+    //                     meetings: [],
+    //                 },
+    //                 {
+    //                     id: '3',
+    //                     name: 'BE',
+    //                     childProjects: [],
+    //                     meetings: [],
+    //                 },
+    //                 {
+    //                     id: '4',
+    //                     name: 'AI',
+    //                     childProjects: [],
+    //                     meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
+    //                 },
+    //             ],
+    //             meetings: [{ meetingId: '6', name: '기획 회의' }],
+    //         },
+    //     ];
+    //
+    //     setProjects(testProjects);
+    // }, []);
 
     // 프로젝트 생성
     const onClickCreateProject = (): void => {
-        setProjects((prevProjects) => {
-            return [
-                ...prevProjects,
-                {
-                    projectId: crypto.randomUUID(),
-                    name: '새 프로젝트',
-                    childProjects: [],
-                    meetings: [],
-                },
-            ];
-        });
+        try {
+            createProject();
+            refetchProjects(); // 데이터 새로고침
+        } catch (error) {
+            console.error('프로젝트 생성 실패:', error);
+        }
     };
 
     // 하위 프로젝트 생성
     const onClickCreateChildProject = (projectId: string): void => {
-        setProjects((prevProjects) => {
-            return prevProjects.map((project) => {
-                return project.projectId === projectId
-                    ? {
-                          ...project,
-                          childProjects: [
-                              ...project.childProjects,
-                              {
-                                  id: crypto.randomUUID(),
-                                  name: '새로운 폴더',
-                                  childProjects: [],
-                                  meetings: [
-                                      {
-                                          meetingId: crypto.randomUUID(),
-                                          name: '회의록',
-                                      },
-                                  ],
-                              },
-                          ],
-                      }
-                    : project;
-            });
-        });
+        try {
+            createChildProject(projectId); // API 호출로 하위 프로젝트 생성
+            refetchProjects(); // 데이터 새로고침
+        } catch (error) {
+            console.error(
+                `하위 프로젝트 생성 실패 (프로젝트 ID: ${projectId}):`,
+                error,
+            );
+        }
     };
 
     const onClickMenuItem = (itemId: string): void => {
