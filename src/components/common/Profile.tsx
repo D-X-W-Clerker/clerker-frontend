@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { LogoutIcon, ClerkerIcon } from '@assets';
 import { SmallModal } from '@components';
@@ -33,6 +33,14 @@ const LogoutButton = styled.img`
 const Profile: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user } = useAuthStore();
+    const [userName, setUserName] = useState<string | null>(null);
+
+    // user 상태가 변경될 때마다 userName을 업데이트
+    useEffect(() => {
+        if (user) {
+            setUserName(user.name);
+        }
+    }, [user]);
 
     const onClickLogoutButton = (): void => {
         setIsModalOpen(true);
@@ -51,7 +59,7 @@ const Profile: React.FC = () => {
         <Container>
             <UserInfoArea>
                 <ProfileImage src={ClerkerIcon} />
-                <ProfileName>{user?.name}</ProfileName>
+                <ProfileName>{userName}</ProfileName>
             </UserInfoArea>
             <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
             {isModalOpen && (
