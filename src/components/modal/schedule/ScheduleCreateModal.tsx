@@ -45,13 +45,6 @@ const ContentArea = styled(FlexCol)`
     gap: 10px;
 `;
 
-const ErrorMessage = styled.div`
-    color: red;
-    font-size: 14px;
-    margin-top: -10px;
-    text-align: center;
-`;
-
 const DateInputArea = styled(ItemsCenterSpaceRow)`
     padding-left: 40px;
     gap: 10px;
@@ -119,13 +112,11 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
     const [endHour, setEndHour] = useState<string>('10');
     const [endMinute, setEndMinute] = useState<string>('00');
     const [sendAlert, setSendAlert] = useState<boolean>(false);
-    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const onChangeInput = (
         event: React.ChangeEvent<HTMLInputElement>,
     ): void => {
         setTitle(event.target.value);
-        setErrorMessage('');
     };
 
     const handleStartHourChange = (
@@ -154,7 +145,7 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
 
     const onClickCreateButton = async (): Promise<void> => {
         if (!title) {
-            setErrorMessage('일정 제목을 입력해주세요.');
+            console.error('일정 제목을 입력해주세요.');
             return;
         }
 
@@ -173,12 +164,11 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                 newScheduleData,
             );
 
-            // API 응답 처리
+            // 성공적으로 생성된 경우
             onCreate(response.data);
             onCancel();
         } catch (error) {
-            console.error('Failed to create schedule:', error);
-            setErrorMessage('일정을 생성하는 데 실패했습니다.');
+            console.error('일정 생성 실패:', error);
         }
     };
 
@@ -193,9 +183,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                         onChange={onChangeInput}
                         placeholder="일정 제목을 입력하세요."
                     />
-                    {errorMessage && (
-                        <ErrorMessage>{errorMessage}</ErrorMessage>
-                    )}
                     <DateInputArea>
                         <StyledSelectWrapper>
                             <StyledSelect
