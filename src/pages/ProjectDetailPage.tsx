@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
@@ -17,6 +17,7 @@ import {
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
+import axios from 'axios';
 
 // -- 인터페이스 --
 interface MeetingData {
@@ -113,29 +114,7 @@ const ProjectDetailPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'meeting' | 'schedule'>(
         'meeting',
     );
-    const [meetingData, setMeetingData] = useState<MeetingData[]>([
-        {
-            meetingId: '1',
-            meetingName: '프로젝트 킥오프 미팅',
-            startDate: '2024-11-12',
-            createdAt: '2024-11-10T15:30:00',
-        },{
-            meetingId: '1',
-            meetingName: '프로젝트 킥오프 미팅',
-            startDate: '2024-11-12',
-            createdAt: '2024-11-10T15:30:00',
-        },{
-            meetingId: '1',
-            meetingName: '프로젝트 킥오프 미팅',
-            startDate: '2024-11-12',
-            createdAt: '2024-11-10T15:30:00',
-        },{
-            meetingId: '1',
-            meetingName: '프로젝트 킥오프 미팅',
-            startDate: '2024-11-12',
-            createdAt: '2024-11-10T15:30:00',
-        },
-    ]);
+    const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
     const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
     const [modalType, setModalType] = useState<
         'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
@@ -161,6 +140,19 @@ const ProjectDetailPage: React.FC = () => {
             role: 'member',
         },
     ];
+
+    useEffect(() => {
+        const fetchMeetingData = async () => {
+            try {
+                const response = await axios.get(`/api/meeting/${projectId}`);
+                setMeetingData(response.data.meetings);
+            } catch (error) {
+                console.error('Failed to fetch meeting data:', error);
+            }
+        };
+
+        fetchMeetingData();
+    }, [projectId]);
 
     const handleOpenModal = (
         type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
