@@ -72,6 +72,13 @@ const ContentArea = styled(FlexCol)`
     gap: 10px;
 `;
 
+const ErrorMessage = styled.div`
+    color: red;
+    font-size: 14px;
+    margin-top: -10px;
+    text-align: center;
+`;
+
 const DateInputArea = styled(ItemsCenterSpaceRow)`
     padding-left: 40px;
     gap: 10px;
@@ -139,11 +146,13 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
     const [endHour, setEndHour] = useState<string>('10');
     const [endMinute, setEndMinute] = useState<string>('00');
     const [sendAlert, setSendAlert] = useState<boolean>(false);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     const onChangeInput = (
         event: React.ChangeEvent<HTMLInputElement>,
     ): void => {
         setTitle(event.target.value);
+        setErrorMessage(''); // 에러 메시지 초기화
     };
 
     const handleStartHourChange = (
@@ -172,7 +181,7 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
 
     const onClickCreateButton = (): void => {
         if (!title) {
-            alert('일정 제목을 입력해주세요.');
+            setErrorMessage('일정 제목을 입력해주세요.');
             return;
         }
 
@@ -200,8 +209,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
 
         // 새로운 스케줄 추가
         onCreate(newSchedule);
-
-        alert('일정이 생성되었습니다!');
         onCancel();
     };
 
@@ -216,6 +223,9 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
                         onChange={onChangeInput}
                         placeholder="일정 제목을 입력하세요."
                     />
+                    {errorMessage && (
+                        <ErrorMessage>{errorMessage}</ErrorMessage>
+                    )}
                     <DateInputArea>
                         <StyledSelectWrapper>
                             <StyledSelect
