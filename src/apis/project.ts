@@ -4,6 +4,17 @@ import { Project, Meeting, ChildProject } from '../types';
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
+interface Member {
+    organizationId: number;
+    role: 'OWNER' | 'MEMBER' | 'ADMIN';
+    type: string;
+}
+
+interface ProjectRequest {
+    projectName: string;
+    members: Member[];
+}
+
 export const getProject = async (): Promise<Project[]> => {
     try {
         const { token } = useAuthStore.getState();
@@ -95,5 +106,28 @@ export const exitProject = async (projectID: string): Promise<void> => {
         return response.data;
     } catch (error) {
         throw new Error(`project 나가기에 실패했습니다: ${error}`);
+    }
+};
+
+export const modifyProject = async (
+    projectID: string,
+    data: ProjectRequest,
+): Promise<string> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.post<string>(
+            `${apiUrl}/api/project/${projectID}`,
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { projectID },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`프로젝트 정보 수정에 실패했습니다: ${error}`);
     }
 };

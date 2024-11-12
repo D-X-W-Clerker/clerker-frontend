@@ -10,7 +10,7 @@ import {
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
 import { useMutation, useQueryClient } from 'react-query';
-import { deleteProject, exitProject } from '../../apis';
+import { deleteProject, exitProject, modifyProject } from '../../apis';
 
 // -- 인터페이스 --
 interface FolderItemProps {
@@ -21,6 +21,17 @@ interface FolderItemProps {
     onClickToggle?: () => void;
     onClickNav: () => void;
     isSubFolder?: boolean;
+}
+
+interface Member {
+    organizationId: number;
+    role: 'OWNER' | 'MEMBER' | 'ADMIN';
+    type: string;
+}
+
+interface ProjectRequest {
+    projectName: string;
+    members: Member[];
 }
 
 const Container = styled(ItemsCenterRow)<{
@@ -180,6 +191,22 @@ const FolderItem: React.FC<FolderItemProps> = ({
         });
     };
 
+    const modifyMutation = useMutation(
+        ({ projectID, data }: { projectID: string; data: ProjectRequest }) => {
+            return modifyProject(projectID, data);
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('projects');
+                alert('프로젝트명이 성공적으로 수정되었습니다.');
+            },
+            onError: (error) => {
+                console.error('프로젝트 수정 실패:', error);
+                alert('프로젝트명 수정에 실패했습니다.');
+            },
+        },
+    );
+
     // 이름 변경 버튼 함수
     const onClickRename = (): void => {
         setIsEditing(true);
@@ -260,7 +287,14 @@ const FolderItem: React.FC<FolderItemProps> = ({
 
     const onSaveName = (): void => {
         setIsEditing(false);
-        // 저장 후 필요한 추가 처리 가능
+        // 저장 후 api 호출
+        modifyMutation.mutate({
+            projectID: id,
+            data: {
+                projectName: folderName,
+                members: [],
+            },
+        });
     };
 
     return (
