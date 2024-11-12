@@ -19,7 +19,34 @@ import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
 
-// -- 인터페이스 --
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use(
+    (config) => {
+        const cookies = document.cookie.split('; ').reduce(
+            (acc, cookie) => {
+                const [key, value] = cookie.split('=');
+                acc[key] = value;
+                return acc;
+            },
+            {} as Record<string, string>,
+        );
+
+        const token = cookies['token'];
+
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        return config;
+    },
+    (error) => {
+        return Promise.reject(error);
+    },
+);
+
 interface MeetingData {
     meetingId: string;
     meetingName: string;
@@ -44,7 +71,6 @@ interface MemberData {
     role: string;
 }
 
-// -- 스타일 컴포넌트 --
 const Container = styled(FlexRow)`
     width: 100%;
     max-width: 1100px;
@@ -144,14 +170,34 @@ const ProjectDetailPage: React.FC = () => {
     useEffect(() => {
         const fetchMeetingData = async () => {
             try {
-                const response = await axios.get(`/api/meeting/${projectId}`);
+                const response = await axiosInstance.get(
+                    `/api/schedule/${projectId}`,
+                );
                 setMeetingData(response.data.meetings);
             } catch (error) {
                 console.error('Failed to fetch meeting data:', error);
             }
         };
 
+        const fetchSchedules = async () => {
+            try {
+                const response = await axiosInstance.get(
+                    `/api/schedule/${projectId}`,
+                );
+                setScheduleData(
+                    response.data.schedules.sort(
+                        (a: ScheduleData, b: ScheduleData) =>
+                            new Date(b.createdAt).getTime() -
+                            new Date(a.createdAt).getTime(),
+                    ),
+                );
+            } catch (error) {
+                console.error('Failed to fetch schedules:', error);
+            }
+        };
+
         fetchMeetingData();
+        fetchSchedules();
     }, [projectId]);
 
     const handleOpenModal = (
@@ -178,7 +224,17 @@ const ProjectDetailPage: React.FC = () => {
     };
 
     const addSchedule = (newSchedule: ScheduleData) => {
-        setScheduleData((prev) => [...prev, newSchedule]);
+        if (newSchedule && newSchedule.scheduleId && newSchedule.scheduleName) {
+            setScheduleData((prev) =>
+                [newSchedule, ...prev].sort(
+                    (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime(),
+                ),
+            );
+        } else {
+            console.error('Invalid schedule data:', newSchedule);
+        }
     };
 
     const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
@@ -234,22 +290,33 @@ const ProjectDetailPage: React.FC = () => {
                                     />
                                 </ButtonContainer>
                             )}
-                            {eventData.map((event) => (
-                                <EventFile
-                                    key={
-                                        'meetingId' in event
-                                            ? event.meetingId
-                                            : event.scheduleId
-                                    }
-                                    meetingName={
-                                        'meetingName' in event
-                                            ? event.meetingName
-                                            : event.scheduleName
-                                    }
-                                    dateTime={event.createdAt}
-                                    onClick={() => onClickEventFile(event)}
-                                />
-                            ))}
+                            {eventData.map((event) => {
+                                if ('meetingId' in event) {
+                                    return (
+                                        <EventFile
+                                            key={event.meetingId}
+                                            meetingName={event.meetingName}
+                                            dateTime={event.createdAt}
+                                            onClick={() =>
+                                                onClickEventFile(event)
+                                            }
+                                        />
+                                    );
+                                }
+                                if ('scheduleId' in event) {
+                                    return (
+                                        <EventFile
+                                            key={event.scheduleId}
+                                            meetingName={event.scheduleName}
+                                            dateTime={event.createdAt}
+                                            onClick={() =>
+                                                onClickEventFile(event)
+                                            }
+                                        />
+                                    );
+                                }
+                                return null;
+                            })}
                         </ContentFileArea>
                     </ContentTabArea>
                 </LeftContentArea>

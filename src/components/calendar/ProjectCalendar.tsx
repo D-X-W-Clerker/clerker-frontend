@@ -5,6 +5,21 @@ import CalendarButton from './CalendarButton';
 import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal';
 import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal';
 
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 interface TimeData {
     hour: string;
     minute: string;
@@ -148,16 +163,22 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         useState<ScheduleData | null>(null);
 
     useEffect(() => {
-        const fetchSchedules = async () => {
+        const fetchMeetings = async () => {
             try {
-                const response = await axios.get(`/api/schedule/${projectId}`);
-                setSchedules(response.data.schedules);
+                const response = await axiosInstance.get(
+                    `/api/schedule/${projectId}`,
+                );
+                console.log('받아온 회의 일정 데이터:', response.data); // 받아온 데이터 출력
+                setSchedules(response.data.meetings); // meetings로 데이터 설정
             } catch (error) {
-                console.error('Failed to fetch schedules:', error);
+                console.error(
+                    '회의 일정 데이터를 가져오는데 실패했습니다:',
+                    error,
+                );
             }
         };
 
-        fetchSchedules();
+        fetchMeetings();
     }, [projectId]);
 
     const resetSelection = (): void => {
