@@ -5,7 +5,6 @@ import CalendarButton from './CalendarButton';
 import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal';
 import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal';
 
-// ScheduleData 인터페이스 정의
 interface TimeData {
     hour: string;
     minute: string;
@@ -24,7 +23,6 @@ interface ScheduleData {
     isEnded: boolean;
 }
 
-// 스타일 컴포넌트
 const CalendarContainer = styled.div`
     margin-top: 40px;
 `;
@@ -78,9 +76,9 @@ const WeekRow = styled.div`
 `;
 
 interface DayCellProps {
-    isCurrentMonth: boolean;
-    hasEvent?: boolean;
-    isSelected?: boolean;
+    $isCurrentMonth: boolean;
+    $hasEvent?: boolean;
+    $isSelected?: boolean;
 }
 
 const DayCell = styled.div<DayCellProps>`
@@ -88,8 +86,8 @@ const DayCell = styled.div<DayCellProps>`
     padding: 15px 15px;
     font-size: 18px;
     background-color: ${(props) => {
-        if (props.isSelected) return '#40A3FF';
-        if (props.hasEvent) return '#E0F0FF';
+        if (props.$isSelected) return '#40A3FF';
+        if (props.$hasEvent) return '#E0F0FF';
         return '#ececec';
     }};
     border-radius: 13px;
@@ -97,11 +95,15 @@ const DayCell = styled.div<DayCellProps>`
     margin: 10px 5px;
     cursor: pointer;
     color: ${(props) =>
-        props.isSelected ? '#ffffff' : props.isCurrentMonth ? '#000' : '#aaa'};
+        props.$isSelected
+            ? '#ffffff'
+            : props.$isCurrentMonth
+              ? '#000'
+              : '#aaa'};
 
     &:hover {
         background-color: ${(props) =>
-            props.isSelected ? '#40A3FF' : '#d4e5f6'};
+            props.$isSelected ? '#40A3FF' : '#d4e5f6'};
     }
 
     position: relative;
@@ -124,7 +126,6 @@ const ScheduleButtonContainer = styled.div`
     margin-top: 20px;
 `;
 
-// Props 인터페이스
 interface ProjectCalendarProps {
     projectId: string;
     addSchedule: (newSchedule: ScheduleData) => void;
@@ -150,24 +151,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         const fetchSchedules = async () => {
             try {
                 const response = await axios.get(`/api/schedule/${projectId}`);
-                const fetchedSchedules = response.data.schedules.map(
-                    (schedule: any): ScheduleData => ({
-                        ...schedule,
-                        startTime: {
-                            hour: String(schedule.startTime.hour),
-                            minute: String(schedule.startTime.minute),
-                            second: String(schedule.startTime.second),
-                            nano: String(schedule.startTime.nano),
-                        },
-                        endTime: {
-                            hour: String(schedule.endTime.hour),
-                            minute: String(schedule.endTime.minute),
-                            second: String(schedule.endTime.second),
-                            nano: String(schedule.endTime.nano),
-                        },
-                    }),
-                );
-                setSchedules(fetchedSchedules);
+                setSchedules(response.data.schedules);
             } catch (error) {
                 console.error('Failed to fetch schedules:', error);
             }
@@ -189,7 +173,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
 
     const closeCheckModal = (): void => {
         setIsCheckModalOpen(false);
-        setSelectedSchedule(null); // 선택된 일정 초기화
+        setSelectedSchedule(null);
     };
 
     const getMonthYear = (date: Date): string =>
@@ -244,26 +228,22 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         return dates;
     };
 
-    const isSameDay = (date1: Date, date2: Date): boolean => {
-        return (
-            date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate()
-        );
-    };
+    const isSameDay = (date1: Date, date2: Date): boolean =>
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
 
-    const isSelected = (date: Date): boolean => {
-        if (selectedStartDate && selectedEndDate) {
-            return date >= selectedStartDate && date <= selectedEndDate;
-        }
-        return selectedStartDate ? isSameDay(selectedStartDate, date) : false;
-    };
+    const isSelected = (date: Date): boolean =>
+        selectedStartDate && selectedEndDate
+            ? date >= selectedStartDate && date <= selectedEndDate
+            : selectedStartDate
+              ? isSameDay(selectedStartDate, date)
+              : false;
 
     const handleDateClick = (date: Date): void => {
         if (isSelectingDates) {
-            if (!selectedStartDate) {
-                setSelectedStartDate(date);
-            } else if (!selectedEndDate) {
+            if (!selectedStartDate) setSelectedStartDate(date);
+            else if (!selectedEndDate) {
                 setSelectedEndDate(
                     date >= selectedStartDate ? date : selectedStartDate,
                 );
@@ -282,22 +262,17 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         }
     };
 
-    const hasEvent = (date: Date): boolean => {
-        return schedules.some((schedule) =>
+    const hasEvent = (date: Date): boolean =>
+        schedules.some((schedule) =>
             isSameDay(new Date(schedule.startDate), date),
         );
-    };
 
     return (
         <CalendarContainer>
             <CalendarNavigation>
-                <NavButton type="button" onClick={prevMonth}>
-                    &lt;
-                </NavButton>
+                <NavButton onClick={prevMonth}>&lt;</NavButton>
                 <MonthYearTitle>{getMonthYear(currentDate)}</MonthYearTitle>
-                <NavButton type="button" onClick={nextMonth}>
-                    &gt;
-                </NavButton>
+                <NavButton onClick={nextMonth}>&gt;</NavButton>
             </CalendarNavigation>
             <WeekdaysRow>
                 {getWeekdays().map((day) => (
@@ -310,11 +285,11 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                         {week.map((date) => (
                             <DayCell
                                 key={date.toISOString()}
-                                isCurrentMonth={
+                                $isCurrentMonth={
                                     date.getMonth() === currentDate.getMonth()
                                 }
-                                hasEvent={hasEvent(date)}
-                                isSelected={isSelected(date)}
+                                $hasEvent={hasEvent(date)}
+                                $isSelected={isSelected(date)}
                                 onClick={() => handleDateClick(date)}
                             >
                                 {date.getDate()}
@@ -328,13 +303,11 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 <CalendarButton
                     isSelectingDates={isSelectingDates}
                     hasSelectedDates={!!selectedStartDate}
-                    onClick={() => {
-                        if (isSelectingDates && selectedStartDate) {
-                            setIsModalOpen(true);
-                        } else {
-                            setIsSelectingDates(!isSelectingDates);
-                        }
-                    }}
+                    onClick={() =>
+                        isSelectingDates && selectedStartDate
+                            ? setIsModalOpen(true)
+                            : setIsSelectingDates(!isSelectingDates)
+                    }
                     onCancel={() => {
                         resetSelection();
                         setIsSelectingDates(false);
