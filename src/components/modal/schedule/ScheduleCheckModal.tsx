@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { LargeModalTitleTab, ModalButton } from '@components';
+import { LargeModalTitleTab, ModalButton, EventFile } from '@components';
 import { CenterRow, FlexCol, ItemsCenterEndRow } from '@styles';
-import CheckIcon from '../../../assets/action/check/Check.svg';
 
 interface ScheduleCheckModalProps {
-    projectId: string;
+    scheduleName: string;
+    dateTime: string;
     onConfirm: () => void;
 }
 
@@ -29,6 +29,13 @@ const Container = styled(FlexCol)`
     padding: 20px 20px;
     background-color: var(--background-color);
     border-radius: 10px;
+    position: relative;
+`;
+
+const HeaderArea = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 10px;
 `;
 
 const ContentArea = styled(FlexCol)`
@@ -36,25 +43,28 @@ const ContentArea = styled(FlexCol)`
     align-items: center;
 `;
 
-const CheckIconImage = styled.img`
-    width: 50px;
-    height: 50px;
-`;
-
-const ButtonArea = styled(ItemsCenterEndRow)`
-    gap: 10px;
+const ButtonArea = styled.div`
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
 `;
 
 const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
-    projectId,
+    scheduleName,
+    dateTime,
     onConfirm,
 }) => {
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab type="project" title="일정 확인" />
+                <HeaderArea>
+                    <LargeModalTitleTab
+                        type="scheduleCheck"
+                        title="일정 확인"
+                    />
+                </HeaderArea>
                 <ContentArea>
-                    <CheckIconImage src={CheckIcon} alt="Check Icon" />
+                    <EventFile meetingName={scheduleName} dateTime={dateTime} />
                 </ContentArea>
                 <ButtonArea>
                     <ModalButton text="확인" color="blue" onClick={onConfirm} />

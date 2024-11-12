@@ -10,29 +10,32 @@ interface CalendarButtonProps {
 
 const ButtonWrapper = styled.div`
     display: flex;
-    gap: 10px; /* 버튼 간의 간격 */
-    margin-top: -2%;
+    gap: 10px;
 `;
 
-const Button = styled.button<CalendarButtonProps>`
-    background-color: ${(props): string => {
-        return props.isSelectingDates && !props.hasSelectedDates
+const Button = styled.button<{
+    $isSelectingDates: boolean;
+    $hasSelectedDates: boolean;
+}>`
+    background-color: ${(props) =>
+        props.$isSelectingDates && !props.$hasSelectedDates
             ? '#CCCCCC'
-            : '#40a3ff';
-    }};
+            : '#40a3ff'};
     color: #ffffff;
     border: none;
     padding: 8px 20px;
     font-size: 16px;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: ${(props) =>
+        props.$isSelectingDates && !props.$hasSelectedDates
+            ? 'not-allowed'
+            : 'pointer'};
 
     &:hover {
-        background-color: ${(props): string => {
-            return props.isSelectingDates && !props.hasSelectedDates
+        background-color: ${(props) =>
+            props.$isSelectingDates && !props.$hasSelectedDates
                 ? '#CCCCCC'
-                : '#3392e6';
-        }};
+                : '#3392e6'};
     }
 `;
 
@@ -59,26 +62,17 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
     return (
         <ButtonWrapper>
             {isSelectingDates && onCancel && (
-                <CancelButton type="button" onClick={onCancel}>
-                    취소
-                </CancelButton>
+                <CancelButton onClick={onCancel}>취소</CancelButton>
             )}
             <Button
-                type="button"
-                isSelectingDates={isSelectingDates}
-                hasSelectedDates={hasSelectedDates}
+                $isSelectingDates={isSelectingDates}
+                $hasSelectedDates={hasSelectedDates}
                 onClick={onClick}
-                disabled={isSelectingDates && !hasSelectedDates}
             >
                 {isSelectingDates ? '일정 추가하기' : '회의 일정잡기'}
             </Button>
         </ButtonWrapper>
     );
-};
-
-// 기본값 설정
-CalendarButton.defaultProps = {
-    onCancel: () => {}, // 기본값으로 빈 함수 설정
 };
 
 export default CalendarButton;

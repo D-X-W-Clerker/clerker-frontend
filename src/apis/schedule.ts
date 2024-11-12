@@ -5,6 +5,7 @@ interface ScheduleRequest {
 }
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
+const token = process.env.REACT_APP_TOKEN;
 
 export const postTimeTable = async (
     scheduleID: number,
@@ -17,6 +18,7 @@ export const postTimeTable = async (
             {
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
             },
         );
