@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { ActiveSettingIcon, MemberIcon, MemberAddIcon } from '@assets';
+import {
+    ActiveSettingIcon,
+    MemberIcon,
+    MemberAddIcon,
+    AddIcon,
+} from '@assets';
 import {
     MemberTable,
     TitleTab,
     EventTab,
+    ActionButton,
     EventFile,
     MemberInviteModal,
     MemberInfoModal,
@@ -68,6 +74,7 @@ const IconImage = styled.img<{ $width: number; $height: number }>`
     cursor: pointer;
 `;
 
+// 왼쪽 영역
 const LeftContentArea = styled(ContentArea)``;
 
 const MemberArea = styled(FlexCol)``;
@@ -101,6 +108,7 @@ const ContentFileArea = styled(FlexCol)`
     gap: 4px;
 `;
 
+// 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
 const ProjectDetailPage: React.FC = () => {
@@ -135,24 +143,6 @@ const ProjectDetailPage: React.FC = () => {
         },
     ];
 
-    const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch(
-                    `/api/project/${projectId}/events`,
-                );
-                const { meetings, schedules } = await response.json();
-                setMeetingData(meetings);
-                setScheduleData(schedules);
-            } catch (error) {
-                console.error('Failed to fetch project data:', error);
-            }
-        };
-        fetchData();
-    }, [projectId]);
-
     const handleOpenModal = (
         type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
         meeting?: MeetingData,
@@ -179,6 +169,8 @@ const ProjectDetailPage: React.FC = () => {
     const addSchedule = (newSchedule: ScheduleData) => {
         setScheduleData((prev) => [...prev, newSchedule]);
     };
+
+    const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
 
     return (
         <Layout>
@@ -220,6 +212,15 @@ const ProjectDetailPage: React.FC = () => {
                             onClickTab={setActiveTab}
                         />
                         <ContentFileArea>
+                            {activeTab === 'meeting' && (
+                                <div style={{ marginBottom: '20px', textAlign: 'right' }}>
+                                    <ActionButton
+                                        icon={AddIcon}
+                                        label="회의 생성"
+                                        onClick={() => handleOpenModal('meetCreate')}
+                                    />
+                                </div>
+                            )}
                             {eventData.map((event) => (
                                 <EventFile
                                     key={

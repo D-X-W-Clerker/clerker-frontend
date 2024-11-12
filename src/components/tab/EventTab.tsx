@@ -23,15 +23,15 @@ const Container = styled(ItemsCenterRow)`
 const TabButton = styled.div<{ $active: boolean }>`
     font-size: ${(props): string => (props.$active ? '19px' : '15px')};
     color: ${(props): string =>
-        props.$active ? 'var(--color-gray-600)' : 'var(--color-gray-500)'};
+            props.$active ? 'var(--color-gray-600)' : 'var(--color-gray-500)'};
     order: ${(props): number => (props.$active ? -1 : 0)};
     ${(props): string =>
-        props.$active
-            ? `&::after {
+            props.$active
+                    ? `&::after {
                 content: '|';
                 margin-left: 5px;
             }`
-            : ''};
+                    : ''};
     cursor: pointer;
 `;
 
@@ -44,9 +44,9 @@ const SvgImage = styled.img`
 
 // -- 컴포넌트 --
 const TabContainer: React.FC<TabContainerProps> = ({
-    activeTab,
-    onClickTab,
-}) => {
+                                                       activeTab,
+                                                       onClickTab,
+                                                   }) => {
     return (
         <Container>
             <SvgImage src={ContentIcon} alt="Content Icon" />
