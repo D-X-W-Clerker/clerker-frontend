@@ -143,6 +143,8 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
     const [schedules, setSchedules] = useState<ScheduleData[]>([]);
+    const [selectedSchedule, setSelectedSchedule] =
+        useState<ScheduleData | null>(null);
 
     useEffect(() => {
         const fetchSchedules = async () => {
@@ -182,11 +184,12 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     const closeModal = (): void => {
         setIsModalOpen(false);
         resetSelection();
-        setIsSelectingDates(false); // 버튼 상태 초기화
+        setIsSelectingDates(false);
     };
 
     const closeCheckModal = (): void => {
         setIsCheckModalOpen(false);
+        setSelectedSchedule(null); // 선택된 일정 초기화
     };
 
     const getMonthYear = (date: Date): string =>
@@ -269,7 +272,13 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 setSelectedEndDate(null);
             }
         } else {
-            setIsCheckModalOpen(true);
+            const schedule = schedules.find((s) =>
+                isSameDay(new Date(s.startDate), date),
+            );
+            if (schedule) {
+                setSelectedSchedule(schedule);
+                setIsCheckModalOpen(true);
+            }
         }
     };
 
@@ -344,10 +353,10 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                     endDate={selectedEndDate}
                 />
             )}
-            {isCheckModalOpen && (
+            {isCheckModalOpen && selectedSchedule && (
                 <ScheduleCheckModal
-                    scheduleName="일정 제목"
-                    dateTime="2024-11-15T10:30:00"
+                    scheduleName={selectedSchedule.scheduleName}
+                    dateTime={selectedSchedule.startDate}
                     onConfirm={closeCheckModal}
                 />
             )}

@@ -9,7 +9,6 @@ interface ScheduleCheckModalProps {
     onConfirm: () => void;
 }
 
-// -- 스타일 컴포넌트 --
 const Backdrop = styled(CenterRow)`
     position: fixed;
     top: 0;
@@ -50,15 +49,9 @@ const ButtonArea = styled.div`
     right: 20px;
 `;
 
-// -- 더미 데이터 --
-const dummyData = {
-    scheduleName: '프론트엔드 디자인 회의',
-    dateTime: '2024-10-21T10:30:00', // ISO 형식 날짜
-};
-
 const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
-    scheduleName = dummyData.scheduleName,
-    dateTime = dummyData.dateTime,
+    scheduleName,
+    dateTime,
     onConfirm,
 }) => {
     return (
