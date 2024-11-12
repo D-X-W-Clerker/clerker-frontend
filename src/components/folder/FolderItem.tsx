@@ -10,7 +10,7 @@ import {
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
 import { useMutation, useQueryClient } from 'react-query';
-import { deleteProject } from '../../apis';
+import { deleteProject, exitProject } from '../../apis';
 
 // -- 인터페이스 --
 interface FolderItemProps {
@@ -209,6 +209,22 @@ const FolderItem: React.FC<FolderItemProps> = ({
         setShowModal(false);
     };
 
+    const exitMutation = useMutation(exitProject, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('projects'); // 'projects' 데이터를 새로고침
+            alert('프로젝트를 성공적으로 나가셨습니다.');
+        },
+        onError: (error) => {
+            console.error('프로젝트 나가기 실패:', error);
+            alert('프로젝트 나가기에 실패했습니다.');
+        },
+    });
+
+    const onConfirmExit = (): void => {
+        setShowSmallModal(false);
+        exitMutation.mutate(id);
+    };
+
     // 프로젝트 나가기 버튼 함수
     const onClickLeave = (): void => {
         setSmallModalType('leave');
@@ -320,7 +336,11 @@ const FolderItem: React.FC<FolderItemProps> = ({
                             ? '프로젝트를 삭제하시겠습니까?'
                             : '프로젝트에서 나가시겠습니까?'
                     }
-                    onConfirm={onConfirmDelete} // 확인 버튼 클릭 시 처리
+                    onConfirm={
+                        smallModalType === 'delete'
+                            ? onConfirmDelete
+                            : onConfirmExit
+                    } // 확인 버튼 클릭 시 처리
                     onCancel={onClickCancel} // 취소 버튼 클릭 시
                     isDelete={smallModalType === 'delete'}
                 />
