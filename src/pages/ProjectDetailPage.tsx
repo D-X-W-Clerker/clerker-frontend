@@ -15,8 +15,8 @@ import {
     When2meet,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
-import Layout from '../Layout'; // 실제 경로에 맞게 조정하세요
-import ProjectCalendar from '../components/calendar/ProjectCalendar'; // 실제 경로에 맞게 조정하세요
+import Layout from '../Layout';
+import ProjectCalendar from '../components/calendar/ProjectCalendar';
 
 // -- 인터페이스 --
 interface MeetingData {
@@ -81,12 +81,8 @@ const ContentArea = styled(FlexCol)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props): number => {
-        return props.$width;
-    }}px;
-    height: ${(props): number => {
-        return props.$height;
-    }}px;
+    width: ${(props): number => props.$width}px;
+    height: ${(props): number => props.$height}px;
     cursor: pointer;
 `;
 
@@ -132,6 +128,7 @@ const fetchEventData = async (): Promise<{
     schedules: ScheduleData[];
     meetings: MeetingData[];
 }> => {
+    // 실제 API 호출로 대체하세요.
     return {
         schedules: [
             {
@@ -146,7 +143,7 @@ const fetchEventData = async (): Promise<{
                     nano: '40',
                 },
                 endTime: {
-                    hour: '10',
+                    hour: '11',
                     minute: '20',
                     second: '30',
                     nano: '40',
@@ -174,6 +171,7 @@ const fetchEventData = async (): Promise<{
 
 // 프로젝트 정보 조회 함수
 const fetchProjectInfo = async (): Promise<ProjectInfo> => {
+    // 실제 API 호출로 대체하세요.
     return {
         projectName: 'Clerker',
         members: [
@@ -285,17 +283,13 @@ const ProjectDetailPage: React.FC = () => {
                                 src={ActiveSettingIcon}
                                 $width={16}
                                 $height={16}
-                                onClick={(): void => {
-                                    return handleOpenModal('memberInfo');
-                                }}
+                                onClick={() => handleOpenModal('memberInfo')}
                             />
                         </MemberTabArea>
                         <MemberTable data={projectInfo?.members || []} />
                         <MemberAddArea>
                             <MemberAddButton
-                                onClick={(): void => {
-                                    return handleOpenModal('memberAdd');
-                                }}
+                                onClick={() => handleOpenModal('memberAdd')}
                             >
                                 <IconImage
                                     src={MemberAddIcon}
@@ -316,9 +310,9 @@ const ProjectDetailPage: React.FC = () => {
                                 <ActionButton
                                     icon={AddIcon}
                                     label="회의 생성"
-                                    onClick={(): void => {
-                                        return handleOpenModal('meetCreate');
-                                    }}
+                                    onClick={() =>
+                                        handleOpenModal('meetCreate')
+                                    }
                                 />
                             )}
                             {eventData.map((event) => {
@@ -334,9 +328,7 @@ const ProjectDetailPage: React.FC = () => {
                                         key={key}
                                         meetingName={eventName}
                                         dateTime={event.createdAt}
-                                        onClick={(): void => {
-                                            return onClickEventFile(event);
-                                        }}
+                                        onClick={() => onClickEventFile(event)}
                                     />
                                 );
                             })}
@@ -345,14 +337,12 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 <RightContentArea>
                     {scheduleClicked ? (
-                        <When2meet
-                            onCancel={(): void => {
-                                return setScheduleClicked(false);
-                            }}
-                        />
+                        <When2meet onCancel={() => setScheduleClicked(false)} />
                     ) : (
-                        // addSchedule 함수를 전달합니다.
-                        <ProjectCalendar addSchedule={addSchedule} />
+                        <ProjectCalendar
+                            projectId={projectId || ''}
+                            addSchedule={addSchedule}
+                        />
                     )}
                 </RightContentArea>
             </Container>
