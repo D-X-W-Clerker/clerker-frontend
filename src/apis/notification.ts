@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@store';
 
 interface Notification {
     notificationId: string;
@@ -7,10 +8,11 @@ interface Notification {
 }
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
-const token = process.env.REACT_APP_TOKEN;
 
 export const getNotification = async (): Promise<Notification[]> => {
     try {
+        const { token } = useAuthStore.getState();
+
         const response = await axios.get<Notification[]>(
             `${apiUrl}/api/notify`,
             {
@@ -30,6 +32,7 @@ export const deleteNotification = async (
     notificationID: string,
 ): Promise<void> => {
     try {
+        const { token } = useAuthStore.getState();
         const response = await axios.delete(
             `${apiUrl}/api/notify/${notificationID}`,
             {
