@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { LogoutIcon, ClerkerIcon } from '@assets';
 import { SmallModal } from '@components';
 import { ItemsCenterRow, ItemsCenterSpaceRow } from '@styles';
+import { useAuthStore } from '@store';
 
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterSpaceRow)`
@@ -31,6 +32,7 @@ const LogoutButton = styled.img`
 
 const Profile: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const { user } = useAuthStore();
 
     const onClickLogoutButton = (): void => {
         setIsModalOpen(true);
@@ -49,7 +51,7 @@ const Profile: React.FC = () => {
         <Container>
             <UserInfoArea>
                 <ProfileImage src={ClerkerIcon} />
-                <ProfileName>Clerker</ProfileName>
+                <ProfileName>{user?.name}</ProfileName>
             </UserInfoArea>
             <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
             {isModalOpen && (
