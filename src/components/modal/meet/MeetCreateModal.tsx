@@ -117,9 +117,9 @@ const dateFields = [
 const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
 
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
-                                                             projectId,
-                                                             onCancel,
-                                                         }) => {
+    projectId,
+    onCancel,
+}) => {
     const [name, setName] = useState<string>('');
     const [domain, setDomain] = useState<string>('');
     const [dateTime, setDateTime] = useState({
@@ -193,7 +193,7 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                                 value={
                                     dateTime[
                                         field.value as keyof typeof dateTime
-                                        ]
+                                    ]
                                 }
                                 onChange={onChangeDate(field.value)}
                                 placeholder={field.placeholder}

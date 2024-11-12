@@ -171,14 +171,15 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 console.log('받아온 회의 일정 데이터:', response.data); // 받아온 데이터 출력
                 setSchedules(response.data.meetings); // meetings로 데이터 설정
             } catch (error) {
-                console.error('회의 일정 데이터를 가져오는데 실패했습니다:', error);
+                console.error(
+                    '회의 일정 데이터를 가져오는데 실패했습니다:',
+                    error,
+                );
             }
         };
 
         fetchMeetings();
     }, [projectId]);
-
-
 
     const resetSelection = (): void => {
         setSelectedStartDate(null);

@@ -193,7 +193,6 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
         }
     };
 
-
     return (
         <Backdrop>
             <Container>
