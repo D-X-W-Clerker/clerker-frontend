@@ -52,8 +52,41 @@ const DateInputArea = styled(ItemsCenterSpaceRow)`
     gap: 10px;
 `;
 
-const SubContentArea = styled(FlexCol)`
-    flex: 1;
+const DomainArea = styled.div`
+    display: flex;
+    justify-content: flex-start;
+    width: fit-content;
+    margin-top: 10px;
+    position: relative;
+`;
+
+const DomainSelect = styled.select`
+    padding: 8px;
+    border: none;
+    background-color: #ececec;
+    border-radius: 4px;
+    width: 200px;
+    color: #333;
+    outline: none;
+    appearance: none;
+    text-align: left;
+    position: relative;
+    z-index: 1; /* 커스텀 화살표 위에 텍스트가 나타나도록 함 */
+
+    /* 기본 화살표를 숨기기 위해 브라우저 기본 스타일 제거 */
+    background-image: none;
+`;
+
+/* 드롭다운 마크 추가 */
+const DropdownArrow = styled.div`
+    position: absolute;
+    right: 15px; /* 오른쪽 마진 */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none; /* 클릭되지 않도록 설정 */
+    font-size: 12px;
+    color: #333;
+    z-index: 0; /* 드롭다운 위에 나타나도록 설정 */
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
@@ -68,11 +101,14 @@ const dateFields = [
     { label: '분', placeholder: 'mm', value: 'minute' },
 ];
 
+const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
+
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
     projectId,
     onCancel,
 }) => {
     const [name, setName] = useState<string>('');
+    const [domain, setDomain] = useState<string>('');
     const [dateTime, setDateTime] = useState({
         year: '',
         month: '',
@@ -102,16 +138,15 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     };
 
-    // 회의 생성 함수
     const onClickCreateButton = (): void => {
         const meetingData = {
             name,
+            domain,
             startDateTime: formatDateTime(),
             isNotify: sendAlert,
         };
         console.log('Sending data:', meetingData);
 
-        // 백엔드로 API 요청을 보내는 로직을 여기에 추가합니다.
         alert('회의 생성');
         onCancel();
     };
@@ -128,34 +163,42 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                         placeholder="회의 이름을 입력하세요."
                     />
                     <DateInputArea>
-                        {dateFields.map((field) => {
-                            return (
-                                <DateInput
-                                    key={field.value}
-                                    type="meet"
-                                    label={field.label}
-                                    value={
-                                        dateTime[
-                                            field.value as keyof typeof dateTime
-                                        ]
-                                    } // 해당 필드 값
-                                    onChange={onChangeDate(field.value)} // 해당 필드 변경 처리
-                                    placeholder={field.placeholder}
-                                />
-                            );
-                        })}
+                        {dateFields.map((field) => (
+                            <DateInput
+                                key={field.value}
+                                type="meet"
+                                label={field.label}
+                                value={
+                                    dateTime[
+                                        field.value as keyof typeof dateTime
+                                    ]
+                                }
+                                onChange={onChangeDate(field.value)}
+                                placeholder={field.placeholder}
+                            />
+                        ))}
                     </DateInputArea>
                 </ContentArea>
-                <SubContentArea>
-                    <RadioInput
-                        label="멤버들에게 회의 생성 알림을 보낼까요?"
-                        name="sendAlert"
-                        checked={sendAlert}
-                        onChange={(): void => {
-                            return setSendAlert(!sendAlert);
-                        }}
-                    />
-                </SubContentArea>
+                <RadioInput
+                    label="멤버들에게 회의 생성 알림을 보낼까요?"
+                    name="sendAlert"
+                    checked={sendAlert}
+                    onChange={() => setSendAlert(!sendAlert)}
+                />
+                <DomainArea>
+                    <DomainSelect
+                        value={domain}
+                        onChange={(event) => setDomain(event.target.value)}
+                    >
+                        <option value="">도메인 입력</option>
+                        {domains.map((option) => (
+                            <option key={option} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </DomainSelect>
+                    <DropdownArrow>▼</DropdownArrow>
+                </DomainArea>
                 <ButtonArea>
                     <ModalButton text="취소" color="gray" onClick={onCancel} />
                     <ModalButton
