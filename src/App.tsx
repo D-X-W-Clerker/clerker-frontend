@@ -7,6 +7,7 @@ import {
     TutorialDetailPage,
     TutorialPage,
     MeetSummaryPage,
+    GoogleCallback,
 } from '@pages';
 
 const App: React.FC = () => {
@@ -28,6 +29,10 @@ const App: React.FC = () => {
                         path="/summary/:summaryId"
                         element={<MeetSummaryPage />}
                     />
+                    <Route
+                        path="/login/callback"
+                        element={<GoogleCallback />}
+                    />{' '}
                 </Routes>
             </BrowserRouter>
         </div>
