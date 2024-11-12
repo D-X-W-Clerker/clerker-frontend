@@ -51,8 +51,12 @@ const Profile: React.FC = () => {
     };
 
     const onClickConfirmButton = (): void => {
-        // 로그아웃 함수 로직
+        useAuthStore.getState().logout(); // 로그아웃 함수 호출
+        setUserName(null); // 사용자 이름 초기화
         setIsModalOpen(false);
+
+        // 홈페이지로 리다이렉트
+        window.location.href = '/';
     };
 
     return (
