@@ -10,6 +10,21 @@ import {
 import { CenterRow, FlexCol, ItemsCenterSpaceRow } from '@styles';
 import DownArrowIcon from '../../../assets/action/arrow/DownArrowIcon.svg';
 
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
+
 interface ScheduleCreateModalProps {
     projectId: string;
     onCancel: () => void;
@@ -149,17 +164,23 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
             return;
         }
 
+        // 시간 데이터 구성 (시간:분:초 형식)
+        const formattedStartTime = `${startHour}:${startMinute}:00`;
+        const formattedEndTime = `${endHour}:${endMinute}:00`;
+
         const newScheduleData = {
             name: title,
             startDate: startDate.toISOString().split('T')[0],
             endDate: endDate.toISOString().split('T')[0],
             isNotify: sendAlert,
-            startTime: `${startHour}:${startMinute}`,
-            endTime: `${endHour}:${endMinute}`,
+            startTime: formattedStartTime,
+            endTime: formattedEndTime,
         };
 
+        console.log('Sending schedule data:', newScheduleData);
+
         try {
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `/api/schedule/create/${projectId}`,
                 newScheduleData,
             );
@@ -171,6 +192,7 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
             console.error('일정 생성 실패:', error);
         }
     };
+
 
     return (
         <Backdrop>
