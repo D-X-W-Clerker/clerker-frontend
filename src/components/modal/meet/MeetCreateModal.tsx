@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import {
     LargeModalTitleTab,
     ProjectInput,
@@ -53,37 +52,8 @@ const DateInputArea = styled(ItemsCenterSpaceRow)`
     gap: 10px;
 `;
 
-const DomainArea = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    width: fit-content;
-    margin-top: 10px;
-    position: relative;
-`;
-
-const DomainSelect = styled.select`
-    padding: 8px;
-    border: none;
-    background-color: #ececec;
-    border-radius: 4px;
-    width: 200px;
-    color: #333;
-    outline: none;
-    appearance: none;
-    text-align: left;
-    position: relative;
-    z-index: 1;
-`;
-
-const DropdownArrow = styled.div`
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 12px;
-    color: #333;
-    z-index: 0;
+const SubContentArea = styled(FlexCol)`
+    flex: 1;
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
@@ -98,14 +68,11 @@ const dateFields = [
     { label: '분', placeholder: 'mm', value: 'minute' },
 ];
 
-const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
-
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
     projectId,
     onCancel,
 }) => {
     const [name, setName] = useState<string>('');
-    const [domain, setDomain] = useState<string>('');
     const [dateTime, setDateTime] = useState({
         year: '',
         month: '',
@@ -135,26 +102,18 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     };
 
-    const onClickCreateButton = async (): Promise<void> => {
+    // 회의 생성 함수
+    const onClickCreateButton = (): void => {
         const meetingData = {
             name,
             startDateTime: formatDateTime(),
             isNotify: sendAlert,
-            domain, // 도메인 추가
         };
+        console.log('Sending data:', meetingData);
 
-        try {
-            const response = await axios.post(
-                `/api/meeting/create/${projectId}`,
-                meetingData,
-            );
-            console.log('Meeting created successfully:', response.data);
-            alert('회의가 생성되었습니다.');
-            onCancel();
-        } catch (error) {
-            console.error('Failed to create meeting:', error);
-            alert('회의 생성에 실패했습니다.');
-        }
+        // 백엔드로 API 요청을 보내는 로직을 여기에 추가합니다.
+        alert('회의 생성');
+        onCancel();
     };
 
     return (
@@ -169,42 +128,34 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                         placeholder="회의 이름을 입력하세요."
                     />
                     <DateInputArea>
-                        {dateFields.map((field) => (
-                            <DateInput
-                                key={field.value}
-                                type="meet"
-                                label={field.label}
-                                value={
-                                    dateTime[
-                                        field.value as keyof typeof dateTime
-                                    ]
-                                }
-                                onChange={onChangeDate(field.value)}
-                                placeholder={field.placeholder}
-                            />
-                        ))}
+                        {dateFields.map((field) => {
+                            return (
+                                <DateInput
+                                    key={field.value}
+                                    type="meet"
+                                    label={field.label}
+                                    value={
+                                        dateTime[
+                                            field.value as keyof typeof dateTime
+                                        ]
+                                    } // 해당 필드 값
+                                    onChange={onChangeDate(field.value)} // 해당 필드 변경 처리
+                                    placeholder={field.placeholder}
+                                />
+                            );
+                        })}
                     </DateInputArea>
                 </ContentArea>
-                <RadioInput
-                    label="멤버들에게 회의 생성 알림을 보낼까요?"
-                    name="sendAlert"
-                    checked={sendAlert}
-                    onChange={() => setSendAlert(!sendAlert)}
-                />
-                <DomainArea>
-                    <DomainSelect
-                        value={domain}
-                        onChange={(event) => setDomain(event.target.value)}
-                    >
-                        <option value="">도메인 입력</option>
-                        {domains.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
-                    </DomainSelect>
-                    <DropdownArrow>▼</DropdownArrow>
-                </DomainArea>
+                <SubContentArea>
+                    <RadioInput
+                        label="멤버들에게 회의 생성 알림을 보낼까요?"
+                        name="sendAlert"
+                        checked={sendAlert}
+                        onChange={(): void => {
+                            return setSendAlert(!sendAlert);
+                        }}
+                    />
+                </SubContentArea>
                 <ButtonArea>
                     <ModalButton text="취소" color="gray" onClick={onCancel} />
                     <ModalButton

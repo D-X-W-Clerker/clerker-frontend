@@ -1,14 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FolderIcon, ActiveSettingIcon } from '@assets';
-import CheckIcon from '../../assets/action/check/Check.svg'; // CheckIcon 경로 확인 필요
 import { ItemsCenterRow } from '@styles';
 
+// -- 인터페이스 --
 interface LargeModalTitleTabProps {
     type: string;
     title: string;
 }
 
+// -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)`
     gap: 5px;
     font-size: 24px;
@@ -17,43 +18,27 @@ const Container = styled(ItemsCenterRow)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props): number => props.$width}px;
-    height: ${(props): number => props.$height}px;
+    width: ${(props): number => {
+        return props.$width;
+    }}px;
+    height: ${(props): number => {
+        return props.$height;
+    }}px;
 `;
 
 const LargeModalTitleTab: React.FC<LargeModalTitleTabProps> = ({
     type,
     title,
 }) => {
-    let iconSrc;
-    let altText;
-    let width;
-    let height;
-
-    if (type === 'project') {
-        iconSrc = FolderIcon;
-        altText = 'Folder Icon';
-        width = 30;
-        height = 23;
-    } else if (type === 'scheduleCheck') {
-        iconSrc = CheckIcon;
-        altText = 'Check Icon';
-        width = 30;
-        height = 30;
-    } else {
-        iconSrc = ActiveSettingIcon;
-        altText = 'Setting Icon';
-        width = 24;
-        height = 24;
-    }
+    const isProject = type === 'project';
 
     return (
         <Container>
             <IconImage
-                src={iconSrc}
-                alt={altText}
-                $width={width}
-                $height={height}
+                src={isProject ? FolderIcon : ActiveSettingIcon}
+                alt={isProject ? 'Folder Icon' : 'Setting Icon'}
+                $width={isProject ? 30 : 24}
+                $height={isProject ? 23 : 24}
             />
             {title}
         </Container>

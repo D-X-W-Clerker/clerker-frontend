@@ -1,2 +1,2 @@
-export * from './schedule';
-export * from './notification';
+export { postTimeTable, getTimeTable } from './schedule';
+// export { getNotification } from './notification';

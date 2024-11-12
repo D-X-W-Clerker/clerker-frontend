@@ -15,9 +15,8 @@ import {
     When2meet,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
-import Layout from '../Layout';
-import ProjectCalendar from '../components/calendar/ProjectCalendar';
-import axios from 'axios';
+import Layout from '../Layout'; // 실제 경로에 맞게 조정하세요
+import ProjectCalendar from '../components/calendar/ProjectCalendar'; // 실제 경로에 맞게 조정하세요
 
 // -- 인터페이스 --
 interface MeetingData {
@@ -32,6 +31,18 @@ interface ScheduleData {
     scheduleName: string;
     startDate: string;
     endDate: string;
+    startTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
+    endTime: {
+        hour: string;
+        minute: string;
+        second: string;
+        nano: string;
+    };
     createdAt: string;
     isEnded: boolean;
 }
@@ -42,6 +53,11 @@ interface MemberData {
     email: string;
     type: string | null;
     role: string;
+}
+
+interface ProjectInfo {
+    projectName: string;
+    members: MemberData[];
 }
 
 // -- 스타일 컴포넌트 --
@@ -65,15 +81,16 @@ const ContentArea = styled(FlexCol)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props) => props.$width}px;
-    height: ${(props) => props.$height}px;
+    width: ${(props): number => {
+        return props.$width;
+    }}px;
+    height: ${(props): number => {
+        return props.$height;
+    }}px;
     cursor: pointer;
 `;
 
-const ButtonContainer = styled.div`
-    text-align: right;
-`;
-
+// 왼쪽 영역
 const LeftContentArea = styled(ContentArea)``;
 
 const MemberArea = styled(FlexCol)``;
@@ -107,79 +124,139 @@ const ContentFileArea = styled(FlexCol)`
     gap: 4px;
 `;
 
+// 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
+
+// 스케줄 및 미팅 목록 get 함수
+const fetchEventData = async (): Promise<{
+    schedules: ScheduleData[];
+    meetings: MeetingData[];
+}> => {
+    return {
+        schedules: [
+            {
+                scheduleId: '3',
+                scheduleName: '프론트 디자인 회의 일정',
+                startDate: '2024-10-21',
+                endDate: '2024-10-21',
+                startTime: {
+                    hour: '10',
+                    minute: '20',
+                    second: '30',
+                    nano: '40',
+                },
+                endTime: {
+                    hour: '10',
+                    minute: '20',
+                    second: '30',
+                    nano: '40',
+                },
+                createdAt: '2024-09-20T10:30:00',
+                isEnded: false,
+            },
+        ],
+        meetings: [
+            {
+                meetingId: '1',
+                meetingName: '프로젝트 킥오프',
+                startDate: '2024-07-02T10:30:00',
+                createdAt: '2024-07-02T10:30:00',
+            },
+            {
+                meetingId: '2',
+                meetingName: '기획 회의',
+                startDate: '2024-07-08T14:00:00',
+                createdAt: '2024-07-08T14:00:00',
+            },
+        ],
+    };
+};
+
+// 프로젝트 정보 조회 함수
+const fetchProjectInfo = async (): Promise<ProjectInfo> => {
+    return {
+        projectName: 'Clerker',
+        members: [
+            {
+                organizationId: '1',
+                username: '이정욱',
+                email: 'dlwjddnr5438@kookmin.ac.kr',
+                type: 'BE',
+                role: 'owner',
+            },
+            {
+                organizationId: '2',
+                username: '신진욱',
+                email: 'jinwook2765@kookmin.ac.kr',
+                type: 'FE',
+                role: 'member',
+            },
+            {
+                organizationId: '3',
+                username: '임형빈',
+                email: 'gudqls3157@gmail.com',
+                type: 'AI',
+                role: 'member',
+            },
+            {
+                organizationId: '4',
+                username: '박건민',
+                email: 'pkm021118@kookmin.ac.kr',
+                type: 'DE',
+                role: 'member',
+            },
+        ],
+    };
+};
 
 const ProjectDetailPage: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
-    const [activeTab, setActiveTab] = useState<'meeting' | 'schedule'>(
-        'meeting',
-    );
+    const [activeTab, setActiveTab] = useState<string>('meeting');
+    const [projectInfo, setProjectInfo] = useState<ProjectInfo | null>(null);
     const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
     const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
-    const [modalType, setModalType] = useState<
-        'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
-    >(null);
     const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
         null,
     );
+    const [modalType, setModalType] = useState<
+        'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
+    >(null);
     const [scheduleClicked, setScheduleClicked] = useState(false);
-
-    const members: MemberData[] = [
-        {
-            organizationId: '1',
-            username: '이정욱',
-            email: 'dlwjddnr5438@kookmin.ac.kr',
-            type: 'BE',
-            role: 'owner',
-        },
-        {
-            organizationId: '2',
-            username: '신진욱',
-            email: 'jinwook2765@kookmin.ac.kr',
-            type: 'FE',
-            role: 'member',
-        },
-    ];
-
-    useEffect(() => {
-        const fetchMeetingData = async () => {
-            try {
-                const response = await axios.get(`/api/meeting/${projectId}`);
-                setMeetingData(response.data.meetings);
-            } catch (error) {
-                console.error('Failed to fetch meeting data:', error);
-            }
-        };
-
-        fetchMeetingData();
-    }, [projectId]);
 
     const handleOpenModal = (
         type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
         meeting?: MeetingData,
-    ) => {
+    ): void => {
         setModalType(type);
         if (meeting) {
             setSelectedMeeting(meeting);
         }
     };
 
-    const handleCloseModal = () => {
+    const handleCloseModal = (): void => {
         setModalType(null);
         setSelectedMeeting(null);
     };
 
-    const onClickEventFile = (event: MeetingData | ScheduleData) => {
+    const onClickEventFile = (event: MeetingData | ScheduleData): void => {
         if (activeTab === 'meeting') {
             handleOpenModal('meetJoin', event as MeetingData);
         } else if (activeTab === 'schedule') {
+            console.log('스케줄을 클릭했습니다:', event);
             setScheduleClicked(true);
         }
     };
 
-    const addSchedule = (newSchedule: ScheduleData) => {
-        setScheduleData((prev) => [...prev, newSchedule]);
-    };
+    useEffect((): void => {
+        const fetchData = async (): Promise<void> => {
+            const { meetings, schedules } = await fetchEventData();
+            const projectInfoData = await fetchProjectInfo();
+            setMeetingData(meetings);
+            setScheduleData(schedules);
+            setProjectInfo(projectInfoData);
+        };
+        fetchData();
+    }, []);
 
     const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
 
@@ -187,7 +264,10 @@ const ProjectDetailPage: React.FC = () => {
         <Layout>
             <Container>
                 <LeftContentArea>
-                    <TitleTab type="project" title={`Project ${projectId}`} />
+                    <TitleTab
+                        type="project"
+                        title={projectInfo?.projectName || ''}
+                    />
                     <MemberArea>
                         <MemberTabArea>
                             <IconImage
@@ -200,13 +280,17 @@ const ProjectDetailPage: React.FC = () => {
                                 src={ActiveSettingIcon}
                                 $width={16}
                                 $height={16}
-                                onClick={() => handleOpenModal('memberInfo')}
+                                onClick={(): void => {
+                                    return handleOpenModal('memberInfo');
+                                }}
                             />
                         </MemberTabArea>
-                        <MemberTable data={members} />
+                        <MemberTable data={projectInfo?.members || []} />
                         <MemberAddArea>
                             <MemberAddButton
-                                onClick={() => handleOpenModal('memberAdd')}
+                                onClick={(): void => {
+                                    return handleOpenModal('memberAdd');
+                                }}
                             >
                                 <IconImage
                                     src={MemberAddIcon}
@@ -224,43 +308,45 @@ const ProjectDetailPage: React.FC = () => {
                         />
                         <ContentFileArea>
                             {activeTab === 'meeting' && (
-                                <ButtonContainer>
-                                    <ActionButton
-                                        icon={AddIcon}
-                                        label="회의 생성"
-                                        onClick={() =>
-                                            handleOpenModal('meetCreate')
-                                        }
-                                    />
-                                </ButtonContainer>
-                            )}
-                            {eventData.map((event) => (
-                                <EventFile
-                                    key={
-                                        'meetingId' in event
-                                            ? event.meetingId
-                                            : event.scheduleId
-                                    }
-                                    meetingName={
-                                        'meetingName' in event
-                                            ? event.meetingName
-                                            : event.scheduleName
-                                    }
-                                    dateTime={event.createdAt}
-                                    onClick={() => onClickEventFile(event)}
+                                <ActionButton
+                                    icon={AddIcon}
+                                    label="회의 생성"
+                                    onClick={(): void => {
+                                        return handleOpenModal('meetCreate');
+                                    }}
                                 />
-                            ))}
+                            )}
+                            {eventData.map((event) => {
+                                const isMeeting = 'meetingId' in event;
+                                const key = isMeeting
+                                    ? event.meetingId
+                                    : event.scheduleId;
+                                const eventName = isMeeting
+                                    ? event.meetingName
+                                    : event.scheduleName;
+                                return (
+                                    <EventFile
+                                        key={key}
+                                        meetingName={eventName}
+                                        dateTime={event.createdAt}
+                                        onClick={(): void => {
+                                            return onClickEventFile(event);
+                                        }}
+                                    />
+                                );
+                            })}
                         </ContentFileArea>
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
                     {scheduleClicked ? (
-                        <When2meet onCancel={() => setScheduleClicked(false)} />
-                    ) : (
-                        <ProjectCalendar
-                            projectId={projectId || ''}
-                            addSchedule={addSchedule}
+                        <When2meet
+                            onCancel={(): void => {
+                                return setScheduleClicked(false);
+                            }}
                         />
+                    ) : (
+                        <ProjectCalendar />
                     )}
                 </RightContentArea>
             </Container>
