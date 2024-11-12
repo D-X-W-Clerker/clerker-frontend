@@ -1,6 +1,6 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import {
     LargeModalTitleTab,
     ProjectInput,
@@ -14,6 +14,22 @@ import {
     ItemsCenterSpaceRow,
     ItemsCenterEndRow,
 } from '@styles';
+
+// -- Axios Instance 설정 --
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 // -- 인터페이스 --
 interface MeetCreateModalProps {
@@ -101,9 +117,9 @@ const dateFields = [
 const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
 
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
-    projectId,
-    onCancel,
-}) => {
+                                                             projectId,
+                                                             onCancel,
+                                                         }) => {
     const [name, setName] = useState<string>('');
     const [domain, setDomain] = useState<string>('');
     const [dateTime, setDateTime] = useState({
@@ -144,7 +160,7 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         };
 
         try {
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `/api/meeting/create/${projectId}`,
                 meetingData,
             );
@@ -177,7 +193,7 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                                 value={
                                     dateTime[
                                         field.value as keyof typeof dateTime
-                                    ]
+                                        ]
                                 }
                                 onChange={onChangeDate(field.value)}
                                 placeholder={field.placeholder}
