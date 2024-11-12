@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import {
     LargeModalTitleTab,
     ProjectInput,
@@ -71,22 +72,18 @@ const DomainSelect = styled.select`
     appearance: none;
     text-align: left;
     position: relative;
-    z-index: 1; /* 커스텀 화살표 위에 텍스트가 나타나도록 함 */
-
-    /* 기본 화살표를 숨기기 위해 브라우저 기본 스타일 제거 */
-    background-image: none;
+    z-index: 1;
 `;
 
-/* 드롭다운 마크 추가 */
 const DropdownArrow = styled.div`
     position: absolute;
-    right: 15px; /* 오른쪽 마진 */
+    right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    pointer-events: none; /* 클릭되지 않도록 설정 */
+    pointer-events: none;
     font-size: 12px;
     color: #333;
-    z-index: 0; /* 드롭다운 위에 나타나도록 설정 */
+    z-index: 0;
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
@@ -104,9 +101,9 @@ const dateFields = [
 const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
 
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
-    projectId,
-    onCancel,
-}) => {
+                                                             projectId,
+                                                             onCancel,
+                                                         }) => {
     const [name, setName] = useState<string>('');
     const [domain, setDomain] = useState<string>('');
     const [dateTime, setDateTime] = useState({
@@ -138,17 +135,26 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
     };
 
-    const onClickCreateButton = (): void => {
+    const onClickCreateButton = async (): Promise<void> => {
         const meetingData = {
             name,
-            domain,
             startDateTime: formatDateTime(),
             isNotify: sendAlert,
+            domain, // 도메인 추가
         };
-        console.log('Sending data:', meetingData);
 
-        alert('회의 생성');
-        onCancel();
+        try {
+            const response = await axios.post(
+                `/api/meeting/create/${projectId}`,
+                meetingData,
+            );
+            console.log('Meeting created successfully:', response.data);
+            alert('회의가 생성되었습니다.');
+            onCancel();
+        } catch (error) {
+            console.error('Failed to create meeting:', error);
+            alert('회의 생성에 실패했습니다.');
+        }
     };
 
     return (
@@ -171,7 +177,7 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                                 value={
                                     dateTime[
                                         field.value as keyof typeof dateTime
-                                    ]
+                                        ]
                                 }
                                 onChange={onChangeDate(field.value)}
                                 placeholder={field.placeholder}

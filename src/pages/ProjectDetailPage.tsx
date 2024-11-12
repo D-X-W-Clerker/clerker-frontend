@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import {
-    ActiveSettingIcon,
-    MemberIcon,
-    MemberAddIcon,
-    AddIcon,
-} from '@assets';
+import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
     TitleTab,
@@ -74,7 +69,10 @@ const IconImage = styled.img<{ $width: number; $height: number }>`
     cursor: pointer;
 `;
 
-// 왼쪽 영역
+const ButtonContainer = styled.div`
+    text-align: right;
+`;
+
 const LeftContentArea = styled(ContentArea)``;
 
 const MemberArea = styled(FlexCol)``;
@@ -108,7 +106,6 @@ const ContentFileArea = styled(FlexCol)`
     gap: 4px;
 `;
 
-// 오른쪽 영역
 const RightContentArea = styled(ContentArea)``;
 
 const ProjectDetailPage: React.FC = () => {
@@ -116,7 +113,29 @@ const ProjectDetailPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'meeting' | 'schedule'>(
         'meeting',
     );
-    const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
+    const [meetingData, setMeetingData] = useState<MeetingData[]>([
+        {
+            meetingId: '1',
+            meetingName: '프로젝트 킥오프 미팅',
+            startDate: '2024-11-12',
+            createdAt: '2024-11-10T15:30:00',
+        },{
+            meetingId: '1',
+            meetingName: '프로젝트 킥오프 미팅',
+            startDate: '2024-11-12',
+            createdAt: '2024-11-10T15:30:00',
+        },{
+            meetingId: '1',
+            meetingName: '프로젝트 킥오프 미팅',
+            startDate: '2024-11-12',
+            createdAt: '2024-11-10T15:30:00',
+        },{
+            meetingId: '1',
+            meetingName: '프로젝트 킥오프 미팅',
+            startDate: '2024-11-12',
+            createdAt: '2024-11-10T15:30:00',
+        },
+    ]);
     const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
     const [modalType, setModalType] = useState<
         'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
@@ -213,13 +232,15 @@ const ProjectDetailPage: React.FC = () => {
                         />
                         <ContentFileArea>
                             {activeTab === 'meeting' && (
-                                <div style={{ marginBottom: '20px', textAlign: 'right' }}>
+                                <ButtonContainer>
                                     <ActionButton
                                         icon={AddIcon}
                                         label="회의 생성"
-                                        onClick={() => handleOpenModal('meetCreate')}
+                                        onClick={() =>
+                                            handleOpenModal('meetCreate')
+                                        }
                                     />
-                                </div>
+                                </ButtonContainer>
                             )}
                             {eventData.map((event) => (
                                 <EventFile
