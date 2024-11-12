@@ -14,6 +14,7 @@ import {
     ItemsCenterRow,
     ItemsCenterSpaceRow,
 } from '@styles';
+import { useAuthStore } from '@store';
 
 // -- 인터페이스 --
 interface AccountSettingModalProps {
@@ -104,8 +105,10 @@ const FooterArea = styled(ItemsCenterSpaceRow)``;
 const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
     onCancel,
 }) => {
+    const { user } = useAuthStore();
     const [profileImage, setProfileImage] = useState<File | null>(null);
-    const [name, setName] = useState<string>('');
+    const [name, setName] = useState<string>(user?.name || '');
+    const [email, setEmail] = useState<string>(user?.email || '');
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
     const [showModal, setShowModal] = useState(false);
     const navigate = useNavigate();
@@ -145,6 +148,13 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         navigate('/');
         setShowModal(false);
     };
+
+    React.useEffect(() => {
+        if (user) {
+            setName(user.name);
+            setEmail(user.email);
+        }
+    }, [user]);
 
     return (
         <>
@@ -187,10 +197,7 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                                 onChange={onChangeName}
                                 placeholder="Clerker"
                             />
-                            <InfoInput
-                                label="이메일"
-                                value="jinwook2765@kookmin.ac.kr"
-                            />
+                            <InfoInput label="이메일" value={email} />
                         </ProfileInfoArea>
                     </ContentArea>
                     <FooterArea>
