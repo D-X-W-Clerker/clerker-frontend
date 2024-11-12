@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
@@ -6,45 +7,17 @@ import {
     ModalButton,
     RadioInput,
 } from '@components';
-import {
-    CenterRow,
-    FlexCol,
-    ItemsCenterSpaceRow,
-    ItemsCenterEndRow,
-} from '@styles';
+import { CenterRow, FlexCol, ItemsCenterSpaceRow } from '@styles';
 import DownArrowIcon from '../../../assets/action/arrow/DownArrowIcon.svg';
-
-// ScheduleData 인터페이스를 파일 내에서 정의합니다.
-interface ScheduleData {
-    scheduleId: string;
-    scheduleName: string;
-    startDate: string;
-    endDate: string;
-    startTime: {
-        hour: string;
-        minute: string;
-        second: string;
-        nano: string;
-    };
-    endTime: {
-        hour: string;
-        minute: string;
-        second: string;
-        nano: string;
-    };
-    createdAt: string;
-    isEnded: boolean;
-}
 
 interface ScheduleCreateModalProps {
     projectId: string;
     onCancel: () => void;
-    onCreate: (newSchedule: ScheduleData) => void;
+    onCreate: (newSchedule: any) => void;
     startDate: Date;
     endDate: Date;
 }
 
-// 스타일 컴포넌트 정의
 const Backdrop = styled(CenterRow)`
     position: fixed;
     top: 0;
@@ -85,16 +58,6 @@ const ButtonArea = styled.div`
     gap: 10px;
 `;
 
-const hourOptions = Array.from({ length: 24 }, (_, i) => ({
-    label: `${i}시`,
-    value: i.toString().padStart(2, '0'),
-}));
-
-const minuteOptions = [
-    { label: '00분', value: '00' },
-    { label: '30분', value: '30' },
-];
-
 const StyledSelectWrapper = styled.div`
     position: relative;
     width: 100%;
@@ -125,6 +88,16 @@ const ArrowIcon = styled.img`
     width: 12px;
     height: 12px;
 `;
+
+const hourOptions = Array.from({ length: 24 }, (_, i) => ({
+    label: `${i}시`,
+    value: i.toString().padStart(2, '0'),
+}));
+
+const minuteOptions = [
+    { label: '00분', value: '00' },
+    { label: '30분', value: '30' },
+];
 
 const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
     projectId,
@@ -170,39 +143,33 @@ const ScheduleCreateModal: React.FC<ScheduleCreateModalProps> = ({
         setEndMinute(e.target.value);
     };
 
-    const onClickCreateButton = (): void => {
+    const onClickCreateButton = async (): Promise<void> => {
         if (!title) {
-            alert('일정 제목을 입력해주세요.');
+            console.error('일정 제목을 입력해주세요.');
             return;
         }
 
-        const scheduleId = Date.now().toString();
-        const newSchedule: ScheduleData = {
-            scheduleId,
-            scheduleName: title,
+        const newScheduleData = {
+            name: title,
             startDate: startDate.toISOString().split('T')[0],
             endDate: endDate.toISOString().split('T')[0],
-            startTime: {
-                hour: startHour,
-                minute: startMinute,
-                second: '0',
-                nano: '0',
-            },
-            endTime: {
-                hour: endHour,
-                minute: endMinute,
-                second: '0',
-                nano: '0',
-            },
-            createdAt: new Date().toISOString(),
-            isEnded: false,
+            isNotify: sendAlert,
+            startTime: `${startHour}:${startMinute}`,
+            endTime: `${endHour}:${endMinute}`,
         };
 
-        // 새로운 스케줄 추가
-        onCreate(newSchedule);
+        try {
+            const response = await axios.post(
+                `/api/schedule/create/${projectId}`,
+                newScheduleData,
+            );
 
-        alert('일정이 생성되었습니다!');
-        onCancel();
+            // 성공적으로 생성된 경우
+            onCreate(response.data);
+            onCancel();
+        } catch (error) {
+            console.error('일정 생성 실패:', error);
+        }
     };
 
     return (

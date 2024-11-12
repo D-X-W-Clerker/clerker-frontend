@@ -1,32 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import CalendarButton from './CalendarButton'; // 실제 경로에 맞게 수정하세요
-import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal'; // 실제 경로에 맞게 수정하세요
-import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal'; // 실제 경로에 맞게 수정하세요
+import axios from 'axios';
+import CalendarButton from './CalendarButton';
+import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal';
+import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal';
 
-// ScheduleData 인터페이스를 파일 내에서 정의합니다.
+interface TimeData {
+    hour: string;
+    minute: string;
+    second: string;
+    nano: string;
+}
+
 interface ScheduleData {
     scheduleId: string;
     scheduleName: string;
     startDate: string;
     endDate: string;
-    startTime: {
-        hour: string;
-        minute: string;
-        second: string;
-        nano: string;
-    };
-    endTime: {
-        hour: string;
-        minute: string;
-        second: string;
-        nano: string;
-    };
+    startTime: TimeData;
+    endTime: TimeData;
     createdAt: string;
     isEnded: boolean;
 }
 
-// 스타일 컴포넌트
 const CalendarContainer = styled.div`
     margin-top: 40px;
 `;
@@ -64,21 +60,9 @@ const WeekdaysRow = styled.div`
     margin-bottom: 10px;
 `;
 
-interface WeekdayCellProps {
-    isSunday?: boolean;
-    isSaturday?: boolean;
-}
-
-const WeekdayCell = styled.div<WeekdayCellProps>`
+const WeekdayCell = styled.div`
     width: 14.28%;
-    color: ${(props): string => {
-        if (props.isSunday) return '#ff4343';
-        if (props.isSaturday) return '#0085ff';
-        return '#2f2f2f';
-    }};
-    abbr {
-        text-decoration: none;
-    }
+    text-align: center;
 `;
 
 const DaysGrid = styled.div`
@@ -92,36 +76,34 @@ const WeekRow = styled.div`
 `;
 
 interface DayCellProps {
-    isCurrentMonth: boolean;
-    hasEvent?: boolean;
-    isSelected?: boolean;
+    $isCurrentMonth: boolean;
+    $hasEvent?: boolean;
+    $isSelected?: boolean;
 }
 
 const DayCell = styled.div<DayCellProps>`
     flex: 1;
     padding: 15px 15px;
     font-size: 18px;
-    background-color: ${(props): string => {
-        if (props.isSelected) {
-            return '#40A3FF';
-        }
-        if (props.hasEvent) {
-            return '#E0F0FF'; // 일정 있는 날 배경색
-        }
+    background-color: ${(props) => {
+        if (props.$isSelected) return '#40A3FF';
+        if (props.$hasEvent) return '#E0F0FF';
         return '#ececec';
     }};
     border-radius: 13px;
     text-align: center;
     margin: 10px 5px;
     cursor: pointer;
-    color: ${(props): string => {
-        if (props.isSelected) return '#ffffff';
-        return props.isCurrentMonth ? '#000' : '#aaa';
-    }};
+    color: ${(props) =>
+        props.$isSelected
+            ? '#ffffff'
+            : props.$isCurrentMonth
+              ? '#000'
+              : '#aaa'};
 
     &:hover {
-        background-color: ${(props): string =>
-            props.isSelected ? '#40A3FF' : '#d4e5f6'};
+        background-color: ${(props) =>
+            props.$isSelected ? '#40A3FF' : '#d4e5f6'};
     }
 
     position: relative;
@@ -130,7 +112,7 @@ const DayCell = styled.div<DayCellProps>`
 const EventDot = styled.div`
     width: 6px;
     height: 6px;
-    background-color: #40a3ff; // 일정 있는 날 점 색상
+    background-color: #40a3ff;
     border-radius: 50%;
     position: absolute;
     bottom: 5px;
@@ -144,13 +126,15 @@ const ScheduleButtonContainer = styled.div`
     margin-top: 20px;
 `;
 
-// 인터페이스
 interface ProjectCalendarProps {
+    projectId: string;
     addSchedule: (newSchedule: ScheduleData) => void;
 }
 
-const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ addSchedule }) => {
-    const today: Date = new Date();
+const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
+    projectId,
+    addSchedule,
+}) => {
     const [currentDate, setCurrentDate] = useState<Date>(new Date());
     const [isSelectingDates, setIsSelectingDates] = useState<boolean>(false);
     const [selectedStartDate, setSelectedStartDate] = useState<Date | null>(
@@ -159,26 +143,41 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ addSchedule }) => {
     const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
+    const [schedules, setSchedules] = useState<ScheduleData[]>([]);
+    const [selectedSchedule, setSelectedSchedule] =
+        useState<ScheduleData | null>(null);
 
-    const closeModal = (): void => {
-        setIsModalOpen(false);
+    useEffect(() => {
+        const fetchSchedules = async () => {
+            try {
+                const response = await axios.get(`/api/schedule/${projectId}`);
+                setSchedules(response.data.schedules);
+            } catch (error) {
+                console.error('Failed to fetch schedules:', error);
+            }
+        };
+
+        fetchSchedules();
+    }, [projectId]);
+
+    const resetSelection = (): void => {
         setSelectedStartDate(null);
         setSelectedEndDate(null);
     };
 
+    const closeModal = (): void => {
+        setIsModalOpen(false);
+        resetSelection();
+        setIsSelectingDates(false);
+    };
+
     const closeCheckModal = (): void => {
         setIsCheckModalOpen(false);
+        setSelectedSchedule(null);
     };
 
-    const eventDates: Date[] = [
-        new Date(2024, 9, 14), // 기존 일정
-        new Date(2024, 9, 20), // 기존 일정
-        new Date(2024, 10, 15), // 11월 15일 일정 추가
-    ];
-
-    const getMonthYear = (date: Date): string => {
-        return date.toLocaleString('ko-KR', { year: 'numeric', month: 'long' });
-    };
+    const getMonthYear = (date: Date): string =>
+        date.toLocaleString('ko-KR', { year: 'numeric', month: 'long' });
 
     const prevMonth = (): void => {
         setCurrentDate(
@@ -192,135 +191,111 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ addSchedule }) => {
         );
     };
 
-    const getWeekdays = (): string[] => {
-        return ['일', '월', '화', '수', '목', '금', '토'];
-    };
+    const getWeekdays = (): string[] => [
+        '일',
+        '월',
+        '화',
+        '수',
+        '목',
+        '금',
+        '토',
+    ];
 
     const generateCalendar = (): Date[][] => {
-        const startOfMonth: Date = new Date(
+        const startOfMonth = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth(),
             1,
         );
-        const endOfMonth: Date = new Date(
+        const endOfMonth = new Date(
             currentDate.getFullYear(),
             currentDate.getMonth() + 1,
             0,
         );
         const dates: Date[][] = [];
-        const current: Date = new Date(startOfMonth);
+        const current = new Date(startOfMonth);
         current.setDate(current.getDate() - current.getDay());
 
         while (current <= endOfMonth || current.getDay() !== 0) {
             const week: Date[] = [];
-
-            for (let i = 0; i < 7; i += 1) {
+            for (let i = 0; i < 7; i++) {
                 week.push(new Date(current));
                 current.setDate(current.getDate() + 1);
             }
             dates.push(week);
         }
+
         return dates;
     };
 
-    const isSameDay = (date1: Date, date2: Date): boolean => {
-        return (
-            date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate()
-        );
-    };
+    const isSameDay = (date1: Date, date2: Date): boolean =>
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
 
-    const isBetweenDates = (
-        date: Date,
-        startDate: Date,
-        endDate: Date,
-    ): boolean => {
-        const time = date.getTime();
-        return time >= startDate.getTime() && time <= endDate.getTime();
-    };
+    const isSelected = (date: Date): boolean =>
+        selectedStartDate && selectedEndDate
+            ? date >= selectedStartDate && date <= selectedEndDate
+            : selectedStartDate
+              ? isSameDay(selectedStartDate, date)
+              : false;
 
     const handleDateClick = (date: Date): void => {
         if (isSelectingDates) {
-            if (!selectedStartDate) {
-                setSelectedStartDate(date);
-            } else if (!selectedEndDate) {
+            if (!selectedStartDate) setSelectedStartDate(date);
+            else if (!selectedEndDate) {
                 setSelectedEndDate(
                     date >= selectedStartDate ? date : selectedStartDate,
                 );
-                if (date < selectedStartDate) setSelectedStartDate(date);
             } else {
                 setSelectedStartDate(date);
                 setSelectedEndDate(null);
             }
         } else {
-            setIsCheckModalOpen(true);
+            const schedule = schedules.find((s) =>
+                isSameDay(new Date(s.startDate), date),
+            );
+            if (schedule) {
+                setSelectedSchedule(schedule);
+                setIsCheckModalOpen(true);
+            }
         }
     };
 
-    const isSelected = (date: Date): boolean => {
-        if (selectedStartDate && selectedEndDate) {
-            return isBetweenDates(date, selectedStartDate, selectedEndDate);
-        }
-        return selectedStartDate ? isSameDay(selectedStartDate, date) : false;
-    };
-
-    const handleScheduleButtonClick = (): void => {
-        if (isSelectingDates && selectedStartDate && selectedEndDate) {
-            setIsModalOpen(true);
-            setIsSelectingDates(false);
-        } else {
-            setIsSelectingDates(true);
-            setSelectedStartDate(null);
-            setSelectedEndDate(null);
-        }
-    };
+    const hasEvent = (date: Date): boolean =>
+        schedules.some((schedule) =>
+            isSameDay(new Date(schedule.startDate), date),
+        );
 
     return (
         <CalendarContainer>
             <CalendarNavigation>
-                <NavButton type="button" onClick={prevMonth}>
-                    &lt;
-                </NavButton>
+                <NavButton onClick={prevMonth}>&lt;</NavButton>
                 <MonthYearTitle>{getMonthYear(currentDate)}</MonthYearTitle>
-                <NavButton type="button" onClick={nextMonth}>
-                    &gt;
-                </NavButton>
+                <NavButton onClick={nextMonth}>&gt;</NavButton>
             </CalendarNavigation>
             <WeekdaysRow>
-                {getWeekdays().map((day, index) => (
-                    <WeekdayCell
-                        key={day}
-                        isSunday={index === 0}
-                        isSaturday={index === 6}
-                    >
-                        <abbr title={day}>{day}</abbr>
-                    </WeekdayCell>
+                {getWeekdays().map((day) => (
+                    <WeekdayCell key={day}>{day}</WeekdayCell>
                 ))}
             </WeekdaysRow>
             <DaysGrid>
                 {generateCalendar().map((week) => (
                     <WeekRow key={week[0].toISOString()}>
-                        {week.map((date) => {
-                            const isCurrentMonth =
-                                date.getMonth() === currentDate.getMonth();
-                            const hasEvent = eventDates.some((eventDate) =>
-                                isSameDay(eventDate, date),
-                            );
-
-                            return (
-                                <DayCell
-                                    key={date.toISOString()}
-                                    isCurrentMonth={isCurrentMonth}
-                                    hasEvent={hasEvent}
-                                    isSelected={isSelected(date)}
-                                    onClick={() => handleDateClick(date)}
-                                >
-                                    {date.getDate()}
-                                    {hasEvent && <EventDot />}
-                                </DayCell>
-                            );
-                        })}
+                        {week.map((date) => (
+                            <DayCell
+                                key={date.toISOString()}
+                                $isCurrentMonth={
+                                    date.getMonth() === currentDate.getMonth()
+                                }
+                                $hasEvent={hasEvent(date)}
+                                $isSelected={isSelected(date)}
+                                onClick={() => handleDateClick(date)}
+                            >
+                                {date.getDate()}
+                                {hasEvent(date) && <EventDot />}
+                            </DayCell>
+                        ))}
                     </WeekRow>
                 ))}
             </DaysGrid>
@@ -328,29 +303,33 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({ addSchedule }) => {
                 <CalendarButton
                     isSelectingDates={isSelectingDates}
                     hasSelectedDates={!!selectedStartDate}
-                    onClick={handleScheduleButtonClick}
+                    onClick={() =>
+                        isSelectingDates && selectedStartDate
+                            ? setIsModalOpen(true)
+                            : setIsSelectingDates(!isSelectingDates)
+                    }
                     onCancel={() => {
+                        resetSelection();
                         setIsSelectingDates(false);
-                        setSelectedStartDate(null);
-                        setSelectedEndDate(null);
                     }}
                 />
             </ScheduleButtonContainer>
-
             {isModalOpen && selectedStartDate && selectedEndDate && (
                 <ScheduleCreateModal
-                    projectId="1234"
+                    projectId={projectId}
                     onCancel={closeModal}
-                    onCreate={addSchedule} // 스케줄 추가 함수 전달
+                    onCreate={(newSchedule: ScheduleData) => {
+                        addSchedule(newSchedule);
+                        closeModal();
+                    }}
                     startDate={selectedStartDate}
                     endDate={selectedEndDate}
                 />
             )}
-
-            {isCheckModalOpen && (
+            {isCheckModalOpen && selectedSchedule && (
                 <ScheduleCheckModal
-                    scheduleName="일정 제목" // 임시 더미 데이터
-                    dateTime="2024-11-15T10:30:00" // 임시 더미 날짜 데이터
+                    scheduleName={selectedSchedule.scheduleName}
+                    dateTime={selectedSchedule.startDate}
                     onConfirm={closeCheckModal}
                 />
             )}
