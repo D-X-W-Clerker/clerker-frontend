@@ -1,3 +1,5 @@
+// MeetJoinModal.tsx
+
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { UrlClipIcon } from '@assets';
@@ -17,11 +19,11 @@ import {
 } from '@styles';
 import { SplitDateTime } from '@utils';
 import axios from 'axios';
-import AudioRecorder from './AudioRecorder';
+import AudioRecorder, { AudioRecorderHandle } from './AudioRecorder';
 import RecordingStopModal from './RecordingStopModal';
 import EndedMeetingModal from './EndedMeetingModal';
 
-// -- Axios Instance 설정 --
+// Axios Instance 설정
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
 });
@@ -37,23 +39,24 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
-// -- 인터페이스 --
+// 인터페이스
 interface MeetJoinModalProps {
     meetingId: string;
     onCancel: () => void;
-    onRecordingStop: () => void;
+    onRecordingStop: (blob: Blob | null) => void; // Blob 전달
 }
 
 interface MeetDetailProps {
-    id: string;
+    id: number;
     name: string;
     url: string;
     startDate: string;
     isEnded: boolean;
     createdAt: string;
+    domain: string;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Backdrop = styled(CenterRow)`
     position: fixed;
     top: 0;
@@ -68,7 +71,7 @@ const Backdrop = styled(CenterRow)`
 const Container = styled(FlexCol)`
     width: 100%;
     max-width: 520px;
-    height: 300px;
+    min-height: 300px;
     box-sizing: border-box;
     gap: 20px;
     padding: 20px 20px;
@@ -117,7 +120,7 @@ const UrlText = styled.span`
     cursor: pointer;
 `;
 
-// -- MeetJoinModal 컴포넌트 --
+// 컴포넌트
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     meetingId,
     onCancel,
@@ -130,10 +133,12 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     const [showRecordingStopModal, setShowRecordingStopModal] =
         useState<boolean>(false);
 
-    const audioRecorderRef = useRef<{
-        startRecording: () => void;
-        stopRecording: () => void;
-    } | null>(null);
+    // 추가된 상태: 녹음된 Blob과 도메인
+    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+    const [domain, setDomain] = useState<string>(''); // 도메인 초기화
+
+    // ref 타입 수정: AudioRecorderHandle
+    const audioRecorderRef = useRef<AudioRecorderHandle>(null);
 
     useEffect(() => {
         const fetchMeeting = async () => {
@@ -143,8 +148,12 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                 );
                 console.log('Fetched Meeting Data:', response.data); // 데이터 출력
                 setMeeting(response.data);
+                setDomain(response.data.domain || 'defaultDomain'); // 실제 도메인 필드로 변경
             } catch (error) {
                 console.error('회의 정보를 가져오는데 실패했습니다:', error);
+                alert(
+                    '회의 정보를 가져오는데 실패했습니다. 다시 시도해주세요.',
+                );
             }
         };
 
@@ -170,14 +179,23 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
             audioRecorderRef.current.stopRecording();
             setIsRecording(false);
         }
-        setShowRecordingStopModal(true); // RecordingStopModal 표시
-        onRecordingStop();
+        // 녹음이 중지되면 handleRecordingStopped가 호출되어 onRecordingStop이 호출됩니다.
     };
 
     const onCopyUrl = (): void => {
         if (meeting && meeting.url) {
             navigator.clipboard.writeText(meeting.url);
             alert('URL이 클립보드에 복사되었습니다!');
+        }
+    };
+
+    // 녹음이 중지되었을 때 Blob을 저장하고 RecordingStopModal을 표시
+    const handleRecordingStopped = (blob: Blob | null) => {
+        if (blob) {
+            setRecordedBlob(blob);
+            onRecordingStop(blob); // 부모 컴포넌트로 Blob 전달
+        } else {
+            alert('녹음이 실패했습니다.');
         }
     };
 
@@ -189,7 +207,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
         return (
             <EndedMeetingModal
                 meeting={{
-                    id: meeting.id,
+                    id: meeting.id.toString(),
                     meetingName: meeting.name,
                     dateTime: meeting.startDate,
                     url: meeting.url,
@@ -205,10 +223,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
         <>
             <AudioRecorder
                 ref={audioRecorderRef}
-                onRecordingStopped={(blob) => {
-                    console.log('녹음된 데이터:', blob);
-                    // 녹음 데이터를 처리하는 로직 추가
-                }}
+                onRecordingStopped={handleRecordingStopped}
             />
             <Backdrop>
                 <Container>
@@ -275,13 +290,16 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                     </ButtonArea>
                 </Container>
             </Backdrop>
-            {showRecordingStopModal && meeting && (
+            {showRecordingStopModal && meeting && recordedBlob && (
                 <RecordingStopModal
                     meeting={{
-                        id: meeting.id,
+                        id: meeting.id.toString(),
                         meetingName: meeting.name,
                         dateTime: meeting.startDate,
+                        url: meeting.url,
                     }}
+                    domain={domain} // 도메인 전달
+                    recordingBlob={recordedBlob} // Blob 전달
                     onConfirm={() => setShowRecordingStopModal(false)}
                 />
             )}

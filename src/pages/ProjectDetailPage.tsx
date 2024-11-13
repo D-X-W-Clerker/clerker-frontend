@@ -23,6 +23,7 @@ import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
 import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 
+// Axios Instance 설정
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
 });
@@ -58,6 +59,7 @@ interface MeetingData {
     createdAt: string;
     isEnded: boolean;
     url?: string;
+    domain: string; // 도메인 추가
 }
 
 interface ScheduleData {
@@ -83,7 +85,7 @@ type ModalType =
     | 'meetCreate'
     | 'meetJoin'
     | 'recordingStop'
-    | 'endedMeeting' // 'endedMeeting' 추가
+    | 'endedMeeting'
     | null;
 
 const Container = styled(FlexRow)`
@@ -163,6 +165,10 @@ const ProjectDetailPage: React.FC = () => {
     );
     const [scheduleClicked, setScheduleClicked] = useState(false);
 
+    // Recording 관련 상태 추가
+    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+    const [domain, setDomain] = useState<string>(''); // 도메인 상태
+
     const members: MemberData[] = [
         {
             organizationId: '1',
@@ -187,6 +193,12 @@ const ProjectDetailPage: React.FC = () => {
                     `/api/schedule/${projectId}`,
                 );
                 setMeetingData(response.data.meetings);
+                // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
+                if (response.data.meetings.length > 0) {
+                    setDomain(
+                        response.data.meetings[0].domain || 'defaultDomain',
+                    );
+                }
             } catch (error) {
                 console.error('Failed to fetch meeting data:', error);
             }
@@ -225,8 +237,13 @@ const ProjectDetailPage: React.FC = () => {
         setSelectedMeeting(null);
     };
 
-    const handleRecordingStop = () => {
-        setModalType('recordingStop'); // RecordingStopModal 표시
+    const handleRecordingStop = (blob: Blob | null) => {
+        if (blob) {
+            setRecordedBlob(blob); // 녹음된 Blob 설정
+            setModalType('recordingStop'); // RecordingStopModal 표시
+        } else {
+            alert('녹음이 실패했습니다.');
+        }
     };
 
     const onClickEventFile = (event: MeetingData | ScheduleData) => {
@@ -375,17 +392,21 @@ const ProjectDetailPage: React.FC = () => {
                     onRecordingStop={handleRecordingStop}
                 />
             )}
-            {modalType === 'recordingStop' && selectedMeeting && (
-                <RecordingStopModal
-                    meeting={{
-                        id: selectedMeeting.meetingId,
-                        meetingName: selectedMeeting.name,
-                        dateTime: selectedMeeting.startDate,
-                        url: selectedMeeting.url,
-                    }}
-                    onConfirm={handleCloseModal} // 확인 버튼 클릭 시 모달 닫기
-                />
-            )}
+            {modalType === 'recordingStop' &&
+                selectedMeeting &&
+                recordedBlob && (
+                    <RecordingStopModal
+                        meeting={{
+                            id: selectedMeeting.meetingId,
+                            meetingName: selectedMeeting.name,
+                            dateTime: selectedMeeting.startDate,
+                            url: selectedMeeting.url,
+                        }}
+                        domain={domain} // 도메인 전달
+                        recordingBlob={recordedBlob} // Blob 전달
+                        onConfirm={handleCloseModal}
+                    />
+                )}
             {modalType === 'endedMeeting' && selectedMeeting && (
                 <EndedMeetingModal
                     meeting={{

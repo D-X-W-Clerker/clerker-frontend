@@ -1,86 +1,72 @@
+// AudioRecorder.tsx
+
 import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 
 interface AudioRecorderProps {
-    onRecordingStopped: (blob: Blob) => void; // Blob 전달
+    onRecordingStopped: (blob: Blob | null) => void; // Blob 또는 null 전달
 }
 
-const AudioRecorder = forwardRef(
-    ({ onRecordingStopped }: AudioRecorderProps, ref) => {
+export interface AudioRecorderHandle {
+    startRecording: () => void;
+    stopRecording: () => void;
+    getRecordingBlob: () => Blob | null;
+}
+
+const AudioRecorder = forwardRef<AudioRecorderHandle, AudioRecorderProps>(
+    ({ onRecordingStopped }, ref) => {
         const mediaRecorderRef = useRef<MediaRecorder | null>(null);
         const chunksRef = useRef<Blob[]>([]);
-
-        const mergeAudioStreams = async (
-            systemStream: MediaStream,
-            micStream: MediaStream,
-        ): Promise<MediaStream> => {
-            const context = new AudioContext();
-            const destination = context.createMediaStreamDestination();
-
-            const systemAudioTracks = systemStream.getAudioTracks();
-            if (systemAudioTracks.length > 0) {
-                const systemSource =
-                    context.createMediaStreamSource(systemStream);
-                systemSource.connect(destination);
-            }
-
-            const micAudioTracks = micStream.getAudioTracks();
-            if (micAudioTracks.length > 0) {
-                const micSource = context.createMediaStreamSource(micStream);
-                micSource.connect(destination);
-            }
-
-            if (systemAudioTracks.length === 0 && micAudioTracks.length === 0) {
-                console.warn('No audio tracks found in provided streams.');
-            }
-
-            return destination.stream;
-        };
 
         const startRecording = async () => {
             try {
                 console.log('Attempting to start recording...');
-                const displayStream =
-                    await navigator.mediaDevices.getDisplayMedia({
-                        video: true,
-                        audio: true,
-                    });
+
+                // 지원되는 MIME 타입 확인
+                const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm'];
+
+                let selectedMimeType = '';
+                for (const mimeType of mimeTypes) {
+                    if (MediaRecorder.isTypeSupported(mimeType)) {
+                        selectedMimeType = mimeType;
+                        break;
+                    }
+                }
+
+                if (!selectedMimeType) {
+                    throw new Error('지원되는 MIME 타입이 없습니다.');
+                }
+
+                console.log(`Selected MIME type: ${selectedMimeType}`);
 
                 const audioStream = await navigator.mediaDevices.getUserMedia({
                     audio: true,
                 });
 
-                const combinedStream = await mergeAudioStreams(
-                    displayStream,
-                    audioStream,
-                );
+                // 오디오 트랙 확인
+                const audioTracks = audioStream.getAudioTracks();
+                console.log('Audio tracks:', audioTracks);
+                if (audioTracks.length === 0) {
+                    throw new Error('오디오 트랙을 찾을 수 없습니다.');
+                }
 
-                const mediaRecorder = new MediaRecorder(combinedStream, {
-                    mimeType: 'audio/webm;codecs=opus',
+                const mediaRecorder = new MediaRecorder(audioStream, {
+                    mimeType: selectedMimeType,
                 });
 
                 mediaRecorder.ondataavailable = (event: BlobEvent) => {
                     if (event.data.size > 0) {
+                        console.log('Data available:', event.data);
                         chunksRef.current.push(event.data);
                     }
                 };
 
                 mediaRecorder.onstop = () => {
                     const blob = new Blob(chunksRef.current, {
-                        type: 'audio/webm',
+                        type: selectedMimeType,
                     });
+                    console.log('Recorded Blob:', blob);
                     chunksRef.current = [];
                     console.log('Recording has been stopped and processed.');
-
-                    // 다운로드 처리
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.style.display = 'none';
-                    a.href = url;
-                    a.download = `recording_${new Date().toISOString()}.webm`;
-                    document.body.appendChild(a);
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
 
                     onRecordingStopped(blob); // 녹음 종료 시 Blob 전달
                 };
@@ -91,6 +77,7 @@ const AudioRecorder = forwardRef(
             } catch (error) {
                 console.error('Error starting recording:', error);
                 alert('녹음을 시작하지 못했습니다. 권한 설정을 확인해주세요.');
+                onRecordingStopped(null); // 녹음 실패 시 null 전달
             }
         };
 
