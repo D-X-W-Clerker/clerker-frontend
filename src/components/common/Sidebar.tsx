@@ -145,12 +145,10 @@ const SideBar: React.FC = () => {
     // 알림 삭제
     const deleteMutation = useMutation(deleteNotification, {
         onSuccess: () => {
-            alert('알림이 삭제되었습니다.');
             refetch(); // 삭제 후 알림 목록 다시 가져오기
         },
         onError: (error) => {
             console.error('알림 삭제 실패:', error);
-            alert('알림 삭제에 실패했습니다.');
         },
     });
 
