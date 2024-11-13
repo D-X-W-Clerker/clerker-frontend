@@ -161,8 +161,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
     const [schedules, setSchedules] = useState<ScheduleData[]>([]);
-    const [selectedSchedule, setSelectedSchedule] =
-        useState<ScheduleData | null>(null);
+    const [selectedSchedules, setSelectedSchedules] = useState<ScheduleData[]>(
+        [],
+    );
 
     useEffect(() => {
         const fetchMeetings = async () => {
@@ -196,7 +197,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
 
     const closeCheckModal = (): void => {
         setIsCheckModalOpen(false);
-        setSelectedSchedule(null);
+        setSelectedSchedules([]);
     };
 
     const getMonthYear = (date: Date): string =>
@@ -275,11 +276,11 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 setSelectedEndDate(null);
             }
         } else {
-            const schedule = schedules.find((s) =>
+            const schedulesOnDate = schedules.filter((s) =>
                 isSameDay(new Date(s.startDate), date),
             );
-            if (schedule) {
-                setSelectedSchedule(schedule);
+            if (schedulesOnDate.length > 0) {
+                setSelectedSchedules(schedulesOnDate);
                 setIsCheckModalOpen(true);
             }
         }
@@ -349,15 +350,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                     endDate={selectedEndDate}
                 />
             )}
-            {isCheckModalOpen && selectedSchedule && (
+            {isCheckModalOpen && selectedSchedules.length > 0 && (
                 <ScheduleCheckModal
-                    scheduleData={{
-                        meetingId: selectedSchedule.meetingId,
-                        scheduleId: selectedSchedule.scheduleId,
-                        name: selectedSchedule.name,
-                        scheduleName: selectedSchedule.scheduleName,
-                        startDate: selectedSchedule.startDate,
-                    }}
+                    scheduleData={selectedSchedules}
                     onConfirm={closeCheckModal}
                 />
             )}
