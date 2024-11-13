@@ -49,9 +49,10 @@ axiosInstance.interceptors.request.use(
 
 interface MeetingData {
     meetingId: string;
-    meetingName: string;
+    name: string; // 이름 필드 추가
     startDate: string;
     createdAt: string;
+    isEnded: boolean; // 필요에 따라 추가
 }
 
 interface ScheduleData {
@@ -295,8 +296,8 @@ const ProjectDetailPage: React.FC = () => {
                                     return (
                                         <EventFile
                                             key={event.meetingId}
-                                            meetingName={event.meetingName}
-                                            dateTime={event.createdAt}
+                                            meetingName={event.name}
+                                            dateTime={event.startDate}
                                             onClick={() =>
                                                 onClickEventFile(event)
                                             }
@@ -308,7 +309,7 @@ const ProjectDetailPage: React.FC = () => {
                                         <EventFile
                                             key={event.scheduleId}
                                             meetingName={event.scheduleName}
-                                            dateTime={event.createdAt}
+                                            dateTime={event.startDate}
                                             onClick={() =>
                                                 onClickEventFile(event)
                                             }
