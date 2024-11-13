@@ -1,6 +1,6 @@
 // MeetJoinModal.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { UrlClipIcon } from '@assets';
 import {
@@ -19,7 +19,6 @@ import {
 } from '@styles';
 import { SplitDateTime } from '@utils';
 import axios from 'axios';
-import AudioRecorder from "@components/modal/meet/AudioRecorder";
 
 // -- Axios Instance 설정 --
 const axiosInstance = axios.create({
@@ -125,7 +124,11 @@ const EndedMessage = styled.div`
 `;
 
 const StopRecordingButton = styled(ModalButton)`
-    background-color: var(--color-red);
+    background-color: #ff4d4f !important; // 빨간색으로 직접 지정
+    color: #fff !important; // 글자색을 흰색으로 지정
+    &:hover {
+        background-color: #ff7875 !important; // 호버 시 색상 변경
+    }
 `;
 
 // -- 컴포넌트 --
@@ -137,7 +140,9 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     const [meeting, setMeeting] = useState<MeetDetailProps | null>(null);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
     const [isRecording, setIsRecording] = useState<boolean>(false);
-    const [isRecordingStopped, setIsRecordingStopped] = useState<boolean>(false);
+
+    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const chunksRef = useRef<Blob[]>([]);
 
     useEffect(() => {
         const fetchMeeting = async () => {
@@ -154,24 +159,84 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
         fetchMeeting();
     }, [meetingId]);
 
-    useEffect(() => {
-        if (isRecordingStopped) {
-            // 녹음이 완전히 종료된 후 onRecordingStop 호출
-            onRecordingStop();
+    const startRecording = async () => {
+        try {
+            const displayStream = await navigator.mediaDevices.getDisplayMedia({
+                video: true,
+                audio: true,
+            });
+
+            const audioStream = await navigator.mediaDevices.getUserMedia({
+                audio: true,
+            });
+
+            const combinedStream = mergeAudioStreams(displayStream, audioStream);
+
+            const mediaRecorder = new MediaRecorder(combinedStream, {
+                mimeType: 'audio/webm;codecs=opus',
+            });
+
+            mediaRecorder.ondataavailable = (event: BlobEvent) => {
+                if (event.data.size > 0) {
+                    chunksRef.current.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+                const url = URL.createObjectURL(blob);
+                // 녹음된 오디오를 처리합니다.
+                chunksRef.current = [];
+                console.log('Recording stopped');
+
+                // 녹음 종료 시 호출
+                onRecordingStop();
+            };
+
+            mediaRecorder.start();
+            mediaRecorderRef.current = mediaRecorder;
+            setIsRecording(true);
+            console.log('Recording started');
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            // 녹음 시작 실패 시 alert 제거
         }
-    }, [isRecordingStopped, onRecordingStop]);
+    };
 
-    const onClickJoinButton = (): void => {
+    const stopRecording = () => {
+        const mediaRecorder = mediaRecorderRef.current;
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+            const tracks = mediaRecorder.stream.getTracks();
+            tracks.forEach((track: MediaStreamTrack) => track.stop());
+            mediaRecorderRef.current = null;
+            setIsRecording(false);
+        }
+    };
+
+    const mergeAudioStreams = (
+        systemStream: MediaStream,
+        micStream: MediaStream,
+    ): MediaStream => {
+        const context = new AudioContext();
+        const destination = context.createMediaStreamDestination();
+
+        const systemSource = context.createMediaStreamSource(systemStream);
+        const micSource = context.createMediaStreamSource(micStream);
+
+        systemSource.connect(destination);
+        micSource.connect(destination);
+
+        return destination.stream;
+    };
+
+    const onClickJoinButton = async (): Promise<void> => {
         if (meeting && meeting.url) {
-            window.open(meeting.url, '_blank');
-
             if (sendAlert) {
                 // 녹음 시작
-                setIsRecording(true);
-            } else {
-                // 녹음하지 않을 경우 모달 닫기
-                onCancel();
+                await startRecording();
             }
+            window.open(meeting.url, '_blank');
         } else {
             alert('회의 URL을 가져올 수 없습니다.');
         }
@@ -179,7 +244,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
 
     const onClickStopButton = (): void => {
         // 녹음 종료 트리거
-        setIsRecording(false);
+        stopRecording();
     };
 
     const onCopyUrl = (): void => {
@@ -242,8 +307,8 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                                         }
                                     />
                                     <Alert>
-                                        녹화 옵션을 선택하지 않을 시, 회의
-                                        요약 및 정리 기능을 이용하실 수 없습니다.
+                                        녹화 옵션을 선택하지 않을 시, 회의 요약 및
+                                        정리 기능을 이용하실 수 없습니다.
                                     </Alert>
                                 </>
                             )}
@@ -278,12 +343,6 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                             )}
                         </ButtonArea>
                     </>
-                )}
-                {isRecording && (
-                    <AudioRecorder
-                        isRecording={isRecording}
-                        onRecordingStopped={() => setIsRecordingStopped(true)}
-                    />
                 )}
             </Container>
         </Backdrop>
