@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { UrlClipIcon } from '@assets';
 import {
@@ -16,6 +16,23 @@ import {
     ItemsCenterEndRow,
 } from '@styles';
 import { SplitDateTime } from '@utils';
+import axios from 'axios';
+
+// -- Axios Instance 설정 --
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 // -- 인터페이스 --
 interface MeetJoinModalProps {
@@ -96,34 +113,50 @@ const UrlText = styled.span`
     cursor: pointer;
 `;
 
-// 더미 데이터
-const meeting: MeetDetailProps = {
-    id: '1',
-    name: '9월 12일 회의',
-    url: 'https://meet.google.com/hgq-ncmq-arq',
-    startDate: '2024-09-12T04:11:48.532Z',
-    isEnded: false,
-    createdAt: '2024-09-12T04:11:48.532Z',
-};
-
+// -- 컴포넌트 --
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     meetingId,
     onCancel,
 }) => {
-    const dateFields = SplitDateTime(meeting.startDate);
+    const [meeting, setMeeting] = useState<MeetDetailProps | null>(null);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
 
+    useEffect(() => {
+        const fetchMeeting = async () => {
+            try {
+                const response = await axiosInstance.get(
+                    `/api/meeting/detail/${meetingId}`,
+                );
+                setMeeting(response.data);
+            } catch (error) {
+                console.error('회의 정보를 가져오는데 실패했습니다:', error);
+            }
+        };
+
+        fetchMeeting();
+    }, [meetingId]);
+
     const onClickJoinButton = (): void => {
-        alert('회의 참여');
-        onCancel();
+        if (meeting && meeting.url) {
+            window.open(meeting.url, '_blank');
+            onCancel();
+        } else {
+            alert('회의 URL을 가져올 수 없습니다.');
+        }
     };
 
     const onCopyUrl = (): void => {
-        if (meeting.url) {
+        if (meeting && meeting.url) {
             navigator.clipboard.writeText(meeting.url);
             alert('URL이 클립보드에 복사되었습니다!');
         }
     };
+
+    if (!meeting) {
+        return null; // 로딩 인디케이터 등을 표시할 수 있습니다.
+    }
+
+    const dateFields = SplitDateTime(meeting.startDate);
 
     return (
         <Backdrop>
@@ -136,17 +169,15 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                         isEditable={false}
                     />
                     <DateInputArea>
-                        {dateFields.map((field) => {
-                            return (
-                                <DateInput
-                                    key={field.value}
-                                    type="meet"
-                                    label={field.label}
-                                    value={field.value}
-                                    isEditable={false}
-                                />
-                            );
-                        })}
+                        {dateFields.map((field) => (
+                            <DateInput
+                                key={field.label}
+                                type="meet"
+                                label={field.label}
+                                value={field.value}
+                                isEditable={false}
+                            />
+                        ))}
                     </DateInputArea>
                 </ContentArea>
                 <SubContentArea>
@@ -154,9 +185,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                         label="회의를 녹화 하시겠습니까?"
                         name="sendAlert"
                         checked={sendAlert}
-                        onChange={(): void => {
-                            return setSendAlert(!sendAlert);
-                        }}
+                        onChange={() => setSendAlert(!sendAlert)}
                     />
                     <Alert>
                         녹화 옵션을 선택하지 않을 시, 회의 요약 및 정리 기능을
