@@ -3,9 +3,16 @@ import styled from 'styled-components';
 import { LargeModalTitleTab, ModalButton, EventFile } from '@components';
 import { CenterRow, FlexCol, ItemsCenterEndRow } from '@styles';
 
+interface ScheduleData {
+    meetingId?: string; // 회의 ID
+    scheduleId?: string; // 스케줄 ID
+    name?: string; // 회의 이름
+    scheduleName?: string; // 스케줄 이름
+    startDate: string; // 시작 날짜
+}
+
 interface ScheduleCheckModalProps {
-    scheduleName: string;
-    dateTime: string;
+    scheduleData: ScheduleData; // 모든 스케줄 데이터를 포함
     onConfirm: () => void;
 }
 
@@ -50,8 +57,7 @@ const ButtonArea = styled.div`
 `;
 
 const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
-    scheduleName,
-    dateTime,
+    scheduleData,
     onConfirm,
 }) => {
     return (
@@ -64,7 +70,18 @@ const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
                     />
                 </HeaderArea>
                 <ContentArea>
-                    <EventFile meetingName={scheduleName} dateTime={dateTime} />
+                    {/* 동적으로 EventFile 렌더링 */}
+                    {'meetingId' in scheduleData ? (
+                        <EventFile
+                            meetingName={scheduleData.name || ''}
+                            dateTime={scheduleData.startDate}
+                        />
+                    ) : 'scheduleId' in scheduleData ? (
+                        <EventFile
+                            meetingName={scheduleData.scheduleName || ''}
+                            dateTime={scheduleData.startDate}
+                        />
+                    ) : null}
                 </ContentArea>
                 <ButtonArea>
                     <ModalButton text="확인" color="blue" onClick={onConfirm} />

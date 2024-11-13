@@ -36,6 +36,8 @@ interface ScheduleData {
     endTime: TimeData;
     createdAt: string;
     isEnded: boolean;
+    meetingId?: string;
+    name?: string;
 }
 
 const CalendarContainer = styled.div`
@@ -168,8 +170,8 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 const response = await axiosInstance.get(
                     `/api/schedule/${projectId}`,
                 );
-                console.log('받아온 회의 일정 데이터:', response.data); // 받아온 데이터 출력
-                setSchedules(response.data.meetings); // meetings로 데이터 설정
+                console.log('받아온 회의 일정 데이터:', response.data);
+                setSchedules(response.data.meetings);
             } catch (error) {
                 console.error(
                     '회의 일정 데이터를 가져오는데 실패했습니다:',
@@ -349,8 +351,13 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
             )}
             {isCheckModalOpen && selectedSchedule && (
                 <ScheduleCheckModal
-                    scheduleName={selectedSchedule.scheduleName}
-                    dateTime={selectedSchedule.startDate}
+                    scheduleData={{
+                        meetingId: selectedSchedule.meetingId,
+                        scheduleId: selectedSchedule.scheduleId,
+                        name: selectedSchedule.name,
+                        scheduleName: selectedSchedule.scheduleName,
+                        startDate: selectedSchedule.startDate,
+                    }}
                     onConfirm={closeCheckModal}
                 />
             )}

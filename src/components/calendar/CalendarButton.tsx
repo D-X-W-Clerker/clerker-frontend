@@ -14,9 +14,12 @@ const ButtonWrapper = styled.div`
     margin-top: -2%;
 `;
 
-const Button = styled.button<CalendarButtonProps>`
+const Button = styled.button<{
+    $isSelectingDates: boolean;
+    $hasSelectedDates: boolean;
+}>`
     background-color: ${(props): string => {
-        return props.isSelectingDates && !props.hasSelectedDates
+        return props.$isSelectingDates && !props.$hasSelectedDates
             ? '#CCCCCC'
             : '#40a3ff';
     }};
@@ -29,7 +32,7 @@ const Button = styled.button<CalendarButtonProps>`
 
     &:hover {
         background-color: ${(props): string => {
-            return props.isSelectingDates && !props.hasSelectedDates
+            return props.$isSelectingDates && !props.$hasSelectedDates
                 ? '#CCCCCC'
                 : '#3392e6';
         }};
@@ -65,8 +68,8 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
             )}
             <Button
                 type="button"
-                isSelectingDates={isSelectingDates}
-                hasSelectedDates={hasSelectedDates}
+                $isSelectingDates={isSelectingDates}
+                $hasSelectedDates={hasSelectedDates}
                 onClick={onClick}
                 disabled={isSelectingDates && !hasSelectedDates}
             >
@@ -74,11 +77,6 @@ const CalendarButton: React.FC<CalendarButtonProps> = ({
             </Button>
         </ButtonWrapper>
     );
-};
-
-// 기본값 설정
-CalendarButton.defaultProps = {
-    onCancel: () => {}, // 기본값으로 빈 함수 설정
 };
 
 export default CalendarButton;
