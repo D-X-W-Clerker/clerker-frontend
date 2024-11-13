@@ -5,8 +5,8 @@ import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface TabContainerProps {
-    activeTab: string;
-    onClickTab: (tab: string) => void;
+    activeTab: 'meeting' | 'schedule';
+    onClickTab: (tab: 'meeting' | 'schedule') => void;
 }
 
 // -- 스타일 컴포넌트 --
@@ -16,26 +16,17 @@ const Container = styled(ItemsCenterRow)`
 `;
 
 const TabButton = styled.div<{ $active: boolean }>`
-    font-size: ${(props): string => {
-        return props.$active ? '19px' : '15px';
-    }};
-    color: ${(props): string => {
-        return props.$active
-            ? 'var(--color-gray-600)'
-            : 'var(--color-gray-500)';
-    }};
-    order: ${(props): number => {
-        return props.$active ? -1 : 0;
-    }};
-    ${(props): string => {
-        return props.$active
-            ? `&::after {
-          content: '|';
-          margin-left: 5px;
-        }`
-            : '';
-    }}
+    font-size: ${(props) => (props.$active ? '19px' : '15px')};
+    color: ${(props) =>
+        props.$active ? 'var(--color-gray-600)' : 'var(--color-gray-500)'};
+    order: ${(props) => (props.$active ? -1 : 0)};
     cursor: pointer;
+    position: relative;
+
+    &::after {
+        content: ${(props) => (props.$active ? "'|'" : "''")};
+        margin-left: 5px;
+    }
 `;
 
 const SvgImage = styled.img`
@@ -54,17 +45,13 @@ const TabContainer: React.FC<TabContainerProps> = ({
             <SvgImage src={ContentIcon} />
             <TabButton
                 $active={activeTab === 'meeting'}
-                onClick={(): void => {
-                    return onClickTab('meeting');
-                }}
+                onClick={() => onClickTab('meeting')}
             >
                 Meeting
             </TabButton>
             <TabButton
                 $active={activeTab === 'schedule'}
-                onClick={(): void => {
-                    return onClickTab('schedule');
-                }}
+                onClick={() => onClickTab('schedule')}
             >
                 Schedule
             </TabButton>
