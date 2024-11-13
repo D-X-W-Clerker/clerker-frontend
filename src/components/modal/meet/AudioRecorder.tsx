@@ -110,6 +110,12 @@ const AudioRecorder = forwardRef(
         useImperativeHandle(ref, () => ({
             startRecording,
             stopRecording,
+            getRecordingBlob: () => {
+                if (chunksRef.current.length > 0) {
+                    return new Blob(chunksRef.current, { type: 'audio/webm' });
+                }
+                return null;
+            },
         }));
 
         return null;

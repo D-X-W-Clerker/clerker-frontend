@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 import {
     LargeModalTitleTab,
     ProjectInput,
@@ -9,11 +10,26 @@ import {
 import {
     CenterRow,
     FlexCol,
-    ItemsCenterRow,
     ItemsCenterSpaceRow,
     ItemsCenterEndRow,
 } from '@styles';
 import { SplitDateTime } from '@utils';
+
+// -- Axios Instance 설정 --
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 // -- 인터페이스 --
 interface RecordingStopModalProps {
@@ -68,7 +84,7 @@ const ButtonArea = styled(ItemsCenterEndRow)`
     gap: 10px;
 `;
 
-const SubText = styled(ItemsCenterRow)`
+const SubText = styled.div`
     font-size: 14px;
     color: var(--color-gray-600);
 `;
@@ -91,11 +107,37 @@ const infoMessages = [
     { id: 3, text: '완료되면 알람을 보내드리고 있습니다.' },
 ];
 
+// -- 컴포넌트 --
 const RecordingStopModal: React.FC<RecordingStopModalProps> = ({
-    meeting,
-    onConfirm,
-}) => {
+                                                                   meeting,
+                                                                   onConfirm,
+                                                               }) => {
     const dateFields = SplitDateTime(meeting.dateTime);
+
+    useEffect(() => {
+        const uploadRecording = async () => {
+            try {
+                const domain = 'exampleDomain'; // 전송할 domain 값
+                const webmFile = new Blob([], { type: 'audio/webm' }); // 실제 녹음 파일로 교체 필요
+
+                const formData = new FormData();
+                formData.append('domain', domain);
+                formData.append('file', webmFile, 'recording.webm');
+
+                await axiosInstance.post('/api/model/send', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+
+                console.log('파일 전송 성공');
+            } catch (error) {
+                console.error('파일 전송 실패:', error);
+            }
+        };
+
+        uploadRecording();
+    }, []);
 
     return (
         <Backdrop>
