@@ -3,12 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import {
-    ActiveSettingIcon,
-    MemberIcon,
-    MemberAddIcon,
-    AddIcon,
-} from '@assets';
+import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
     TitleTab,
@@ -22,16 +17,11 @@ import {
     RecordingStopModal,
     When2meet,
 } from '@components';
-import {
-    FlexCol,
-    FlexRow,
-    ItemsCenterRow,
-    ItemsCenterStartRow,
-} from '@styles';
+import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
-import EndedMeetingModal from "@components/modal/meet/EndedMeetingModal";
+import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -223,10 +213,7 @@ const ProjectDetailPage: React.FC = () => {
         fetchSchedules();
     }, [projectId]);
 
-    const handleOpenModal = (
-        type: ModalType,
-        meeting?: MeetingData,
-    ) => {
+    const handleOpenModal = (type: ModalType, meeting?: MeetingData) => {
         setModalType(type);
         if (meeting) {
             setSelectedMeeting(meeting);
@@ -239,7 +226,7 @@ const ProjectDetailPage: React.FC = () => {
     };
 
     const handleRecordingStop = () => {
-        setModalType('recordingStop');
+        setModalType('recordingStop'); // RecordingStopModal 표시
     };
 
     const onClickEventFile = (event: MeetingData | ScheduleData) => {
@@ -354,9 +341,7 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 <RightContentArea>
                     {scheduleClicked ? (
-                        <When2meet
-                            onCancel={() => setScheduleClicked(false)}
-                        />
+                        <When2meet onCancel={() => setScheduleClicked(false)} />
                     ) : (
                         <ProjectCalendar
                             projectId={projectId || ''}
@@ -398,7 +383,7 @@ const ProjectDetailPage: React.FC = () => {
                         dateTime: selectedMeeting.startDate,
                         url: selectedMeeting.url,
                     }}
-                    onConfirm={handleCloseModal}
+                    onConfirm={handleCloseModal} // 확인 버튼 클릭 시 모달 닫기
                 />
             )}
             {modalType === 'endedMeeting' && selectedMeeting && (

@@ -76,9 +76,9 @@ const SubText = styled(ItemsCenterRow)`
 `;
 
 const EndedMeetingModal: React.FC<EndedMeetingModalProps> = ({
-                                                                 meeting,
-                                                                 onConfirm,
-                                                             }) => {
+    meeting,
+    onConfirm,
+}) => {
     const dateFields = SplitDateTime(meeting.dateTime);
 
     return (
