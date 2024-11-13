@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import { UrlClipIcon } from '@assets';
 import {
     LargeModalTitleTab,
@@ -97,30 +96,22 @@ const UrlText = styled.span`
     cursor: pointer;
 `;
 
+// 더미 데이터
+const meeting: MeetDetailProps = {
+    id: '1',
+    name: '9월 12일 회의',
+    url: 'https://meet.google.com/hgq-ncmq-arq',
+    startDate: '2024-09-12T04:11:48.532Z',
+    isEnded: false,
+    createdAt: '2024-09-12T04:11:48.532Z',
+};
+
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     meetingId,
     onCancel,
 }) => {
-    const [meetingData, setMeetingData] = useState<MeetDetailProps | null>(
-        null,
-    );
+    const dateFields = SplitDateTime(meeting.startDate);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
-
-    // 데이터 가져오기
-    useEffect(() => {
-        const fetchMeetingData = async () => {
-            try {
-                const response = await axios.get(
-                    `/api/meeting/detail/${meetingId}`,
-                );
-                setMeetingData(response.data);
-            } catch (error) {
-                console.error('Failed to fetch meeting data:', error);
-            }
-        };
-
-        fetchMeetingData();
-    }, [meetingId]);
 
     const onClickJoinButton = (): void => {
         alert('회의 참여');
@@ -128,17 +119,11 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     };
 
     const onCopyUrl = (): void => {
-        if (meetingData?.url) {
-            navigator.clipboard.writeText(meetingData.url);
+        if (meeting.url) {
+            navigator.clipboard.writeText(meeting.url);
             alert('URL이 클립보드에 복사되었습니다!');
         }
     };
-
-    if (!meetingData) {
-        return null; // 데이터가 로드되지 않았을 때 아무것도 렌더링하지 않음
-    }
-
-    const dateFields = SplitDateTime(meetingData.startDate);
 
     return (
         <Backdrop>
@@ -147,7 +132,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                 <ContentArea>
                     <ProjectInput
                         type="text"
-                        value={meetingData.name}
+                        value={meeting.name}
                         isEditable={false}
                     />
                     <DateInputArea>
@@ -179,7 +164,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                     </Alert>
                     <UrlArea onClick={onCopyUrl}>
                         <SvgImage src={UrlClipIcon} alt="URL Clip Icon" />
-                        <UrlText>{meetingData.url}</UrlText>
+                        <UrlText>{meeting.url}</UrlText>
                     </UrlArea>
                 </SubContentArea>
                 <ButtonArea>

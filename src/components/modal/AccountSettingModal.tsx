@@ -15,6 +15,7 @@ import {
     ItemsCenterSpaceRow,
 } from '@styles';
 import { useAuthStore } from '@store';
+import axios from 'axios';
 
 // -- 인터페이스 --
 interface AccountSettingModalProps {
@@ -105,7 +106,7 @@ const FooterArea = styled(ItemsCenterSpaceRow)``;
 const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
     onCancel,
 }) => {
-    const { user } = useAuthStore();
+    const { user, token, setUser } = useAuthStore();
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [name, setName] = useState<string>(user?.name || '');
     const [email, setEmail] = useState<string>(user?.email || '');
@@ -131,8 +132,41 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         setName(event.target.value);
     };
 
-    const onClickConfirmButton = (): void => {
-        alert('계정 설정');
+    const onClickConfirmButton = async (): Promise<void> => {
+        try {
+            const formData = new FormData();
+            if (profileImage) {
+                formData.append('profileImage', profileImage); // 이미지 파일을 'profileImage' 필드로 전송
+            }
+            formData.append('username', name); // 이름을 'username' 필드로 전송
+
+            const response = await axios.patch(
+                `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
+                formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data', // multipart/form-data로 설정
+                    },
+                },
+            );
+
+            if (response.status === 200) {
+                const { authToken, updatedUser } = response.data;
+                setUser(authToken, {
+                    ...updatedUser,
+                    profileImage: profileImage
+                        ? URL.createObjectURL(profileImage)
+                        : updatedUser.profileImage,
+                });
+                alert('계정 설정이 저장되었습니다.');
+            } else {
+                throw new Error('프로필 업데이트에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('계정 설정 저장 중 오류가 발생했습니다.');
+        }
     };
 
     const onClickAccountDelete = (): void => {
@@ -143,10 +177,30 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         setShowModal(false);
     };
 
-    const onClickConfirmDelete = (): void => {
-        alert('계정이 삭제되었습니다.');
-        navigate('/');
-        setShowModal(false);
+    const onClickConfirmDelete = async (): Promise<void> => {
+        try {
+            const response = await axios.delete(
+                `${process.env.REACT_APP_BASE_URL}/api/auth/account`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            if (response.status === 200) {
+                alert('계정이 삭제되었습니다.');
+                useAuthStore.getState().logout(); // 상태 초기화
+                navigate('/');
+            } else {
+                throw new Error('계정 삭제에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('계정 삭제 중 오류가 발생했습니다.');
+        } finally {
+            setShowModal(false);
+        }
     };
 
     React.useEffect(() => {
