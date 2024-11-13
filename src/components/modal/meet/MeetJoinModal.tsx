@@ -119,10 +119,10 @@ const UrlText = styled.span`
 
 // -- MeetJoinModal 컴포넌트 --
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
-                                                         meetingId,
-                                                         onCancel,
-                                                         onRecordingStop,
-                                                     }) => {
+    meetingId,
+    onCancel,
+    onRecordingStop,
+}) => {
     const [meeting, setMeeting] = useState<MeetDetailProps | null>(null);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
     const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -141,7 +141,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                 const response = await axiosInstance.get(
                     `/api/meeting/detail/${meetingId}`,
                 );
-                console.log("Fetched Meeting Data:", response.data); // 데이터 출력
+                console.log('Fetched Meeting Data:', response.data); // 데이터 출력
                 setMeeting(response.data);
             } catch (error) {
                 console.error('회의 정보를 가져오는데 실패했습니다:', error);
@@ -238,21 +238,16 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                                     label="회의를 녹화 하시겠습니까?"
                                     name="sendAlert"
                                     checked={sendAlert}
-                                    onChange={() =>
-                                        setSendAlert(!sendAlert)
-                                    }
+                                    onChange={() => setSendAlert(!sendAlert)}
                                 />
                                 <Alert>
-                                    녹화 옵션을 선택하지 않을 시, 회의
-                                    요약 및 정리 기능을 이용하실 수 없습니다.
+                                    녹화 옵션을 선택하지 않을 시, 회의 요약 및
+                                    정리 기능을 이용하실 수 없습니다.
                                 </Alert>
                             </>
                         )}
                         <UrlArea onClick={onCopyUrl}>
-                            <SvgImage
-                                src={UrlClipIcon}
-                                alt="URL Clip Icon"
-                            />
+                            <SvgImage src={UrlClipIcon} alt="URL Clip Icon" />
                             <UrlText>{meeting.url}</UrlText>
                         </UrlArea>
                     </SubContentArea>
