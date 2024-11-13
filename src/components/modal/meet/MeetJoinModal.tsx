@@ -19,6 +19,7 @@ import { SplitDateTime } from '@utils';
 import axios from 'axios';
 import AudioRecorder from './AudioRecorder';
 import RecordingStopModal from './RecordingStopModal';
+import EndedMeetingModal from './EndedMeetingModal';
 
 // -- Axios Instance 설정 --
 const axiosInstance = axios.create({
@@ -116,19 +117,12 @@ const UrlText = styled.span`
     cursor: pointer;
 `;
 
-const EndedMessage = styled.div`
-    font-size: 16px;
-    color: var(--color-gray-600);
-    text-align: center;
-    margin-top: 20px;
-`;
-
-// -- 컴포넌트 --
+// -- MeetJoinModal 컴포넌트 --
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
-    meetingId,
-    onCancel,
-    onRecordingStop,
-}) => {
+                                                         meetingId,
+                                                         onCancel,
+                                                         onRecordingStop,
+                                                     }) => {
     const [meeting, setMeeting] = useState<MeetDetailProps | null>(null);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
     const [isRecording, setIsRecording] = useState<boolean>(false);
@@ -147,6 +141,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                 const response = await axiosInstance.get(
                     `/api/meeting/detail/${meetingId}`,
                 );
+                console.log("Fetched Meeting Data:", response.data); // 데이터 출력
                 setMeeting(response.data);
             } catch (error) {
                 console.error('회의 정보를 가져오는데 실패했습니다:', error);
@@ -190,6 +185,20 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
         return null; // 로딩 중일 때는 아무것도 표시하지 않음
     }
 
+    if (meeting.isEnded) {
+        return (
+            <EndedMeetingModal
+                meeting={{
+                    id: meeting.id,
+                    meetingName: meeting.name,
+                    dateTime: meeting.startDate,
+                    url: meeting.url,
+                }}
+                onConfirm={onCancel}
+            />
+        );
+    }
+
     const dateFields = SplitDateTime(meeting.startDate);
 
     return (
@@ -222,69 +231,53 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                             ))}
                         </DateInputArea>
                     </ContentArea>
-                    {meeting.isEnded ? (
-                        <>
-                            <EndedMessage>회의가 종료되었습니다.</EndedMessage>
-                            <ButtonArea>
+                    <SubContentArea>
+                        {!isRecording && !isMeetingStarted && (
+                            <>
+                                <RadioInput
+                                    label="회의를 녹화 하시겠습니까?"
+                                    name="sendAlert"
+                                    checked={sendAlert}
+                                    onChange={() =>
+                                        setSendAlert(!sendAlert)
+                                    }
+                                />
+                                <Alert>
+                                    녹화 옵션을 선택하지 않을 시, 회의
+                                    요약 및 정리 기능을 이용하실 수 없습니다.
+                                </Alert>
+                            </>
+                        )}
+                        <UrlArea onClick={onCopyUrl}>
+                            <SvgImage
+                                src={UrlClipIcon}
+                                alt="URL Clip Icon"
+                            />
+                            <UrlText>{meeting.url}</UrlText>
+                        </UrlArea>
+                    </SubContentArea>
+                    <ButtonArea>
+                        {!isMeetingStarted ? (
+                            <>
                                 <ModalButton
-                                    text="닫기"
+                                    text="취소"
                                     color="gray"
                                     onClick={onCancel}
                                 />
-                            </ButtonArea>
-                        </>
-                    ) : (
-                        <>
-                            <SubContentArea>
-                                {!isRecording && !isMeetingStarted && (
-                                    <>
-                                        <RadioInput
-                                            label="회의를 녹화 하시겠습니까?"
-                                            name="sendAlert"
-                                            checked={sendAlert}
-                                            onChange={() =>
-                                                setSendAlert(!sendAlert)
-                                            }
-                                        />
-                                        <Alert>
-                                            녹화 옵션을 선택하지 않을 시, 회의
-                                            요약 및 정리 기능을 이용하실 수
-                                            없습니다.
-                                        </Alert>
-                                    </>
-                                )}
-                                <UrlArea onClick={onCopyUrl}>
-                                    <SvgImage
-                                        src={UrlClipIcon}
-                                        alt="URL Clip Icon"
-                                    />
-                                    <UrlText>{meeting.url}</UrlText>
-                                </UrlArea>
-                            </SubContentArea>
-                            <ButtonArea>
-                                {!isMeetingStarted ? (
-                                    <>
-                                        <ModalButton
-                                            text="취소"
-                                            color="gray"
-                                            onClick={onCancel}
-                                        />
-                                        <ModalButton
-                                            text="참여"
-                                            color="blue"
-                                            onClick={onClickJoinButton}
-                                        />
-                                    </>
-                                ) : (
-                                    <ModalButton
-                                        text="회의 종료"
-                                        color="red"
-                                        onClick={onClickEndMeetingButton}
-                                    />
-                                )}
-                            </ButtonArea>
-                        </>
-                    )}
+                                <ModalButton
+                                    text="참여"
+                                    color="blue"
+                                    onClick={onClickJoinButton}
+                                />
+                            </>
+                        ) : (
+                            <ModalButton
+                                text="회의 종료"
+                                color="red"
+                                onClick={onClickEndMeetingButton}
+                            />
+                        )}
+                    </ButtonArea>
                 </Container>
             </Backdrop>
             {showRecordingStopModal && meeting && (
