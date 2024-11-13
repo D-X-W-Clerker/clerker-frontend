@@ -53,7 +53,8 @@ export const useAuthStore = create<AuthState>()(
                     set({ token: null, user: null, isAuthenticated: false });
                 },
                 setUser: (authToken, authUser): void => {
-                    // 로그인한 사용자 정보 및 토큰을 상태에 설정
+                    // 로그인한 사용자 정보 및 토큰을 상태에 설정하고 쿠키를 갱신
+                    document.cookie = `token=${authToken}; path=/; samesite=strict`;
                     set({ token: authToken, user: authUser });
                 },
             };
