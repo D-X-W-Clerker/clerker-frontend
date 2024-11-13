@@ -9,6 +9,8 @@ import {
 } from '@assets';
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
+import { useMutation, useQueryClient } from 'react-query';
+import { deleteProject, exitProject, modifyProject } from '../../apis';
 
 // -- 인터페이스 --
 interface FolderItemProps {
@@ -19,6 +21,17 @@ interface FolderItemProps {
     onClickToggle?: () => void;
     onClickNav: () => void;
     isSubFolder?: boolean;
+}
+
+interface Member {
+    organizationId: number;
+    role: 'OWNER' | 'MEMBER' | 'ADMIN';
+    type: string;
+}
+
+interface ProjectRequest {
+    projectName: string;
+    members: Member[];
 }
 
 const Container = styled(ItemsCenterRow)<{
@@ -169,6 +182,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
     const [isEditing, setIsEditing] = useState(false); // 이름 변경 모드 상태
     const [folderName, setFolderName] = useState(name); // 폴더 이름 상태
     const modalRef = useRef<HTMLDivElement>(null);
+    const queryClient = useQueryClient();
 
     // 폴더 기능 모달 토글 함수
     const onClickMoreIcon = (): void => {
@@ -177,10 +191,42 @@ const FolderItem: React.FC<FolderItemProps> = ({
         });
     };
 
+    const modifyMutation = useMutation(
+        ({ projectID, data }: { projectID: string; data: ProjectRequest }) => {
+            return modifyProject(projectID, data);
+        },
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries('projects');
+                alert('프로젝트명이 성공적으로 수정되었습니다.');
+            },
+            onError: (error) => {
+                console.error('프로젝트 수정 실패:', error);
+                alert('프로젝트명 수정에 실패했습니다.');
+            },
+        },
+    );
+
     // 이름 변경 버튼 함수
     const onClickRename = (): void => {
         setIsEditing(true);
         setShowModal(false);
+    };
+
+    const deleteMutation = useMutation(deleteProject, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('projects'); // 'projects' 데이터를 새로고침
+            alert('프로젝트가 성공적으로 삭제되었습니다.');
+        },
+        onError: (error) => {
+            console.error('프로젝트 삭제 실패:', error);
+            alert('프로젝트 삭제에 실패했습니다.');
+        },
+    });
+
+    const onConfirmDelete = (): void => {
+        setShowSmallModal(false);
+        deleteMutation.mutate(id);
     };
 
     // 프로젝트 삭제 버튼 함수
@@ -188,6 +234,22 @@ const FolderItem: React.FC<FolderItemProps> = ({
         setSmallModalType('delete');
         setShowSmallModal(true);
         setShowModal(false);
+    };
+
+    const exitMutation = useMutation(exitProject, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('projects'); // 'projects' 데이터를 새로고침
+            alert('프로젝트를 성공적으로 나가셨습니다.');
+        },
+        onError: (error) => {
+            console.error('프로젝트 나가기 실패:', error);
+            alert('프로젝트 나가기에 실패했습니다.');
+        },
+    });
+
+    const onConfirmExit = (): void => {
+        setShowSmallModal(false);
+        exitMutation.mutate(id);
     };
 
     // 프로젝트 나가기 버튼 함수
@@ -225,7 +287,14 @@ const FolderItem: React.FC<FolderItemProps> = ({
 
     const onSaveName = (): void => {
         setIsEditing(false);
-        // 저장 후 필요한 추가 처리 가능
+        // 저장 후 api 호출
+        modifyMutation.mutate({
+            projectID: id,
+            data: {
+                projectName: folderName,
+                members: [],
+            },
+        });
     };
 
     return (
@@ -301,7 +370,11 @@ const FolderItem: React.FC<FolderItemProps> = ({
                             ? '프로젝트를 삭제하시겠습니까?'
                             : '프로젝트에서 나가시겠습니까?'
                     }
-                    onConfirm={(): void => {}} // 확인 버튼 클릭 시 처리
+                    onConfirm={
+                        smallModalType === 'delete'
+                            ? onConfirmDelete
+                            : onConfirmExit
+                    } // 확인 버튼 클릭 시 처리
                     onCancel={onClickCancel} // 취소 버튼 클릭 시
                     isDelete={smallModalType === 'delete'}
                 />
