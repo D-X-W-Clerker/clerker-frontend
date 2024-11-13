@@ -19,7 +19,7 @@ import {
     MemberInfoModal,
     MeetCreateModal,
     MeetJoinModal,
-    RecordingStopModal, // 추가된 부분
+    RecordingStopModal,
     When2meet,
 } from '@components';
 import {
@@ -31,6 +31,7 @@ import {
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
+import EndedMeetingModal from "@components/modal/meet/EndedMeetingModal";
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -85,6 +86,15 @@ interface MemberData {
     type: string | null;
     role: string;
 }
+
+type ModalType =
+    | 'memberAdd'
+    | 'memberInfo'
+    | 'meetCreate'
+    | 'meetJoin'
+    | 'recordingStop'
+    | 'endedMeeting' // 'endedMeeting' 추가
+    | null;
 
 const Container = styled(FlexRow)`
     width: 100%;
@@ -157,14 +167,11 @@ const ProjectDetailPage: React.FC = () => {
     );
     const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
     const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
-    const [modalType, setModalType] = useState<
-        'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin' | null
-    >(null);
+    const [modalType, setModalType] = useState<ModalType>(null);
     const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
         null,
     );
     const [scheduleClicked, setScheduleClicked] = useState(false);
-    const [showRecordingStopModal, setShowRecordingStopModal] = useState<boolean>(false); // 추가된 부분
 
     const members: MemberData[] = [
         {
@@ -217,7 +224,7 @@ const ProjectDetailPage: React.FC = () => {
     }, [projectId]);
 
     const handleOpenModal = (
-        type: 'memberAdd' | 'memberInfo' | 'meetCreate' | 'meetJoin',
+        type: ModalType,
         meeting?: MeetingData,
     ) => {
         setModalType(type);
@@ -229,16 +236,20 @@ const ProjectDetailPage: React.FC = () => {
     const handleCloseModal = () => {
         setModalType(null);
         setSelectedMeeting(null);
-        setShowRecordingStopModal(false); // 추가된 부분
     };
 
     const handleRecordingStop = () => {
-        setShowRecordingStopModal(true);
+        setModalType('recordingStop');
     };
 
     const onClickEventFile = (event: MeetingData | ScheduleData) => {
         if (activeTab === 'meeting') {
-            handleOpenModal('meetJoin', event as MeetingData);
+            const meeting = event as MeetingData;
+            if (meeting.isEnded) {
+                handleOpenModal('endedMeeting', meeting);
+            } else {
+                handleOpenModal('meetJoin', meeting);
+            }
         } else if (activeTab === 'schedule') {
             setScheduleClicked(true);
         }
@@ -376,10 +387,10 @@ const ProjectDetailPage: React.FC = () => {
                 <MeetJoinModal
                     meetingId={selectedMeeting.meetingId}
                     onCancel={handleCloseModal}
-                    onRecordingStop={handleRecordingStop} // 추가된 부분
+                    onRecordingStop={handleRecordingStop}
                 />
             )}
-            {showRecordingStopModal && selectedMeeting && (
+            {modalType === 'recordingStop' && selectedMeeting && (
                 <RecordingStopModal
                     meeting={{
                         id: selectedMeeting.meetingId,
@@ -387,7 +398,18 @@ const ProjectDetailPage: React.FC = () => {
                         dateTime: selectedMeeting.startDate,
                         url: selectedMeeting.url,
                     }}
-                    onConfirm={() => setShowRecordingStopModal(false)}
+                    onConfirm={handleCloseModal}
+                />
+            )}
+            {modalType === 'endedMeeting' && selectedMeeting && (
+                <EndedMeetingModal
+                    meeting={{
+                        id: selectedMeeting.meetingId,
+                        meetingName: selectedMeeting.name,
+                        dateTime: selectedMeeting.startDate,
+                        url: selectedMeeting.url,
+                    }}
+                    onConfirm={handleCloseModal}
                 />
             )}
         </Layout>

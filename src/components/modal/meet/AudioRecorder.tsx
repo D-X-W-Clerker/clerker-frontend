@@ -1,10 +1,13 @@
+// AudioRecorder.tsx
+
 import React, { useEffect, useRef } from 'react';
 
 interface AudioRecorderProps {
     isRecording: boolean;
+    onRecordingStopped: () => void; // 추가된 부분
 }
 
-const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording }) => {
+const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording, onRecordingStopped }) => {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const chunksRef = useRef<Blob[]>([]);
 
@@ -14,6 +17,10 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording }) => {
         } else {
             stopRecording();
         }
+        // 컴포넌트 언마운트 시 녹음 중지
+        return () => {
+            stopRecording();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isRecording]);
 
@@ -40,7 +47,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording }) => {
     const startRecording = async () => {
         try {
             const displayStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true, // video: true를 추가하여 오류 해결
+                video: true,
                 audio: true,
             });
 
@@ -66,6 +73,11 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording }) => {
                 // 녹음된 오디오를 처리합니다.
                 chunksRef.current = [];
                 console.log('Recording stopped'); // 녹음 종료 시 로그 출력
+
+                // 녹음 종료 시 호출
+                if (onRecordingStopped) {
+                    onRecordingStopped();
+                }
             };
 
             mediaRecorder.start();
@@ -79,7 +91,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ isRecording }) => {
 
     const stopRecording = () => {
         const mediaRecorder = mediaRecorderRef.current;
-        if (mediaRecorder) {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
             mediaRecorder.stop();
             const tracks = mediaRecorder.stream.getTracks();
             tracks.forEach((track: MediaStreamTrack) => track.stop());
