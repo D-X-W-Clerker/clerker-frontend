@@ -152,21 +152,33 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
     };
 
     const onClickCreateButton = async (): Promise<void> => {
+        // 서버에서 요구하는 데이터 형식에 맞게 필드 구성
         const meetingData = {
-            name,
-            startDateTime: formatDateTime(),
-            isNotify: sendAlert,
-            domain, // 도메인 추가
+            name, // 이름 필드
+            startDateTime: formatDateTime(), // ISO 형식 날짜 및 시간
+            domain, // 도메인 정보
+            isNotify: sendAlert, // 알림 여부
         };
 
         try {
+            // API 요청
             const response = await axiosInstance.post(
                 `/api/meeting/create/${projectId}`,
                 meetingData,
             );
+
             console.log('Meeting created successfully:', response.data);
-            alert('회의가 생성되었습니다.');
-            onCancel();
+
+            if (response.status === 200 || response.status === 201) {
+                alert('회의가 성공적으로 생성되었습니다.');
+                onCancel(); // 모달 닫기
+            } else {
+                console.error(
+                    '서버 응답에서 문제가 발생했습니다.',
+                    response.data,
+                );
+                alert('회의 생성 중 오류가 발생했습니다.');
+            }
         } catch (error) {
             console.error('Failed to create meeting:', error);
             alert('회의 생성에 실패했습니다.');

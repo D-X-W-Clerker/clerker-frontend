@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
-import { useMutation } from 'react-query';
 import { postTimeTable } from '../../apis';
 
 // 타입 정의
@@ -134,21 +133,6 @@ const When2meet: React.FC<When2meetProps> = ({
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
     const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-    const { mutate: saveSchedule, isLoading } = useMutation(
-        async (data: { scheduleID: number; timeTable: string[] }) => {
-            const { scheduleID, timeTable } = data;
-            return postTimeTable(scheduleID, { timeTable });
-        },
-        {
-            onSuccess: () => {
-                alert('일정이 성공적으로 저장되었습니다!');
-            },
-            onError: () => {
-                alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
-            },
-        },
-    );
-
     const updateMyInfo = (times: string[]): Member => {
         return {
             ...myInfo,
@@ -221,9 +205,15 @@ const When2meet: React.FC<When2meetProps> = ({
         });
     };
 
-    const handleSaveSchedule = (): void => {
-        const scheduleID = 123;
-        saveSchedule({ scheduleID, timeTable: personalAvailable });
+    const handleSaveSchedule = async (): Promise<void> => {
+        try {
+            const scheduleID = 123; // 예제 스케줄 ID (실제 ID로 교체 필요)
+            await postTimeTable(scheduleID, { timeTable: personalAvailable });
+            alert('일정이 성공적으로 저장되었습니다!');
+        } catch (error) {
+            console.log(personalAvailable);
+            alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
+        }
     };
 
     return (

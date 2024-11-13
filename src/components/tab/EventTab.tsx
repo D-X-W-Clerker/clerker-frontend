@@ -4,14 +4,9 @@ import { ContentIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
-interface EventData {
-    id: string;
-    name: string;
-}
-
 interface TabContainerProps {
-    activeTab: 'meeting' | 'schedule'; // 타입 제한
-    onClickTab: (tab: 'meeting' | 'schedule') => void; // 타입 제한
+    activeTab: 'meeting' | 'schedule';
+    onClickTab: (tab: 'meeting' | 'schedule') => void;
 }
 
 // -- 스타일 컴포넌트 --
@@ -21,18 +16,17 @@ const Container = styled(ItemsCenterRow)`
 `;
 
 const TabButton = styled.div<{ $active: boolean }>`
-    font-size: ${(props): string => (props.$active ? '19px' : '15px')};
-    color: ${(props): string =>
+    font-size: ${(props) => (props.$active ? '19px' : '15px')};
+    color: ${(props) =>
         props.$active ? 'var(--color-gray-600)' : 'var(--color-gray-500)'};
-    order: ${(props): number => (props.$active ? -1 : 0)};
-    ${(props): string =>
-        props.$active
-            ? `&::after {
-                content: '|';
-                margin-left: 5px;
-            }`
-            : ''};
+    order: ${(props) => (props.$active ? -1 : 0)};
     cursor: pointer;
+    position: relative;
+
+    &::after {
+        content: ${(props) => (props.$active ? "'|'" : "''")};
+        margin-left: 5px;
+    }
 `;
 
 const SvgImage = styled.img`
@@ -42,14 +36,13 @@ const SvgImage = styled.img`
     order: -2;
 `;
 
-// -- 컴포넌트 --
 const TabContainer: React.FC<TabContainerProps> = ({
     activeTab,
     onClickTab,
 }) => {
     return (
         <Container>
-            <SvgImage src={ContentIcon} alt="Content Icon" />
+            <SvgImage src={ContentIcon} />
             <TabButton
                 $active={activeTab === 'meeting'}
                 onClick={() => onClickTab('meeting')}
