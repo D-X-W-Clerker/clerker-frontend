@@ -1,0 +1,61 @@
+import axios from 'axios';
+import { useAuthStore } from '@store';
+import { Project, Meeting, ChildProject } from '../types';
+
+const apiUrl = process.env.REACT_APP_BASE_URL;
+
+export const getProject = async (): Promise<Project[]> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.get<Project[]>(`${apiUrl}/api/project`, {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        throw new Error(`project 목록 불러오기에 실패했습니다: ${error}`);
+    }
+};
+
+export const createProject = async (): Promise<Project> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.post<Project>(
+            `${apiUrl}/api/project/create`,
+            {},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`project 생성에 실패했습니다: ${error}`);
+    }
+};
+
+export const createChildProject = async (
+    projectID: string,
+): Promise<Project> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.post<Project>(
+            `${apiUrl}/api/project/${projectID}/create-child`,
+            {},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { projectID },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`하위 project 생성에 실패했습니다: ${error}`);
+    }
+};
