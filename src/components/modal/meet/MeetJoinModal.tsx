@@ -1,5 +1,3 @@
-// MeetJoinModal.tsx
-
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { UrlClipIcon } from '@assets';
@@ -19,6 +17,8 @@ import {
 } from '@styles';
 import { SplitDateTime } from '@utils';
 import axios from 'axios';
+import AudioRecorder from './AudioRecorder';
+import RecordingStopModal from './RecordingStopModal';
 
 // -- Axios Instance 설정 --
 const axiosInstance = axios.create({
@@ -123,26 +123,23 @@ const EndedMessage = styled.div`
     margin-top: 20px;
 `;
 
-const StopRecordingButton = styled(ModalButton)`
-    background-color: #ff4d4f !important; // 빨간색으로 직접 지정
-    color: #fff !important; // 글자색을 흰색으로 지정
-    &:hover {
-        background-color: #ff7875 !important; // 호버 시 색상 변경
-    }
-`;
-
 // -- 컴포넌트 --
 const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
-                                                         meetingId,
-                                                         onCancel,
-                                                         onRecordingStop,
-                                                     }) => {
+    meetingId,
+    onCancel,
+    onRecordingStop,
+}) => {
     const [meeting, setMeeting] = useState<MeetDetailProps | null>(null);
     const [sendAlert, setSendAlert] = useState<boolean>(false);
     const [isRecording, setIsRecording] = useState<boolean>(false);
+    const [isMeetingStarted, setIsMeetingStarted] = useState<boolean>(false);
+    const [showRecordingStopModal, setShowRecordingStopModal] =
+        useState<boolean>(false);
 
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-    const chunksRef = useRef<Blob[]>([]);
+    const audioRecorderRef = useRef<{
+        startRecording: () => void;
+        stopRecording: () => void;
+    } | null>(null);
 
     useEffect(() => {
         const fetchMeeting = async () => {
@@ -159,92 +156,27 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
         fetchMeeting();
     }, [meetingId]);
 
-    const startRecording = async () => {
-        try {
-            const displayStream = await navigator.mediaDevices.getDisplayMedia({
-                video: true,
-                audio: true,
-            });
-
-            const audioStream = await navigator.mediaDevices.getUserMedia({
-                audio: true,
-            });
-
-            const combinedStream = mergeAudioStreams(displayStream, audioStream);
-
-            const mediaRecorder = new MediaRecorder(combinedStream, {
-                mimeType: 'audio/webm;codecs=opus',
-            });
-
-            mediaRecorder.ondataavailable = (event: BlobEvent) => {
-                if (event.data.size > 0) {
-                    chunksRef.current.push(event.data);
-                }
-            };
-
-            mediaRecorder.onstop = () => {
-                const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-                const url = URL.createObjectURL(blob);
-                // 녹음된 오디오를 처리합니다.
-                chunksRef.current = [];
-                console.log('Recording stopped');
-
-                // 녹음 종료 시 호출
-                onRecordingStop();
-            };
-
-            mediaRecorder.start();
-            mediaRecorderRef.current = mediaRecorder;
-            setIsRecording(true);
-            console.log('Recording started');
-        } catch (error) {
-            console.error('Error starting recording:', error);
-            // 녹음 시작 실패 시 alert 제거
-        }
-    };
-
-    const stopRecording = () => {
-        const mediaRecorder = mediaRecorderRef.current;
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-            const tracks = mediaRecorder.stream.getTracks();
-            tracks.forEach((track: MediaStreamTrack) => track.stop());
-            mediaRecorderRef.current = null;
-            setIsRecording(false);
-        }
-    };
-
-    const mergeAudioStreams = (
-        systemStream: MediaStream,
-        micStream: MediaStream,
-    ): MediaStream => {
-        const context = new AudioContext();
-        const destination = context.createMediaStreamDestination();
-
-        const systemSource = context.createMediaStreamSource(systemStream);
-        const micSource = context.createMediaStreamSource(micStream);
-
-        systemSource.connect(destination);
-        micSource.connect(destination);
-
-        return destination.stream;
-    };
-
     const onClickJoinButton = async (): Promise<void> => {
         if (meeting && meeting.url) {
-            if (sendAlert) {
-                // 녹음 시작
-                await startRecording();
+            if (sendAlert && audioRecorderRef.current) {
+                audioRecorderRef.current.startRecording();
+                setIsRecording(true);
             }
             window.open(meeting.url, '_blank');
+            setIsMeetingStarted(true); // 회의 시작 상태로 변경
         } else {
             alert('회의 URL을 가져올 수 없습니다.');
         }
     };
 
-    const onClickStopButton = (): void => {
-        // 녹음 종료 트리거
-        stopRecording();
+    const onClickEndMeetingButton = (): void => {
+        setIsMeetingStarted(false); // 회의 종료 상태로 변경
+        if (isRecording && audioRecorderRef.current) {
+            audioRecorderRef.current.stopRecording();
+            setIsRecording(false);
+        }
+        setShowRecordingStopModal(true); // RecordingStopModal 표시
+        onRecordingStop();
     };
 
     const onCopyUrl = (): void => {
@@ -261,91 +193,111 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
     const dateFields = SplitDateTime(meeting.startDate);
 
     return (
-        <Backdrop>
-            <Container>
-                <LargeModalTitleTab type="project" title="회의 참여" />
-                <ContentArea>
-                    <ProjectInput
-                        type="text"
-                        value={meeting.name}
-                        isEditable={false}
-                    />
-                    <DateInputArea>
-                        {dateFields.map((field) => (
-                            <DateInput
-                                key={field.label}
-                                type="meet"
-                                label={field.label}
-                                value={field.value}
-                                isEditable={false}
-                            />
-                        ))}
-                    </DateInputArea>
-                </ContentArea>
-                {meeting.isEnded ? (
-                    <>
-                        <EndedMessage>회의가 종료되었습니다.</EndedMessage>
-                        <ButtonArea>
-                            <ModalButton
-                                text="닫기"
-                                color="gray"
-                                onClick={onCancel}
-                            />
-                        </ButtonArea>
-                    </>
-                ) : (
-                    <>
-                        <SubContentArea>
-                            {!isRecording && (
-                                <>
-                                    <RadioInput
-                                        label="회의를 녹화 하시겠습니까?"
-                                        name="sendAlert"
-                                        checked={sendAlert}
-                                        onChange={() =>
-                                            setSendAlert(!sendAlert)
-                                        }
-                                    />
-                                    <Alert>
-                                        녹화 옵션을 선택하지 않을 시, 회의 요약 및
-                                        정리 기능을 이용하실 수 없습니다.
-                                    </Alert>
-                                </>
-                            )}
-                            <UrlArea onClick={onCopyUrl}>
-                                <SvgImage
-                                    src={UrlClipIcon}
-                                    alt="URL Clip Icon"
+        <>
+            <AudioRecorder
+                ref={audioRecorderRef}
+                onRecordingStopped={(blob) => {
+                    console.log('녹음된 데이터:', blob);
+                    // 녹음 데이터를 처리하는 로직 추가
+                }}
+            />
+            <Backdrop>
+                <Container>
+                    <LargeModalTitleTab type="project" title="회의 참여" />
+                    <ContentArea>
+                        <ProjectInput
+                            type="text"
+                            value={meeting.name}
+                            isEditable={false}
+                        />
+                        <DateInputArea>
+                            {dateFields.map((field) => (
+                                <DateInput
+                                    key={field.label}
+                                    type="meet"
+                                    label={field.label}
+                                    value={field.value}
+                                    isEditable={false}
                                 />
-                                <UrlText>{meeting.url}</UrlText>
-                            </UrlArea>
-                        </SubContentArea>
-                        <ButtonArea>
-                            {!isRecording ? (
-                                <>
-                                    <ModalButton
-                                        text="취소"
-                                        color="gray"
-                                        onClick={onCancel}
-                                    />
-                                    <ModalButton
-                                        text="참여"
-                                        color="blue"
-                                        onClick={onClickJoinButton}
-                                    />
-                                </>
-                            ) : (
-                                <StopRecordingButton
-                                    text="녹음 종료"
-                                    color="red"
-                                    onClick={onClickStopButton}
+                            ))}
+                        </DateInputArea>
+                    </ContentArea>
+                    {meeting.isEnded ? (
+                        <>
+                            <EndedMessage>회의가 종료되었습니다.</EndedMessage>
+                            <ButtonArea>
+                                <ModalButton
+                                    text="닫기"
+                                    color="gray"
+                                    onClick={onCancel}
                                 />
-                            )}
-                        </ButtonArea>
-                    </>
-                )}
-            </Container>
-        </Backdrop>
+                            </ButtonArea>
+                        </>
+                    ) : (
+                        <>
+                            <SubContentArea>
+                                {!isRecording && !isMeetingStarted && (
+                                    <>
+                                        <RadioInput
+                                            label="회의를 녹화 하시겠습니까?"
+                                            name="sendAlert"
+                                            checked={sendAlert}
+                                            onChange={() =>
+                                                setSendAlert(!sendAlert)
+                                            }
+                                        />
+                                        <Alert>
+                                            녹화 옵션을 선택하지 않을 시, 회의
+                                            요약 및 정리 기능을 이용하실 수
+                                            없습니다.
+                                        </Alert>
+                                    </>
+                                )}
+                                <UrlArea onClick={onCopyUrl}>
+                                    <SvgImage
+                                        src={UrlClipIcon}
+                                        alt="URL Clip Icon"
+                                    />
+                                    <UrlText>{meeting.url}</UrlText>
+                                </UrlArea>
+                            </SubContentArea>
+                            <ButtonArea>
+                                {!isMeetingStarted ? (
+                                    <>
+                                        <ModalButton
+                                            text="취소"
+                                            color="gray"
+                                            onClick={onCancel}
+                                        />
+                                        <ModalButton
+                                            text="참여"
+                                            color="blue"
+                                            onClick={onClickJoinButton}
+                                        />
+                                    </>
+                                ) : (
+                                    <ModalButton
+                                        text="회의 종료"
+                                        color="red"
+                                        onClick={onClickEndMeetingButton}
+                                    />
+                                )}
+                            </ButtonArea>
+                        </>
+                    )}
+                </Container>
+            </Backdrop>
+            {showRecordingStopModal && meeting && (
+                <RecordingStopModal
+                    meeting={{
+                        id: meeting.id,
+                        meetingName: meeting.name,
+                        dateTime: meeting.startDate,
+                    }}
+                    onConfirm={() => setShowRecordingStopModal(false)}
+                />
+            )}
+        </>
     );
 };
 
