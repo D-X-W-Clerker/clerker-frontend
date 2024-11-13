@@ -24,6 +24,11 @@ interface EventData {
 }
 
 interface When2meetProps {
+    scheduleID: string;
+    startDate: string;
+    endDate: string;
+    // startTime: string;
+    // endTime: string;
     onCancel: () => void;
 }
 
@@ -115,7 +120,14 @@ const fetchEventData = async (): Promise<EventData> => {
     };
 };
 
-const When2meet: React.FC<When2meetProps> = ({ onCancel }) => {
+const When2meet: React.FC<When2meetProps> = ({
+    scheduleID,
+    startDate,
+    endDate,
+    // startTime,
+    // endTime,
+    onCancel,
+}) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);
@@ -195,9 +207,9 @@ const When2meet: React.FC<When2meetProps> = ({ onCancel }) => {
 
     const handleSaveSchedule = async (): Promise<void> => {
         try {
-            const scheduleID = 123; // 예제 스케줄 ID (실제 ID로 교체 필요)
-            await postTimeTable(scheduleID, { timeTable: personalAvailable });
-            alert('일정이 성공적으로 저장되었습니다!');
+            // const scheduleID = 123; // 예제 스케줄 ID (실제 ID로 교체 필요)
+            // await postTimeTable(scheduleID, { timeTable: personalAvailable });
+            // alert('일정이 성공적으로 저장되었습니다!');
         } catch (error) {
             console.log(personalAvailable);
             alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');

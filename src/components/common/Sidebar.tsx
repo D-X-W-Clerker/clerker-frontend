@@ -124,7 +124,7 @@ const SideBar: React.FC = () => {
     const { data: projects = [], refetch: refetchProjects } = useQuery<
         Project[]
     >('projects', getProject, {
-        staleTime: 5 * 60 * 1000, // 5분 동안 데이터가 신선한 상태로 유지
+        staleTime: 5 * 60 * 1000,
         onError: (error) => {
             console.error('프로젝트 데이터를 불러오는 데 실패했습니다:', error);
         },
@@ -222,7 +222,7 @@ const SideBar: React.FC = () => {
     // 하위 프로젝트 생성
     const onClickCreateChildProject = (projectId: string): void => {
         try {
-            createChildProject(projectId); // API 호출로 하위 프로젝트 생성
+            createChildProject(projectId);
             refetchProjects(); // 데이터 새로고침
         } catch (error) {
             console.error(
