@@ -25,6 +25,11 @@ interface EventData {
 }
 
 interface When2meetProps {
+    scheduleID: string;
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
     onCancel: () => void;
 }
 
@@ -116,7 +121,14 @@ const fetchEventData = async (): Promise<EventData> => {
     };
 };
 
-const When2meet: React.FC<When2meetProps> = ({ onCancel }) => {
+const When2meet: React.FC<When2meetProps> = ({
+    scheduleID,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    onCancel,
+}) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
     const [availableTimes, setAvailableTimes] = useState<string[]>([]);

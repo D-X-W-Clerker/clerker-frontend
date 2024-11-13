@@ -15,9 +15,9 @@ import {
     When2meet,
 } from '@components';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
+import axios from 'axios';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
-import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -34,10 +34,10 @@ axiosInstance.interceptors.request.use(
             {} as Record<string, string>,
         );
 
-        const token = cookies['token'];
+        const { token } = cookies;
 
         if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         return config;
@@ -91,8 +91,12 @@ const ContentArea = styled(FlexCol)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props) => props.$width}px;
-    height: ${(props) => props.$height}px;
+    width: ${(props) => {
+        return props.$width;
+    }}px;
+    height: ${(props) => {
+        return props.$height;
+    }}px;
     cursor: pointer;
 `;
 
@@ -149,6 +153,8 @@ const ProjectDetailPage: React.FC = () => {
         null,
     );
     const [scheduleClicked, setScheduleClicked] = useState(false);
+    const [selectedSchedule, setSelectedSchedule] =
+        useState<ScheduleData | null>(null);
 
     const members: MemberData[] = [
         {
@@ -186,9 +192,12 @@ const ProjectDetailPage: React.FC = () => {
                 );
                 setScheduleData(
                     response.data.schedules.sort(
-                        (a: ScheduleData, b: ScheduleData) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime(),
+                        (a: ScheduleData, b: ScheduleData) => {
+                            return (
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                            );
+                        },
                     ),
                 );
             } catch (error) {
@@ -220,18 +229,20 @@ const ProjectDetailPage: React.FC = () => {
             handleOpenModal('meetJoin', event as MeetingData);
         } else if (activeTab === 'schedule') {
             setScheduleClicked(true);
+            setSelectedSchedule(event as ScheduleData);
         }
     };
 
     const addSchedule = (newSchedule: ScheduleData) => {
         if (newSchedule && newSchedule.scheduleId && newSchedule.scheduleName) {
-            setScheduleData((prev) =>
-                [newSchedule, ...prev].sort(
-                    (a, b) =>
+            setScheduleData((prev) => {
+                return [newSchedule, ...prev].sort((a, b) => {
+                    return (
                         new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime(),
-                ),
-            );
+                        new Date(a.createdAt).getTime()
+                    );
+                });
+            });
         } else {
             console.error('Invalid schedule data:', newSchedule);
         }
@@ -239,6 +250,7 @@ const ProjectDetailPage: React.FC = () => {
 
     const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
 
+    console.log('모야 너', selectedSchedule);
     return (
         <Layout>
             <Container>
@@ -256,13 +268,17 @@ const ProjectDetailPage: React.FC = () => {
                                 src={ActiveSettingIcon}
                                 $width={16}
                                 $height={16}
-                                onClick={() => handleOpenModal('memberInfo')}
+                                onClick={() => {
+                                    return handleOpenModal('memberInfo');
+                                }}
                             />
                         </MemberTabArea>
                         <MemberTable data={members} />
                         <MemberAddArea>
                             <MemberAddButton
-                                onClick={() => handleOpenModal('memberAdd')}
+                                onClick={() => {
+                                    return handleOpenModal('memberAdd');
+                                }}
                             >
                                 <IconImage
                                     src={MemberAddIcon}
@@ -284,9 +300,11 @@ const ProjectDetailPage: React.FC = () => {
                                     <ActionButton
                                         icon={AddIcon}
                                         label="회의 생성"
-                                        onClick={() =>
-                                            handleOpenModal('meetCreate')
-                                        }
+                                        onClick={() => {
+                                            return handleOpenModal(
+                                                'meetCreate',
+                                            );
+                                        }}
                                     />
                                 </ButtonContainer>
                             )}
@@ -297,9 +315,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.meetingId}
                                             meetingName={event.meetingName}
                                             dateTime={event.createdAt}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -309,9 +327,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.scheduleId}
                                             meetingName={event.scheduleName}
                                             dateTime={event.createdAt}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -321,8 +339,18 @@ const ProjectDetailPage: React.FC = () => {
                     </ContentTabArea>
                 </LeftContentArea>
                 <RightContentArea>
-                    {scheduleClicked ? (
-                        <When2meet onCancel={() => setScheduleClicked(false)} />
+                    {scheduleClicked && selectedSchedule ? (
+                        <When2meet
+                            scheduleID={selectedSchedule.scheduleId}
+                            startDate={selectedSchedule.startDate}
+                            endDate={selectedSchedule.endDate}
+                            startTime={selectedSchedule.startTime}
+                            endTime={selectedSchedule.endTime}
+                            onCancel={(): void => {
+                                setScheduleClicked(false);
+                                setSelectedSchedule(null);
+                            }}
+                        />
                     ) : (
                         <ProjectCalendar
                             projectId={projectId || ''}
