@@ -1,7 +1,14 @@
+// ProjectDetailPage.tsx
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
+import {
+    ActiveSettingIcon,
+    MemberIcon,
+    MemberAddIcon,
+    AddIcon,
+} from '@assets';
 import {
     MemberTable,
     TitleTab,
@@ -12,9 +19,15 @@ import {
     MemberInfoModal,
     MeetCreateModal,
     MeetJoinModal,
+    RecordingStopModal, // 추가된 부분
     When2meet,
 } from '@components';
-import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
+import {
+    FlexCol,
+    FlexRow,
+    ItemsCenterRow,
+    ItemsCenterStartRow,
+} from '@styles';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
@@ -49,10 +62,11 @@ axiosInstance.interceptors.request.use(
 
 interface MeetingData {
     meetingId: string;
-    name: string; // 이름 필드 추가
+    name: string;
     startDate: string;
     createdAt: string;
-    isEnded: boolean; // 필요에 따라 추가
+    isEnded: boolean;
+    url?: string;
 }
 
 interface ScheduleData {
@@ -150,6 +164,7 @@ const ProjectDetailPage: React.FC = () => {
         null,
     );
     const [scheduleClicked, setScheduleClicked] = useState(false);
+    const [showRecordingStopModal, setShowRecordingStopModal] = useState<boolean>(false); // 추가된 부분
 
     const members: MemberData[] = [
         {
@@ -214,6 +229,11 @@ const ProjectDetailPage: React.FC = () => {
     const handleCloseModal = () => {
         setModalType(null);
         setSelectedMeeting(null);
+        setShowRecordingStopModal(false); // 추가된 부분
+    };
+
+    const handleRecordingStop = () => {
+        setShowRecordingStopModal(true);
     };
 
     const onClickEventFile = (event: MeetingData | ScheduleData) => {
@@ -323,7 +343,9 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 <RightContentArea>
                     {scheduleClicked ? (
-                        <When2meet onCancel={() => setScheduleClicked(false)} />
+                        <When2meet
+                            onCancel={() => setScheduleClicked(false)}
+                        />
                     ) : (
                         <ProjectCalendar
                             projectId={projectId || ''}
@@ -354,6 +376,18 @@ const ProjectDetailPage: React.FC = () => {
                 <MeetJoinModal
                     meetingId={selectedMeeting.meetingId}
                     onCancel={handleCloseModal}
+                    onRecordingStop={handleRecordingStop} // 추가된 부분
+                />
+            )}
+            {showRecordingStopModal && selectedMeeting && (
+                <RecordingStopModal
+                    meeting={{
+                        id: selectedMeeting.meetingId,
+                        meetingName: selectedMeeting.name,
+                        dateTime: selectedMeeting.startDate,
+                        url: selectedMeeting.url,
+                    }}
+                    onConfirm={() => setShowRecordingStopModal(false)}
                 />
             )}
         </Layout>
