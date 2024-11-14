@@ -208,6 +208,19 @@ const ProjectDetailPage: React.FC = () => {
     const projectName = projectInfo?.projectName || 'Unknown Project'; // 안전한 접근
     const members = projectInfo?.members || []; // 안전한 접근
 
+    // 현재 로그인 중인 사용자의 정보
+    const currentUser = members.find((member) => {
+        return (
+            member.email ===
+            document.cookie
+                .split('; ')
+                .find((cookie) => {
+                    return cookie.startsWith('user_email=');
+                })
+                ?.split('=')[1]
+        );
+    });
+
     useEffect(() => {
         const fetchMeetingData = async () => {
             try {
@@ -449,6 +462,7 @@ const ProjectDetailPage: React.FC = () => {
             {modalType === 'memberAdd' && (
                 <MemberInviteModal
                     projectId={projectId || ''}
+                    projectName={projectName || ''}
                     onCancel={handleCloseModal}
                 />
             )}
