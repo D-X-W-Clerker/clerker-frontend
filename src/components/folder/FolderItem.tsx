@@ -24,9 +24,11 @@ interface FolderItemProps {
 }
 
 interface Member {
-    organizationId: number;
-    role: 'OWNER' | 'MEMBER' | 'ADMIN';
-    type: string;
+    organizationId: string;
+    username: string;
+    email: string;
+    type: string | null;
+    role: string;
 }
 
 interface ProjectRequest {
