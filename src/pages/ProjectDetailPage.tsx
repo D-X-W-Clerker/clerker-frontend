@@ -24,6 +24,7 @@ import {
     ItemsCenterEndRow,
 } from '@styles';
 import axios from 'axios';
+import { useAuthStore } from '@store';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import { getProjectInfo } from '../apis';
@@ -209,17 +210,16 @@ const ProjectDetailPage: React.FC = () => {
     const members = projectInfo?.members || []; // 안전한 접근
 
     // 현재 로그인 중인 사용자의 정보
+    const { user } = useAuthStore.getState();
     const currentUser = members.find((member) => {
-        return (
-            member.email ===
-            document.cookie
-                .split('; ')
-                .find((cookie) => {
-                    return cookie.startsWith('user_email=');
-                })
-                ?.split('=')[1]
-        );
-    });
+        return member.email === user?.email;
+    }) || {
+        organizationId: '',
+        username: 'Unknown User',
+        email: 'unknown@example.com',
+        type: null,
+        role: '',
+    };
 
     useEffect(() => {
         const fetchMeetingData = async () => {
@@ -446,6 +446,7 @@ const ProjectDetailPage: React.FC = () => {
                             endDate={selectedSchedule.endDate}
                             startTime={selectedSchedule.startTime}
                             endTime={selectedSchedule.endTime}
+                            userInfo={currentUser}
                             onCancel={(): void => {
                                 return setScheduleClicked(false);
                             }}
