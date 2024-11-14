@@ -1,51 +1,37 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { jwtDecode } from 'jwt-decode';
 
-// 상태 관리에서 사용될 타입 정의
 interface AuthState {
-    token: string | null; // 로그인한 사용자의 JWT 토큰
-    user: { name: string; email: string; profileURL: string } | null; // 로그인한 사용자 정보 (이름, 이메일, 프로필 URL)
-    isAuthenticated: boolean; // 사용자가 로그인했는지 여부
+    token: string | null;
+    user: { name: string; email: string; profileImage: string } | null;
+    isAuthenticated: boolean;
     login: (
         authToken: string,
-        authUser: { name: string; email: string; profileURL: string },
-    ) => void; // 로그인 함수
-    logout: () => void; // 로그아웃 함수
+        authUser: { name: string; email: string; profileImage: string },
+    ) => void;
+    logout: () => void;
     setUser: (
         authToken: string,
-        authUser: { name: string; email: string; profileURL: string },
-    ) => void; // 사용자 정보 및 토큰을 상태에 설정하는 함수
+        authUser: { name: string; email: string; profileImage: string },
+    ) => void;
 }
 
-// 브라우저 쿠키에서 토큰을 읽어오는 함수
 const getTokenFromCookies = (): string | null => {
     const match = document.cookie.match(/(^| )token=([^;]+)/);
     return match ? match[2] : null;
 };
 
-// Zustand를 사용해 인증 상태를 관리하는 스토어 정의
 export const useAuthStore = create<AuthState>()(
     persist(
         (set): AuthState => {
             const token = getTokenFromCookies();
             const isAuthenticated = Boolean(token);
-            const user = token
-                ? jwtDecode<{ name: string; email: string }>(token)
-                : null;
 
             return {
-                token, // 토큰 상태
-                user: user
-                    ? {
-                          name: user.name,
-                          email: user.email,
-                          profileURL: '', // 초기 프로필 URL은 빈 문자열로 설정
-                      }
-                    : null,
-                isAuthenticated, // 로그인 여부 상태
+                token,
+                user: null,
+                isAuthenticated,
                 login: (authToken, authUser): void => {
-                    // 로그인 시, 토큰과 사용자 정보를 상태에 설정
                     set({
                         token: authToken,
                         user: authUser,
@@ -53,24 +39,22 @@ export const useAuthStore = create<AuthState>()(
                     });
                 },
                 logout: (): void => {
-                    // 로그아웃 시, 쿠키에서 'token'을 삭제하고 상태를 초기화
-                    document.cookie =
-                        'token=; path=/; max-age=0; samesite=strict';
+                    document.cookie = 'token=; path=/; max-age=0; samesite=strict';
                     set({ token: null, user: null, isAuthenticated: false });
                 },
                 setUser: (authToken, authUser): void => {
-                    // 로그인한 사용자 정보 및 토큰을 상태에 설정하고 쿠키를 갱신
                     document.cookie = `token=${authToken}; path=/; samesite=strict`;
-                    set({ token: authToken, user: authUser });
+                    set({
+                        token: authToken,
+                        user: authUser,
+                        isAuthenticated: true,
+                    });
                 },
             };
         },
         {
-            // persist 미들웨어의 설정
-            name: 'auth-storage', // 상태를 저장할 키값 (localStorage에 저장될 key)
-            storage: createJSONStorage(() => {
-                return localStorage;
-            }), // JSON 형태로 localStorage 사용
+            name: 'auth-storage',
+            storage: createJSONStorage(() => localStorage),
         },
     ),
 );

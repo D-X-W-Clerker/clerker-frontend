@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@store';
-import { jwtDecode, JwtPayload } from 'jwt-decode';
+import {jwtDecode, JwtPayload } from 'jwt-decode';
+import axios from 'axios';
 
-// JWT 토큰의 커스텀 페이로드 정의 (username, email)
+// JWT 토큰의 커스텀 페이로드 정의
 interface CustomJwtPayload extends JwtPayload {
     username: string;
     email: string;
@@ -13,7 +14,6 @@ const GoogleCallback: React.FC = () => {
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('token'); // 쿼리 파라미터에서 'token' 값 추출
-    const profileURL = searchParams.get('profileURL') || ''; // 쿼리 파라미터에서 'profileURL' 값 추출
     const { login } = useAuthStore();
 
     useEffect(() => {
@@ -30,35 +30,41 @@ const GoogleCallback: React.FC = () => {
                 // JWT 토큰을 디코딩하여 페이로드 추출
                 const decoded = jwtDecode<CustomJwtPayload>(token);
                 console.log('디코딩된 토큰:', decoded);
-                const { email, username, exp } = decoded; // 토큰에서 이메일, 사용자 이름, 만료 시간 추출
+                const { email, username, exp } = decoded;
 
-                // 토큰이 만료되었으면 로그인 실패 처리
                 if (exp && Date.now() >= exp * 1000) {
                     console.error('토큰이 만료되었습니다.');
                     navigate('/');
                     return;
                 }
 
-                console.log('로그인 처리');
-                // 로그인 상태 업데이트 (zustand 상태 관리)
-                login(token, { name: username, email, profileURL });
-
-                // 쿠키에 토큰 저장 (1시간 만료, HTTPS일 경우 secure 옵션 추가)
+                // 쿠키에 토큰 저장
                 document.cookie = `token=${token}; path=/; max-age=3600; ${
                     window.location.protocol === 'https:' ? 'secure;' : ''
                 } samesite=strict`;
 
-                setTimeout(() => {
-                    navigate('/home');
-                }, 0);
+                // 추가 API 호출로 프로필 데이터 가져오기
+                const response = await axios.patch(
+                    `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    },
+                );
+
+                const { profileURL } = response.data;
+                console.log('프로필 데이터 가져오기 성공:', response.data);
+
+                // 상태 업데이트
+                login(token, { name: username, email, profileImage: profileURL });
+                setTimeout(() => navigate('/home'), 0);
             } catch (error) {
-                console.error('토큰 디코딩 실패:', error);
+                console.error('로그인 처리 중 오류:', error);
                 navigate('/');
             }
         };
 
         handleLogin();
-    }, [token, profileURL, navigate, login]); // profileURL 추가
+    }, [token, navigate, login]);
 
     return <p>구글 로그인 중입니다...</p>;
 };

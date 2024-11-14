@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import {
-    Clerker,
     ClerkerIcon,
     ClerkerIconPNG,
     DeleteIcon,
@@ -22,7 +21,6 @@ import {
 } from '@styles';
 import { useAuthStore } from '@store';
 import axios from 'axios';
-import profile from '@components/common/Profile';
 
 // -- 인터페이스 --
 interface AccountSettingModalProps {
@@ -70,12 +68,8 @@ const ProfileImageArea = styled.div`
 `;
 
 const SvgImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props): number => {
-        return props.$width;
-    }}px;
-    height: ${(props): number => {
-        return props.$height;
-    }}px;
+    width: ${(props): number => props.$width}px;
+    height: ${(props): number => props.$height}px;
     cursor: pointer;
 `;
 
@@ -110,9 +104,16 @@ const ButtonArea = styled(ItemsCenterRow)`
 
 const FooterArea = styled(ItemsCenterSpaceRow)``;
 
+// `convertImageToFile` 함수 추가
+const convertImageToFile = async (imageSrc: string): Promise<File> => {
+    const response = await fetch(imageSrc);
+    const blob = await response.blob();
+    return new File([blob], 'default-profile-image.png', { type: blob.type });
+};
+
 const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
-    onCancel,
-}) => {
+                                                                     onCancel,
+                                                                 }) => {
     const { user, token, setUser } = useAuthStore();
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [name, setName] = useState<string>(user?.name || '');
@@ -139,21 +140,19 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         setName(event.target.value);
     };
 
-    // ClerkerIcon2 URL 또는 Base64 데이터를 File로 변환하는 함수
-    const convertImageToFile = async (imageSrc: string): Promise<File> => {
-        const response = await fetch(imageSrc);
-        const blob = await response.blob();
-        return new File([blob], 'ClerkerIconPNG.png', { type: blob.type });
-    };
-
-    // AccountSettingModal에서 setUser 호출 시 profileURL도 포함
     const onClickConfirmButton = async (): Promise<void> => {
         try {
+            console.log('토큰:', token);
             const formData = new FormData();
             const image =
                 profileImage || (await convertImageToFile(ClerkerIconPNG));
+            console.log('선택된 프로필 이미지 또는 기본 이미지:', image);
+
             formData.append('profileImage', image);
             formData.append('username', name);
+
+            console.log('전송할 formData:');
+            formData.forEach((value, key) => console.log(key, value));
 
             const response = await axios.patch(
                 `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
@@ -166,57 +165,25 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                 },
             );
 
+            console.log('서버 응답 상태 코드:', response.status);
+            console.log('서버 응답 데이터:', response.data);
+
             if (response.status === 200 || response.status === 204) {
-                const authToken = response.headers.authorization
-                    ? response.headers.authorization.split(' ')[1]
-                    : token; // authorization 헤더가 없을 경우 기존 토큰을 사용
-                const updatedProfileURL = response.data.profileURL;
-                setUser(authToken, {
-                    name,
-                    email,
-                    profileURL: updatedProfileURL,
-                });
+                const updatedImageUrl = response.data.profileURL;
+                console.log('업데이트된 프로필 이미지 URL:', updatedImageUrl);
+
+                // 상태 업데이트
+                setUser(token!, { name, email, profileImage: updatedImageUrl });
+                console.log('업데이트된 사용자 상태:', useAuthStore.getState().user);
+
+                setProfileImage(null); // 로컬 파일 상태 초기화
                 alert('계정 설정이 저장되었습니다.');
             } else {
                 throw new Error('프로필 업데이트에 실패했습니다.');
             }
         } catch (error) {
-            console.error(error);
+            console.error('프로필 업데이트 중 오류:', error);
             alert('계정 설정 저장 중 오류가 발생했습니다.');
-        }
-    };
-
-    const onClickAccountDelete = (): void => {
-        setShowModal(true);
-    };
-
-    const onClickCancelDelete = (): void => {
-        setShowModal(false);
-    };
-
-    const onClickConfirmDelete = async (): Promise<void> => {
-        try {
-            const response = await axios.delete(
-                `${process.env.REACT_APP_BASE_URL}/api/auth/account`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                },
-            );
-
-            if (response.status === 200) {
-                alert('계정이 삭제되었습니다.');
-                useAuthStore.getState().logout(); // 상태 초기화
-                navigate('/');
-            } else {
-                throw new Error('계정 삭제에 실패했습니다.');
-            }
-        } catch (error) {
-            console.error(error);
-            alert('계정 삭제 중 오류가 발생했습니다.');
-        } finally {
-            setShowModal(false);
         }
     };
 
@@ -224,6 +191,7 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         if (user) {
             setName(user.name);
             setEmail(user.email);
+            setProfileImage(null); // 파일 입력 초기화
         }
     }, [user]);
 
@@ -241,7 +209,7 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                                 src={
                                     profileImage
                                         ? URL.createObjectURL(profileImage)
-                                        : ClerkerIcon
+                                        : user?.profileImage || ClerkerIcon
                                 }
                                 $width={90}
                                 $height={90}
@@ -272,7 +240,7 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                         </ProfileInfoArea>
                     </ContentArea>
                     <FooterArea>
-                        <DeleteButton onClick={onClickAccountDelete}>
+                        <DeleteButton onClick={() => setShowModal(true)}>
                             <SvgImage
                                 src={DeleteIcon}
                                 $width={18}
@@ -300,8 +268,26 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                     type="account"
                     title="계정 삭제"
                     message="계정을 삭제 하시겠습니까?"
-                    onConfirm={onClickConfirmDelete}
-                    onCancel={onClickCancelDelete}
+                    onConfirm={async () => {
+                        try {
+                            await axios.delete(
+                                `${process.env.REACT_APP_BASE_URL}/api/auth/account`,
+                                {
+                                    headers: {
+                                        Authorization: `Bearer ${token}`,
+                                    },
+                                },
+                            );
+                            useAuthStore.getState().logout();
+                            navigate('/');
+                        } catch (error) {
+                            console.error('계정 삭제 오류:', error);
+                            alert('계정 삭제 중 오류가 발생했습니다.');
+                        } finally {
+                            setShowModal(false);
+                        }
+                    }}
+                    onCancel={() => setShowModal(false)}
                     isDelete
                 />
             )}
