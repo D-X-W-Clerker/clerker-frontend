@@ -146,14 +146,14 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         return new File([blob], 'ClerkerIconPNG.png', { type: blob.type });
     };
 
-    // 프로필 이미지 처리 부분에서 사용
+    // AccountSettingModal에서 setUser 호출 시 profileURL도 포함
     const onClickConfirmButton = async (): Promise<void> => {
         try {
             const formData = new FormData();
             const image =
                 profileImage || (await convertImageToFile(ClerkerIconPNG));
-            formData.append('profileImage', image); // 이미지 파일을 'profileImage' 필드로 전송
-            formData.append('username', name); // 이름을 'username' 필드로 전송
+            formData.append('profileImage', image);
+            formData.append('username', name);
 
             const response = await axios.patch(
                 `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
@@ -167,16 +167,16 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
             );
 
             if (response.status === 200 || response.status === 204) {
-                const authorizationHeader = response.headers.authorization;
-
-                if (authorizationHeader) {
-                    const authToken = authorizationHeader.split(' ')[1];
-                    console.log(`authToken: ${authToken}`);
-                    setUser(authToken, { name, email });
-                    alert('계정 설정이 저장되었습니다.');
-                } else {
-                    throw new Error('프로필 업데이트에 실패했습니다.');
-                }
+                const authToken = response.headers.authorization
+                    ? response.headers.authorization.split(' ')[1]
+                    : token; // authorization 헤더가 없을 경우 기존 토큰을 사용
+                const updatedProfileURL = response.data.profileURL;
+                setUser(authToken, {
+                    name,
+                    email,
+                    profileURL: updatedProfileURL,
+                });
+                alert('계정 설정이 저장되었습니다.');
             } else {
                 throw new Error('프로필 업데이트에 실패했습니다.');
             }

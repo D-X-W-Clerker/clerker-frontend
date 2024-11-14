@@ -5,16 +5,16 @@ import { jwtDecode } from 'jwt-decode';
 // 상태 관리에서 사용될 타입 정의
 interface AuthState {
     token: string | null; // 로그인한 사용자의 JWT 토큰
-    user: { name: string; email: string } | null; // 로그인한 사용자 정보 (이름, 이메일)
+    user: { name: string; email: string; profileURL: string } | null; // 로그인한 사용자 정보 (이름, 이메일, 프로필 URL)
     isAuthenticated: boolean; // 사용자가 로그인했는지 여부
     login: (
         authToken: string,
-        authUser: { name: string; email: string },
+        authUser: { name: string; email: string; profileURL: string },
     ) => void; // 로그인 함수
     logout: () => void; // 로그아웃 함수
     setUser: (
         authToken: string,
-        authUser: { name: string; email: string },
+        authUser: { name: string; email: string; profileURL: string },
     ) => void; // 사용자 정보 및 토큰을 상태에 설정하는 함수
 }
 
@@ -36,7 +36,13 @@ export const useAuthStore = create<AuthState>()(
 
             return {
                 token, // 토큰 상태
-                user, // 사용자 정보 상태
+                user: user
+                    ? {
+                          name: user.name,
+                          email: user.email,
+                          profileURL: '', // 초기 프로필 URL은 빈 문자열로 설정
+                      }
+                    : null,
                 isAuthenticated, // 로그인 여부 상태
                 login: (authToken, authUser): void => {
                     // 로그인 시, 토큰과 사용자 정보를 상태에 설정

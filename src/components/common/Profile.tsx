@@ -60,23 +60,23 @@ const Profile: React.FC = () => {
     };
 
     return (
-        <Container>
-            <UserInfoArea>
-                <ProfileImage src={ClerkerIcon} />
-                <ProfileName>{userName}</ProfileName>
-            </UserInfoArea>
-            <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
-            {isModalOpen && (
-                <SmallModal
-                    type="logout"
-                    title="로그아웃"
-                    message="로그아웃 하시겠습니까?"
-                    onConfirm={onClickConfirmButton}
-                    onCancel={onClickCloseButton}
-                    isDelete={false}
-                />
-            )}
-        </Container>
+      <Container>
+          <UserInfoArea>
+              <ProfileImage src={ClerkerIcon} />
+              <ProfileName>{userName}</ProfileName>
+          </UserInfoArea>
+          <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
+          {isModalOpen && (
+            <SmallModal
+              type="logout"
+              title="로그아웃"
+              message="로그아웃 하시겠습니까?"
+              onConfirm={onClickConfirmButton}
+              onCancel={onClickCloseButton}
+              isDelete={false}
+            />
+          )}
+      </Container>
     );
 };
 

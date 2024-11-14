@@ -13,6 +13,7 @@ const GoogleCallback: React.FC = () => {
     const navigate = useNavigate();
     const searchParams = new URLSearchParams(window.location.search);
     const token = searchParams.get('token'); // 쿼리 파라미터에서 'token' 값 추출
+    const profileURL = searchParams.get('profileURL') || ''; // 쿼리 파라미터에서 'profileURL' 값 추출
     const { login } = useAuthStore();
 
     useEffect(() => {
@@ -40,7 +41,7 @@ const GoogleCallback: React.FC = () => {
 
                 console.log('로그인 처리');
                 // 로그인 상태 업데이트 (zustand 상태 관리)
-                login(token, { name: username, email });
+                login(token, { name: username, email, profileURL });
 
                 // 쿠키에 토큰 저장 (1시간 만료, HTTPS일 경우 secure 옵션 추가)
                 document.cookie = `token=${token}; path=/; max-age=3600; ${
@@ -57,7 +58,7 @@ const GoogleCallback: React.FC = () => {
         };
 
         handleLogin();
-    }, [token, navigate, login]); // token, navigate, login이 변경될 때마다 실행
+    }, [token, profileURL, navigate, login]); // profileURL 추가
 
     return <p>구글 로그인 중입니다...</p>;
 };
