@@ -115,7 +115,7 @@ export const modifyProject = async (
 ): Promise<string> => {
     try {
         const { token } = useAuthStore.getState();
-        const response = await axios.post<string>(
+        const response = await axios.patch<string>(
             `${apiUrl}/api/project/${projectID}`,
             data,
             {
