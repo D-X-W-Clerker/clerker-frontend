@@ -47,6 +47,7 @@ const MemberContainer = styled(FlexCol)``;
 
 const ButtonContainer = styled(ItemsCenterEndRow)`
     gap: 7px;
+    margin-bottom: 30px;
 `;
 
 const myInfo: Member = {
