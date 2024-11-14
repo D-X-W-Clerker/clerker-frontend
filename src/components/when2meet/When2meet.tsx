@@ -55,77 +55,6 @@ const ButtonContainer = styled(ItemsCenterEndRow)`
     margin-bottom: 30px;
 `;
 
-const myInfo: Member = {
-    username: '황현진',
-    email: 'jjini6530@kookmin.ac.kr',
-    role: 'member',
-    type: 'FE',
-    timeTables: [],
-};
-
-const fetchEventData = async (): Promise<EventData> => {
-    return {
-        times: [
-            '0800',
-            '0830',
-            '0900',
-            '0930',
-            '1000',
-            '1030',
-            '1100',
-            '1130',
-            '1200',
-            '1230',
-            '1300',
-            '1330',
-            '1400',
-            '1430',
-            '1500',
-            '1530',
-            '1600',
-            '1630',
-            '1700',
-            '1730',
-            '1800',
-            '1830',
-            '1900',
-            '1930',
-            '2000',
-            '2030',
-            '2100',
-            '2130',
-        ],
-        dates: ['1006', '1007', '1008', '1009', '1010'],
-        members: [
-            {
-                username: '류건',
-                email: 'sksnsfbjrjs@kookmin.ac.kr',
-                role: 'owner',
-                type: 'BE',
-                timeTables: [
-                    { time: '2024-10-06 16:00:00' },
-                    { time: '2024-10-06 16:30:00' },
-                    { time: '2024-10-06 17:00:00' },
-                    { time: '2024-10-07 16:00:00' },
-                    { time: '2024-10-07 16:30:00' },
-                    { time: '2024-10-07 17:00:00' },
-                ],
-            },
-            {
-                username: '신욱욱',
-                email: 'jinwook2765@kookmin.ac.kr',
-                role: 'member',
-                type: 'FE',
-                timeTables: [
-                    { time: '2024-10-07 16:00:00' },
-                    { time: '2024-10-07 16:30:00' },
-                    { time: '2024-10-07 17:00:00' },
-                ],
-            },
-        ],
-    };
-};
-
 const When2meet: React.FC<When2meetProps> = ({
     projectID,
     scheduleID,
@@ -137,6 +66,15 @@ const When2meet: React.FC<When2meetProps> = ({
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
+    const { user } = useAuthStore();
+
+    const myInfo: Member = {
+        username: user?.name || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        role: 'member',
+        type: 'FE',
+        timeTables: [],
+    };
 
     const { data: timeTableData } = useQuery(
         ['timeTable', scheduleID],
