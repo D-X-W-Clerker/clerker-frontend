@@ -60,14 +60,19 @@ const TabsContainer = styled(FlexRow)`
     gap: 10px;
 `;
 
-const TabButton = styled.button<{ active: boolean }>`
+const TabButton = styled.button<{ $active: boolean }>`
     padding: 10px 20px;
     font-size: 14px;
     cursor: pointer;
-    background-color: ${(props) => (props.active ? '#007bff' : '#f9f9f9')};
-    color: ${(props) => (props.active ? '#fff' : '#333')};
-    border: 1px solid #ddd;
+    background-color: ${(props) => (props.$active ? '#40A3FF' : '#f9f9f9')};
+    color: ${(props) => (props.$active ? '#fff' : '#333')};
+    border: 1px solid ${(props) => (props.$active ? '#40A3FF' : '#ddd')};
     border-radius: 5px;
+
+    &:hover {
+        background-color: ${(props) =>
+    props.$active ? '#007ACC' : '#f0f0f0'}; /* 선택 시 Hover 효과 */
+    }
 `;
 
 const FileContainer = styled.div`
@@ -112,10 +117,7 @@ interface MeetingData {
     meetingId: number;
     name: string;
     domain: string | null;
-    files: {
-        REPORT?: FileItem[];
-        STT_RAW?: FileItem[];
-    };
+    files: Record<string, FileItem>;
 }
 
 const fetchFileContent = async (url: string): Promise<string> => {
@@ -132,10 +134,8 @@ const MeetSummaryPage: React.FC = () => {
     const meetingId = 9; // meetingId를 9로 고정
     const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [fileContents, setFileContents] = useState<Record<number, string>>(
-        {},
-    );
-    const [activeTab, setActiveTab] = useState<'MARKDOWN' | 'TEXT'>('MARKDOWN');
+    const [fileContents, setFileContents] = useState<Record<number, string>>({});
+    const [activeTab, setActiveTab] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchMeetingData = async () => {
@@ -147,12 +147,8 @@ const MeetSummaryPage: React.FC = () => {
                 console.log('회의 데이터:', response.data);
                 setMeetingData(response.data);
 
-                // REPORT와 STT_RAW 파일 내용 가져오기
-                const files = [
-                    ...(response.data.files.REPORT || []),
-                    ...(response.data.files.STT_RAW || []),
-                ];
-
+                // 모든 파일 내용 가져오기
+                const files = Object.values(response.data.files);
                 const fileContentPromises = files.map((file) =>
                     fetchFileContent(file.url).then((content) => ({
                         fileId: file.fileId,
@@ -160,13 +156,17 @@ const MeetSummaryPage: React.FC = () => {
                     })),
                 );
 
-                const fileContentsArray =
-                    await Promise.all(fileContentPromises);
+                const fileContentsArray = await Promise.all(fileContentPromises);
                 const contentMap: Record<number, string> = {};
                 fileContentsArray.forEach(({ fileId, content }) => {
                     contentMap[fileId] = content;
                 });
                 setFileContents(contentMap);
+
+                // 첫 번째 파일을 기본 활성화 탭으로 설정
+                if (files.length > 0) {
+                    setActiveTab(Object.keys(response.data.files)[0]);
+                }
             } catch (error) {
                 console.error('회의 데이터를 가져오는 데 실패했습니다:', error);
                 alert('회의 데이터를 불러오는데 실패했습니다.');
@@ -202,33 +202,24 @@ const MeetSummaryPage: React.FC = () => {
                     )}
                 </DomainArea>
                 <TabsContainer>
-                    <TabButton
-                        active={activeTab === 'MARKDOWN'}
-                        onClick={() => setActiveTab('MARKDOWN')}
-                    >
-                        보고서
-                    </TabButton>
-                    <TabButton
-                        active={activeTab === 'TEXT'}
-                        onClick={() => setActiveTab('TEXT')}
-                    >
-                        Law Text
-                    </TabButton>
+                    {Object.keys(meetingData.files).map((key) => (
+                        <TabButton
+                            key={key}
+                            $active={activeTab === key}
+                            onClick={() => setActiveTab(key)}
+                        >
+                            {key}
+                        </TabButton>
+                    ))}
                 </TabsContainer>
                 <FileContainer>
-                    {activeTab === 'MARKDOWN'
-                        ? meetingData.files.REPORT?.map((file) => (
-                              <MarkdownContent key={file.fileId}>
-                                  {fileContents[file.fileId] ||
-                                      '불러오는 중...'}
-                              </MarkdownContent>
-                          ))
-                        : meetingData.files.STT_RAW?.map((file) => (
-                              <TextContent key={file.fileId}>
-                                  {fileContents[file.fileId] ||
-                                      '불러오는 중...'}
-                              </TextContent>
-                          ))}
+                    {Object.entries(meetingData.files).map(([key, file]) =>
+                        activeTab === key ? (
+                            <MarkdownContent key={file.fileId}>
+                                {fileContents[file.fileId] || '불러오는 중...'}
+                            </MarkdownContent>
+                        ) : null,
+                    )}
                 </FileContainer>
             </Container>
         </Layout>
