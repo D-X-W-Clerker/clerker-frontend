@@ -135,9 +135,7 @@ const MeetSummaryPage: React.FC = () => {
     const [fileContents, setFileContents] = useState<Record<number, string>>(
         {},
     );
-    const [activeTab, setActiveTab] = useState<'MARKDOWN' | 'TEXT'>(
-        'MARKDOWN',
-    );
+    const [activeTab, setActiveTab] = useState<'MARKDOWN' | 'TEXT'>('MARKDOWN');
 
     useEffect(() => {
         const fetchMeetingData = async () => {
@@ -220,15 +218,17 @@ const MeetSummaryPage: React.FC = () => {
                 <FileContainer>
                     {activeTab === 'MARKDOWN'
                         ? meetingData.files.REPORT?.map((file) => (
-                            <MarkdownContent key={file.fileId}>
-                                {fileContents[file.fileId] || '불러오는 중...'}
-                            </MarkdownContent>
-                        ))
+                              <MarkdownContent key={file.fileId}>
+                                  {fileContents[file.fileId] ||
+                                      '불러오는 중...'}
+                              </MarkdownContent>
+                          ))
                         : meetingData.files.STT_RAW?.map((file) => (
-                            <TextContent key={file.fileId}>
-                                {fileContents[file.fileId] || '불러오는 중...'}
-                            </TextContent>
-                        ))}
+                              <TextContent key={file.fileId}>
+                                  {fileContents[file.fileId] ||
+                                      '불러오는 중...'}
+                              </TextContent>
+                          ))}
                 </FileContainer>
             </Container>
         </Layout>
