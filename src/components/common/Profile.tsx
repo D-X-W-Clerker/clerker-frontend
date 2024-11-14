@@ -66,7 +66,10 @@ const Profile: React.FC = () => {
     return (
         <Container>
             <UserInfoArea>
-                <ProfileImage src={profileImage || ClerkerIcon} alt="프로필 이미지" />
+                <ProfileImage
+                    src={profileImage || ClerkerIcon}
+                    alt="프로필 이미지"
+                />
                 <ProfileName>{userName}</ProfileName>
             </UserInfoArea>
             <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />

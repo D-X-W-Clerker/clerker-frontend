@@ -112,8 +112,8 @@ const convertImageToFile = async (imageSrc: string): Promise<File> => {
 };
 
 const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
-                                                                     onCancel,
-                                                                 }) => {
+    onCancel,
+}) => {
     const { user, token, setUser } = useAuthStore();
     const [profileImage, setProfileImage] = useState<File | null>(null);
     const [name, setName] = useState<string>(user?.name || '');
@@ -174,7 +174,10 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
 
                 // 상태 업데이트
                 setUser(token!, { name, email, profileImage: updatedImageUrl });
-                console.log('업데이트된 사용자 상태:', useAuthStore.getState().user);
+                console.log(
+                    '업데이트된 사용자 상태:',
+                    useAuthStore.getState().user,
+                );
 
                 setProfileImage(null); // 로컬 파일 상태 초기화
                 alert('계정 설정이 저장되었습니다.');
