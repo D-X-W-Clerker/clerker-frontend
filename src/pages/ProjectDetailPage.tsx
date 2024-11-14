@@ -27,7 +27,6 @@ import {
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import axios from 'axios';
-import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 
 // Axios Instance 설정
 const axiosInstance = axios.create({
@@ -450,17 +449,6 @@ const ProjectDetailPage: React.FC = () => {
                         onConfirm={handleCloseModal}
                     />
                 )}
-            {modalType === 'endedMeeting' && selectedMeeting && (
-                <EndedMeetingModal
-                    meeting={{
-                        id: selectedMeeting.meetingId,
-                        meetingName: selectedMeeting.name,
-                        dateTime: selectedMeeting.startDate,
-                        url: selectedMeeting.url,
-                    }}
-                    onConfirm={handleCloseModal}
-                />
-            )}
         </Layout>
     );
 };
