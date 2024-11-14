@@ -455,6 +455,8 @@ const ProjectDetailPage: React.FC = () => {
             {modalType === 'memberInfo' && (
                 <MemberInfoModal
                     projectId={projectId || ''}
+                    projectName={projectName || ''}
+                    memberData={members}
                     onCancel={handleCloseModal}
                 />
             )}
