@@ -1,13 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
 import { TitleTab } from '@components';
 import { FlexCol, FlexRow } from '@styles';
 import Layout from '../Layout';
 import DomainArrow from '../assets/action/arrow/DomainArrow.svg';
+import axios from 'axios';
+
+const axiosInstance = axios.create({
+    baseURL: process.env.REACT_APP_BASE_URL,
+});
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        ?.split('=')[1];
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
 const Container = styled(FlexCol)`
     width: 100%;
-    max-width: 1100px;
+    max-width: 1300px;
     padding: 40px;
     gap: 30px;
     overflow-y: auto;
@@ -38,117 +55,181 @@ const DomainKeyword = styled.span`
     background-color: #f9f9f9;
 `;
 
-const Text = styled.div`
+const TabsContainer = styled(FlexRow)`
+    margin-bottom: -20px;
+    gap: 10px;
+`;
+
+const TabButton = styled.button<{ active: boolean }>`
+    padding: 10px 20px;
     font-size: 14px;
-    line-height: 1.6;
-    margin-bottom: 20px; /* 이미지와 텍스트 간의 간격 추가 */
+    cursor: pointer;
+    background-color: ${(props) => (props.active ? '#007bff' : '#f9f9f9')};
+    color: ${(props) => (props.active ? '#fff' : '#333')};
+    border: 1px solid #ddd;
+    border-radius: 5px;
 `;
 
-const DiagramContainer = styled.div`
-    display: flex;
-    justify-content: center; /* 가운데 정렬 */
-    margin: 20px 0;
+const FileContainer = styled.div`
+    margin-bottom: 20px;
+    padding: 50px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
 `;
 
-const DiagramImage = styled.img`
-    width: 100%;
-    max-width: 600px; /* 최대 너비 제한 */
-    height: auto;
+const MarkdownContent = styled(ReactMarkdown)`
+    font-size: 14px;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    margin-top: -25px;
+
+    img {
+        max-width: 80%;
+        max-height: 400px;
+        height: auto;
+        display: block;
+        margin: 10px auto;
+    }
 `;
 
-const fetchEventData = async (): Promise<{
-    reports: { id: string; title: string; summary: string; fileUrl: string }[];
-    diagrams: { id: string; title: string; diagramUrl: string }[];
-}> => {
-    return {
-        reports: [
-            {
-                id: '1',
-                title: '회의록 1',
-                summary: '프로젝트 킥오프 회의의 요약본입니다.',
-                fileUrl: 'https://example.com/report1.pdf',
-            },
-        ],
-        diagrams: [
-            {
-                id: '1',
-                title: '청크1',
-                diagramUrl: '/diagrams/chunk1.png',
-            },
-            {
-                id: '2',
-                title: '청크2',
-                diagramUrl: '/diagrams/chunk2.png',
-            },
-        ],
+const TextContent = styled.pre`
+    font-size: 14px;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+`;
+
+interface FileItem {
+    fileId: number;
+    url: string;
+}
+
+interface MeetingData {
+    meetingId: number;
+    name: string;
+    domain: string | null;
+    files: {
+        REPORT?: FileItem[];
+        STT_RAW?: FileItem[];
     };
+}
+
+const fetchFileContent = async (url: string): Promise<string> => {
+    try {
+        const response = await axios.get(url, { responseType: 'text' });
+        return response.data;
+    } catch (error) {
+        console.error('파일 내용을 가져오는데 실패했습니다:', error);
+        return '파일 내용을 불러오는데 실패했습니다.';
+    }
 };
 
 const MeetSummaryPage: React.FC = () => {
-    const [reportData, setReportData] = useState<
-        { id: string; title: string; summary: string; fileUrl: string }[]
-    >([]);
-    const [diagramData, setDiagramData] = useState<
-        { id: string; title: string; diagramUrl: string }[]
-    >([]);
-    const domainKeywords = ['AI', 'Machine Learning', 'NLP', 'Summarization'];
+    const meetingId = 9; // meetingId를 9로 고정
+    const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [fileContents, setFileContents] = useState<Record<number, string>>(
+        {},
+    );
+    const [activeTab, setActiveTab] = useState<'MARKDOWN' | 'TEXT'>(
+        'MARKDOWN',
+    );
 
-    useEffect((): void => {
-        const fetchData = async (): Promise<void> => {
-            const { reports, diagrams } = await fetchEventData();
-            setReportData(reports);
-            setDiagramData(diagrams);
+    useEffect(() => {
+        const fetchMeetingData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axiosInstance.get<MeetingData>(
+                    `/api/meeting/result/${meetingId}`,
+                );
+                console.log('회의 데이터:', response.data);
+                setMeetingData(response.data);
+
+                // REPORT와 STT_RAW 파일 내용 가져오기
+                const files = [
+                    ...(response.data.files.REPORT || []),
+                    ...(response.data.files.STT_RAW || []),
+                ];
+
+                const fileContentPromises = files.map((file) =>
+                    fetchFileContent(file.url).then((content) => ({
+                        fileId: file.fileId,
+                        content,
+                    })),
+                );
+
+                const fileContentsArray =
+                    await Promise.all(fileContentPromises);
+                const contentMap: Record<number, string> = {};
+                fileContentsArray.forEach(({ fileId, content }) => {
+                    contentMap[fileId] = content;
+                });
+                setFileContents(contentMap);
+            } catch (error) {
+                console.error('회의 데이터를 가져오는 데 실패했습니다:', error);
+                alert('회의 데이터를 불러오는데 실패했습니다.');
+            } finally {
+                setIsLoading(false);
+            }
         };
-        fetchData();
-    }, []);
+
+        fetchMeetingData();
+    }, [meetingId]);
+
+    if (isLoading) {
+        return <div>데이터를 불러오는 중입니다...</div>;
+    }
+
+    if (!meetingData) {
+        return <div>회의 데이터를 찾을 수 없습니다.</div>;
+    }
 
     return (
         <Layout>
             <Container>
-                <TitleTab type="meetSummary" title="9월 12일 AI 회의" />
+                <TitleTab
+                    type="meetSummary"
+                    title={meetingData.name || '회의 제목'}
+                />
                 <DomainArea>
                     <DomainArrowIcon src={DomainArrow} />
-                    {domainKeywords.map((keyword) => {
-                        return (
-                            <DomainKeyword key={keyword}>
-                                {keyword}
-                            </DomainKeyword>
-                        );
-                    })}
+                    {meetingData.domain ? (
+                        <DomainKeyword>{meetingData.domain}</DomainKeyword>
+                    ) : (
+                        <DomainKeyword>도메인 정보 없음</DomainKeyword>
+                    )}
                 </DomainArea>
-                <Text>
-                    9월 12일 회의 내용입니다. 인퍼런스용 강의 영상은 논문
-                    발표처럼 무겁지 않게, 컨퍼런스 형식의 영상으로 진행하면
-                    좋습니다. SK에서 진행한 강의 영상처럼 일반 대중을 대상으로
-                    하되, 전문 용어를 적절히 사용하여 이해하기 쉬운 방식으로
-                    진행합니다.
-                </Text>
-                {diagramData[0] && (
-                    <DiagramContainer>
-                        <DiagramImage
-                            src={diagramData[0].diagramUrl}
-                            alt={diagramData[0].title}
-                        />
-                    </DiagramContainer>
-                )}
-                <Text>
-                    STT에서는 청킹을 넘어갈 때 불용어 처리가 진행됩니다. MP3
-                    파일을 입력하면 NTT 결과와 청킹 결과, 서머리 결과 등이
-                    저장되도록 설정되어 있으며, STT 결과물이 청킹과 서머리
-                    과정에 자동으로 반영됩니다.
-                </Text>
-                {diagramData[1] && (
-                    <DiagramContainer>
-                        <DiagramImage
-                            src={diagramData[1].diagramUrl}
-                            alt={diagramData[1].title}
-                        />
-                    </DiagramContainer>
-                )}
-                <Text>
-                    현재 코드가 각 청크별로 블로썸을 거쳐 HTML로 연결되는데, 이
-                    과정에서 HTML이 깨지고 시간이 오래 걸립니다.
-                </Text>
+                <TabsContainer>
+                    <TabButton
+                        active={activeTab === 'MARKDOWN'}
+                        onClick={() => setActiveTab('MARKDOWN')}
+                    >
+                        보고서
+                    </TabButton>
+                    <TabButton
+                        active={activeTab === 'TEXT'}
+                        onClick={() => setActiveTab('TEXT')}
+                    >
+                        Law Text
+                    </TabButton>
+                </TabsContainer>
+                <FileContainer>
+                    {activeTab === 'MARKDOWN'
+                        ? meetingData.files.REPORT?.map((file) => (
+                            <MarkdownContent key={file.fileId}>
+                                {fileContents[file.fileId] || '불러오는 중...'}
+                            </MarkdownContent>
+                        ))
+                        : meetingData.files.STT_RAW?.map((file) => (
+                            <TextContent key={file.fileId}>
+                                {fileContents[file.fileId] || '불러오는 중...'}
+                            </TextContent>
+                        ))}
+                </FileContainer>
             </Container>
         </Layout>
     );
