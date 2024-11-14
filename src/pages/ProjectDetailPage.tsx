@@ -199,7 +199,13 @@ const ProjectDetailPage: React.FC = () => {
                 const response = await axiosInstance.get(
                     `/api/schedule/${projectId}`,
                 );
-                setMeetingData(response.data.meetings);
+                setMeetingData(
+                    response.data.meetings.sort(
+                        (a: MeetingData, b: MeetingData) =>
+                            new Date(b.createdAt).getTime() -
+                            new Date(a.createdAt).getTime(),
+                    ),
+                );
                 // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
                 if (response.data.meetings.length > 0) {
                     setDomain(
@@ -228,8 +234,20 @@ const ProjectDetailPage: React.FC = () => {
             }
         };
 
+        // 초기 데이터 로드
         fetchMeetingData();
         fetchSchedules();
+
+        // 주기적으로 데이터를 다시 가져오기 (5초 간격)
+        const intervalId = setInterval(() => {
+            fetchMeetingData();
+            fetchSchedules();
+        }, 5000);
+
+        // 컴포넌트 언마운트 시 interval 제거
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [projectId]);
 
     const handleOpenModal = (

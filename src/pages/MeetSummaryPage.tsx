@@ -71,7 +71,7 @@ const TabButton = styled.button<{ $active: boolean }>`
 
     &:hover {
         background-color: ${(props) =>
-    props.$active ? '#007ACC' : '#f0f0f0'}; /* 선택 시 Hover 효과 */
+            props.$active ? '#007ACC' : '#f0f0f0'}; /* 선택 시 Hover 효과 */
     }
 `;
 
@@ -134,7 +134,9 @@ const MeetSummaryPage: React.FC = () => {
     const meetingId = 9; // meetingId를 9로 고정
     const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [fileContents, setFileContents] = useState<Record<number, string>>({});
+    const [fileContents, setFileContents] = useState<Record<number, string>>(
+        {},
+    );
     const [activeTab, setActiveTab] = useState<string | null>(null);
 
     useEffect(() => {
@@ -156,7 +158,8 @@ const MeetSummaryPage: React.FC = () => {
                     })),
                 );
 
-                const fileContentsArray = await Promise.all(fileContentPromises);
+                const fileContentsArray =
+                    await Promise.all(fileContentPromises);
                 const contentMap: Record<number, string> = {};
                 fileContentsArray.forEach(({ fileId, content }) => {
                     contentMap[fileId] = content;
