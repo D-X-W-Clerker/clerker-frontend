@@ -148,20 +148,26 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
 
     const formatDateTime = (): string => {
         const { year, month, day, hour, minute } = dateTime;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
+        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
     };
 
     const onClickCreateButton = async (): Promise<void> => {
-        // 서버에서 요구하는 데이터 형식에 맞게 필드 구성
         const meetingData = {
-            name, // 이름 필드
-            startDateTime: formatDateTime(), // ISO 형식 날짜 및 시간
-            domain, // 도메인 정보
-            isNotify: sendAlert, // 알림 여부
+            name,
+            startDateTime: formatDateTime(),
+            domain,
+            isNotify: sendAlert,
         };
 
+        console.log('보낼 데이터:', meetingData);
+
+        // startDateTime 형식 검증
+        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(meetingData.startDateTime)) {
+            alert('날짜 및 시간 형식이 올바르지 않습니다. (예: YYYY-MM-DDTHH:mm:ss)');
+            return;
+        }
+
         try {
-            // API 요청
             const response = await axiosInstance.post(
                 `/api/meeting/create/${projectId}`,
                 meetingData,
@@ -171,17 +177,20 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
 
             if (response.status === 200 || response.status === 201) {
                 alert('회의가 성공적으로 생성되었습니다.');
-                onCancel(); // 모달 닫기
+                onCancel();
             } else {
-                console.error(
-                    '서버 응답에서 문제가 발생했습니다.',
-                    response.data,
-                );
+                console.error('서버 응답에서 문제가 발생했습니다.', response.data);
                 alert('회의 생성 중 오류가 발생했습니다.');
             }
-        } catch (error) {
-            console.error('Failed to create meeting:', error);
-            alert('회의 생성에 실패했습니다.');
+        } catch (error: any) {
+            console.error('회의 생성 요청 실패:', error);
+
+            if (error.response) {
+                console.error('서버 오류 메시지:', error.response.data);
+                alert(`회의 생성에 실패했습니다: ${error.response.data.message || '서버 오류'}`);
+            } else {
+                alert('회의 생성에 실패했습니다.');
+            }
         }
     };
 
