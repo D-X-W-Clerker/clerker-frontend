@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { ClerkerIcon, DeleteIcon, ProfileAddIcon } from '@assets';
+import {
+    Clerker,
+    ClerkerIcon,
+    ClerkerIconPNG,
+    DeleteIcon,
+    ProfileAddIcon,
+} from '@assets';
 import {
     LargeModalTitleTab,
     ModalButton,
@@ -16,6 +22,7 @@ import {
 } from '@styles';
 import { useAuthStore } from '@store';
 import axios from 'axios';
+import profile from '@components/common/Profile';
 
 // -- 인터페이스 --
 interface AccountSettingModalProps {
@@ -132,12 +139,20 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         setName(event.target.value);
     };
 
+    // ClerkerIcon2 URL 또는 Base64 데이터를 File로 변환하는 함수
+    const convertImageToFile = async (imageSrc: string): Promise<File> => {
+        const response = await fetch(imageSrc);
+        const blob = await response.blob();
+        return new File([blob], 'ClerkerIconPNG.png', { type: blob.type });
+    };
+
+    // 프로필 이미지 처리 부분에서 사용
     const onClickConfirmButton = async (): Promise<void> => {
         try {
             const formData = new FormData();
-            if (profileImage) {
-                formData.append('profileImage', profileImage); // 이미지 파일을 'profileImage' 필드로 전송
-            }
+            const image =
+                profileImage || (await convertImageToFile(ClerkerIconPNG));
+            formData.append('profileImage', image); // 이미지 파일을 'profileImage' 필드로 전송
             formData.append('username', name); // 이름을 'username' 필드로 전송
 
             const response = await axios.patch(
@@ -146,20 +161,22 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data', // multipart/form-data로 설정
+                        'Content-Type': 'multipart/form-data',
                     },
                 },
             );
 
-            if (response.status === 200) {
-                const { authToken, updatedUser } = response.data;
-                setUser(authToken, {
-                    ...updatedUser,
-                    profileImage: profileImage
-                        ? URL.createObjectURL(profileImage)
-                        : updatedUser.profileImage,
-                });
-                alert('계정 설정이 저장되었습니다.');
+            if (response.status === 200 || response.status === 204) {
+                const authorizationHeader = response.headers.authorization;
+
+                if (authorizationHeader) {
+                    const authToken = authorizationHeader.split(' ')[1];
+                    console.log(`authToken: ${authToken}`);
+                    setUser(authToken, { name, email });
+                    alert('계정 설정이 저장되었습니다.');
+                } else {
+                    throw new Error('프로필 업데이트에 실패했습니다.');
+                }
             } else {
                 throw new Error('프로필 업데이트에 실패했습니다.');
             }

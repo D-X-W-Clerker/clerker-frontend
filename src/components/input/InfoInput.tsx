@@ -37,7 +37,7 @@ const NameInput = styled.input`
 
 const InfoInput: React.FC<InfoInputProps> = ({
     label,
-    value,
+    value = '',
     isEditable = false,
     onChange,
     placeholder,
@@ -49,7 +49,7 @@ const InfoInput: React.FC<InfoInputProps> = ({
                 <NameInput
                     id={label}
                     type="text"
-                    value={value}
+                    value={value || ''}
                     onChange={onChange}
                     placeholder={placeholder}
                 />
