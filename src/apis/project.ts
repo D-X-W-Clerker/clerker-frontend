@@ -116,6 +116,7 @@ export const exitProject = async (projectID: string): Promise<void> => {
     }
 };
 
+// 프로젝트 정보(이름+멤버) 수정
 export const modifyProject = async (
     projectID: string,
     data: ProjectRequest,
