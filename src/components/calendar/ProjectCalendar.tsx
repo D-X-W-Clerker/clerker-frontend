@@ -244,7 +244,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
 
         while (current <= endOfMonth || current.getDay() !== 0) {
             const week: Date[] = [];
-            for (let i = 0; i < 7; i++) {
+            for (let i = 0; i < 7; i += 1) {
                 week.push(new Date(current));
                 current.setDate(current.getDate() + 1);
             }

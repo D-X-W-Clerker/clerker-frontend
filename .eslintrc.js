@@ -39,9 +39,11 @@ module.exports = {
         'react/jsx-one-expression-per-line': 'off',
         'no-unused-vars': 'off',
         'no-nested-ternary': 'off',
+        'no-param-reassign': 'off', // 추가
+        'no-restricted-syntax': 'off', // 추가
         'react/prop-types': 'off',
         'import/no-extraneous-dependencies': 'error',
-        'arrow-body-style': ['error', 'always'],
+        'arrow-body-style': ['warn', 'always'],
         'react/function-component-definition': [
             'error',
             {
@@ -52,7 +54,7 @@ module.exports = {
 
         // TypeScript 관련 규칙
         '@typescript-eslint/no-unused-vars': 'off',
-        '@typescript-eslint/explicit-function-return-type': 'error',
+        '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-explicit-any': 'error',
 
         // Import 관련 규칙

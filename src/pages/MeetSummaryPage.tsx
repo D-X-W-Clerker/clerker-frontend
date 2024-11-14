@@ -3,9 +3,9 @@ import styled from 'styled-components';
 import ReactMarkdown from 'react-markdown';
 import { TitleTab } from '@components';
 import { FlexCol, FlexRow } from '@styles';
+import axios from 'axios';
 import Layout from '../Layout';
 import DomainArrow from '../assets/action/arrow/DomainArrow.svg';
-import axios from 'axios';
 
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
@@ -14,7 +14,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = document.cookie
         .split('; ')
-        .find((row) => row.startsWith('token='))
+        .find((row) => {
+            return row.startsWith('token=');
+        })
         ?.split('=')[1];
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -64,14 +66,22 @@ const TabButton = styled.button<{ $active: boolean }>`
     padding: 10px 20px;
     font-size: 14px;
     cursor: pointer;
-    background-color: ${(props) => (props.$active ? '#40A3FF' : '#f9f9f9')};
-    color: ${(props) => (props.$active ? '#fff' : '#333')};
-    border: 1px solid ${(props) => (props.$active ? '#40A3FF' : '#ddd')};
+    background-color: ${(props) => {
+        return props.$active ? '#40A3FF' : '#f9f9f9';
+    }};
+    color: ${(props) => {
+        return props.$active ? '#fff' : '#333';
+    }};
+    border: 1px solid
+        ${(props) => {
+            return props.$active ? '#40A3FF' : '#ddd';
+        }};
     border-radius: 5px;
 
     &:hover {
-        background-color: ${(props) =>
-            props.$active ? '#007ACC' : '#f0f0f0'}; /* 선택 시 Hover 효과 */
+        background-color: ${(props) => {
+            return props.$active ? '#007ACC' : '#f0f0f0';
+        }}; /* 선택 시 Hover 효과 */
     }
 `;
 
@@ -151,12 +161,14 @@ const MeetSummaryPage: React.FC = () => {
 
                 // 모든 파일 내용 가져오기
                 const files = Object.values(response.data.files);
-                const fileContentPromises = files.map((file) =>
-                    fetchFileContent(file.url).then((content) => ({
-                        fileId: file.fileId,
-                        content,
-                    })),
-                );
+                const fileContentPromises = files.map((file) => {
+                    return fetchFileContent(file.url).then((content) => {
+                        return {
+                            fileId: file.fileId,
+                            content,
+                        };
+                    });
+                });
 
                 const fileContentsArray =
                     await Promise.all(fileContentPromises);
@@ -205,24 +217,28 @@ const MeetSummaryPage: React.FC = () => {
                     )}
                 </DomainArea>
                 <TabsContainer>
-                    {Object.keys(meetingData.files).map((key) => (
-                        <TabButton
-                            key={key}
-                            $active={activeTab === key}
-                            onClick={() => setActiveTab(key)}
-                        >
-                            {key}
-                        </TabButton>
-                    ))}
+                    {Object.keys(meetingData.files).map((key) => {
+                        return (
+                            <TabButton
+                                key={key}
+                                $active={activeTab === key}
+                                onClick={() => {
+                                    return setActiveTab(key);
+                                }}
+                            >
+                                {key}
+                            </TabButton>
+                        );
+                    })}
                 </TabsContainer>
                 <FileContainer>
-                    {Object.entries(meetingData.files).map(([key, file]) =>
-                        activeTab === key ? (
+                    {Object.entries(meetingData.files).map(([key, file]) => {
+                        return activeTab === key ? (
                             <MarkdownContent key={file.fileId}>
                                 {fileContents[file.fileId] || '불러오는 중...'}
                             </MarkdownContent>
-                        ) : null,
-                    )}
+                        ) : null;
+                    })}
                 </FileContainer>
             </Container>
         </Layout>
