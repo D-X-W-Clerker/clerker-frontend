@@ -22,6 +22,10 @@ interface ProjectInfo {
     members: Member[];
 }
 
+interface Emails {
+    emails: string[];
+}
+
 export const getProject = async (): Promise<Project[]> => {
     try {
         const { token } = useAuthStore.getState();
@@ -158,5 +162,29 @@ export const getProjectInfo = async (
         return response.data;
     } catch (error) {
         throw new Error(`project 정보 조회에 실패했습니다: ${error}`);
+    }
+};
+
+// 프로젝트에 멤버 초대
+export const inviteMember = async (
+    projectID: string,
+    data: Emails,
+): Promise<Emails> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.post<Emails>(
+            `${apiUrl}/api/project/${projectID}/join`,
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { projectID },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`멤버 초대에 실패했습니다: ${error}`);
     }
 };
