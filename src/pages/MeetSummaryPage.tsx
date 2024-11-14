@@ -73,9 +73,9 @@ const TabButton = styled.button<{ $active: boolean }>`
         return props.$active ? '#fff' : '#333';
     }};
     border: 1px solid
-        ${(props) => {
-            return props.$active ? '#40A3FF' : '#ddd';
-        }};
+    ${(props) => {
+        return props.$active ? '#40A3FF' : '#ddd';
+    }};
     border-radius: 5px;
 
     &:hover {
