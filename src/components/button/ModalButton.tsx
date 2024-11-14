@@ -40,14 +40,18 @@ const ModalButton: React.FC<ModalButtonProps> = ({
     disabled = false,
 }) => {
     const bgColor =
-        color === 'blue' ? 'var(--color-blue-200)' : 'var(--color-gray-400)';
+        color === 'blue'
+            ? 'var(--color-blue-200)'
+            : color === 'red'
+              ? '#FF6464' // 빨간색 배경 추가
+              : 'var(--color-gray-400)';
 
     return (
         <Container
             $bgColor={bgColor}
             $disabled={disabled}
-            onClick={!disabled && onClick ? onClick : undefined} // disabled 상태일 때 클릭 이벤트 제거
-            disabled={disabled} // 버튼의 disabled 속성 설정
+            onClick={!disabled && onClick ? onClick : undefined}
+            disabled={disabled}
         >
             {text}
         </Container>
