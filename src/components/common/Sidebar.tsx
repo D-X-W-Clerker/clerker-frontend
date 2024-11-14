@@ -15,7 +15,7 @@ import {
     AccountSettingModal,
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
     getNotification,
     deleteNotification,
@@ -23,7 +23,7 @@ import {
     createProject,
     createChildProject,
 } from '../../apis';
-import { Project, Meeting, ChildProject } from '../../types';
+import { Project } from '../../types';
 
 // -- 인터페이스 --
 interface InboxItem {
@@ -120,6 +120,7 @@ const menuItems = [
 const SideBar: React.FC = () => {
     const [showInbox, setShowInbox] = useState(false);
     const [showSettingModal, setShowSettingModal] = useState(false);
+    const queryClient = useQueryClient();
 
     const { data: projects = [], refetch: refetchProjects } = useQuery<
         Project[]
@@ -175,13 +176,18 @@ const SideBar: React.FC = () => {
     };
 
     // 프로젝트 생성
-    const onClickCreateProject = (): void => {
-        try {
-            createProject();
-            refetchProjects(); // 데이터 새로고침
-        } catch (error) {
+    const { mutate: createProjectMutation } = useMutation(createProject, {
+        onSuccess: () => {
+            // 프로젝트 생성 성공 시 목록 새로고침
+            queryClient.invalidateQueries('projects');
+        },
+        onError: (error) => {
             console.error('프로젝트 생성 실패:', error);
-        }
+        },
+    });
+
+    const onClickCreateProject = (): void => {
+        createProjectMutation();
     };
 
     // 하위 프로젝트 생성
