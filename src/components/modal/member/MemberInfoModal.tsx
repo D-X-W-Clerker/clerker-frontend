@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
+import { useMutation } from 'react-query';
 import { MemberIcon } from '@assets';
 import { ModalButton, LargeModalTitleTab, MemberEditTable } from '@components';
 import {
@@ -9,6 +10,7 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import { modifyProject } from '../../../apis';
 
 // -- 인터페이스 --
 interface Member {
@@ -87,6 +89,36 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
     const [members, setMembers] = useState(memberData);
     const [originalMembers] = useState(memberData); // 원래 멤버 목록
 
+    const modifyMutation = useMutation(
+        (data: {
+            projectID: string;
+            projectName: string;
+            members: Member[];
+        }) => {
+            return modifyProject(data.projectID, {
+                projectName: data.projectName,
+                members: data.members.map((member) => {
+                    return {
+                        organizationId: member.organizationId,
+                        username: member.username,
+                        email: member.email,
+                        role: member.role,
+                        type: member.type || '',
+                    };
+                }),
+            });
+        },
+        {
+            onSuccess: () => {
+                alert('멤버 정보가 성공적으로 수정되었습니다.');
+                onCancel();
+            },
+            onError: (error) => {
+                console.error('멤버 정보 수정 중 오류 발생:', error);
+            },
+        },
+    );
+
     // onRoleChange 함수에 useCallback을 사용하여 무한 렌더링 방지
     const onChangeType = useCallback((id: string, newType: string): void => {
         setMembers((prevMembers) => {
@@ -106,30 +138,17 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
             return member.type !== originalMembers[index].type;
         });
 
-        // 변경된 멤버들의 정보를 해당 형식에 맞춰 배열로 변환
-        const result = {
+        modifyMutation.mutate({
+            projectID: projectId,
             projectName,
-            members: changedMembers.map((member) => {
-                return {
-                    organizationId: member.organizationId,
-                    role: member.role,
-                    type: member.type || '',
-                };
-            }),
-        };
-
-        console.log('변경된 멤버 정보:', result);
-        alert('멤버 정보 변경 완료');
-        onCancel();
+            members: changedMembers,
+        });
     };
 
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab
-                    type="project"
-                    title="D & X : W conference"
-                />
+                <LargeModalTitleTab type="project" title={projectName} />
                 <ContentArea>
                     <TextArea>
                         <SvgImage src={MemberIcon} />
