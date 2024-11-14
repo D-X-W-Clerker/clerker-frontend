@@ -174,39 +174,6 @@ const SideBar: React.FC = () => {
         deleteMutation.mutate(notificationId); // 알림 삭제 호출
     };
 
-    // useEffect(() => {
-    //     // 프로젝트 목록 조회
-    //     const testProjects: Project[] = [
-    //         {
-    //             projectId: '1',
-    //             name: 'Clerker',
-    //             childProjects: [
-    //                 {
-    //                     id: '2',
-    //                     name: 'FE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '3',
-    //                     name: 'BE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '4',
-    //                     name: 'AI',
-    //                     childProjects: [],
-    //                     meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
-    //                 },
-    //             ],
-    //             meetings: [{ meetingId: '6', name: '기획 회의' }],
-    //         },
-    //     ];
-    //
-    //     setProjects(testProjects);
-    // }, []);
-
     // 프로젝트 생성
     const onClickCreateProject = (): void => {
         try {
