@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useQuery } from 'react-query';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
 import { useAuthStore } from '@store';
 import { postTimeTable } from '../../apis';
+
 // 타입 정의
 interface TimeTable {
     time: string;
