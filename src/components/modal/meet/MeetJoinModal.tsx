@@ -21,7 +21,6 @@ import { SplitDateTime } from '@utils';
 import axios from 'axios';
 import AudioRecorder, { AudioRecorderHandle } from './AudioRecorder';
 import RecordingStopModal from './RecordingStopModal';
-import EndedMeetingModal from './EndedMeetingModal';
 
 // Axios Instance 설정
 const axiosInstance = axios.create({
@@ -201,20 +200,6 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
 
     if (!meeting) {
         return null; // 로딩 중일 때는 아무것도 표시하지 않음
-    }
-
-    if (meeting.isEnded) {
-        return (
-            <EndedMeetingModal
-                meeting={{
-                    id: meeting.id.toString(),
-                    meetingName: meeting.name,
-                    dateTime: meeting.startDate,
-                    url: meeting.url,
-                }}
-                onConfirm={onCancel}
-            />
-        );
     }
 
     const dateFields = SplitDateTime(meeting.startDate);

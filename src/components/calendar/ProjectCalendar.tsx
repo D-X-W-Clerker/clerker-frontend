@@ -168,7 +168,6 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 const response = await axiosInstance.get(
                     `/api/schedule/${projectId}`,
                 );
-                console.log('받아온 회의 일정 데이터:', response.data);
                 setSchedules(response.data.meetings);
             } catch (error) {
                 console.error(

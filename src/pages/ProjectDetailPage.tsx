@@ -24,7 +24,6 @@ import {
     ItemsCenterEndRow,
 } from '@styles';
 import axios from 'axios';
-import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
 import { getProjectInfo } from '../apis';
@@ -487,17 +486,6 @@ const ProjectDetailPage: React.FC = () => {
                         onConfirm={handleCloseModal}
                     />
                 )}
-            {modalType === 'endedMeeting' && selectedMeeting && (
-                <EndedMeetingModal
-                    meeting={{
-                        id: selectedMeeting.meetingId,
-                        meetingName: selectedMeeting.name,
-                        dateTime: selectedMeeting.startDate,
-                        url: selectedMeeting.url,
-                    }}
-                    onConfirm={handleCloseModal}
-                />
-            )}
         </Layout>
     );
 };
