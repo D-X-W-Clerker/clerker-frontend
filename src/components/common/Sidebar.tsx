@@ -131,7 +131,7 @@ const SideBar: React.FC = () => {
         },
     });
 
-    const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
+    const { data: inboxItems = [], refetch } = useQuery<InboxItem[]>(
         'notifications',
         getNotification,
         {
@@ -153,23 +153,23 @@ const SideBar: React.FC = () => {
         },
     });
 
-    const exampleInboxItems: InboxItem[] = [
-        {
-            notificationId: '1',
-            content:
-                '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
-            createdAt: '2024-10-21T02:33:01.603Z',
-        },
-        {
-            notificationId: '2',
-            content: 'Clerker 프로젝트에 초대되었습니다.',
-            createdAt: '2024-10-21T02:33:01.603Z',
-        },
-    ];
-
-    // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
-    const inboxItems =
-        fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
+    // const exampleInboxItems: InboxItem[] = [
+    //     {
+    //         notificationId: '1',
+    //         content:
+    //             '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
+    //         createdAt: '2024-10-21T02:33:01.603Z',
+    //     },
+    //     {
+    //         notificationId: '2',
+    //         content: 'Clerker 프로젝트에 초대되었습니다.',
+    //         createdAt: '2024-10-21T02:33:01.603Z',
+    //     },
+    // ];
+    //
+    // // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
+    // const inboxItems =
+    //     fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
 
     const onClickInboxDelete = (notificationId: string): void => {
         deleteMutation.mutate(notificationId); // 알림 삭제 호출
