@@ -209,7 +209,7 @@ const ProjectDetailPage: React.FC = () => {
     const projectName = projectInfo?.projectName || 'Unknown Project'; // 안전한 접근
     const members = projectInfo?.members || []; // 안전한 접근
 
-    // 현재 로그인 중인 사용자의 정보
+    // 현재 로그인 중인 사용자 정보
     const { user } = useAuthStore.getState();
     const currentUser = members.find((member) => {
         return member.email === user?.email;
