@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
@@ -26,6 +27,7 @@ import axios from 'axios';
 import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
+import { getProjectInfo } from '../apis';
 
 // Axios Instance 설정
 const axiosInstance = axios.create({
@@ -74,12 +76,17 @@ interface ScheduleData {
     isEnded: boolean;
 }
 
-interface MemberData {
+interface Member {
     organizationId: string;
     username: string;
     email: string;
     type: string | null;
     role: string;
+}
+
+interface ProjectInfo {
+    projectName: string;
+    members: Member[];
 }
 
 // ModalType에 'when2meet' 추가
@@ -183,22 +190,24 @@ const ProjectDetailPage: React.FC = () => {
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [domain, setDomain] = useState<string>(''); // 도메인 상태
 
-    const members: MemberData[] = [
-        {
-            organizationId: '1',
-            username: '이정욱',
-            email: 'dlwjddnr5438@kookmin.ac.kr',
-            type: 'BE',
-            role: 'owner',
+    const { data: projectInfo } = useQuery(
+        ['projectInfo', projectId],
+        () => {
+            return getProjectInfo(projectId || '');
         },
         {
-            organizationId: '2',
-            username: '신진욱',
-            email: 'jinwook2765@kookmin.ac.kr',
-            type: 'FE',
-            role: 'member',
+            enabled: !!projectId,
+            onError: (error) => {
+                console.error(
+                    '프로젝트 정보를 불러오는 데 실패했습니다:',
+                    error,
+                );
+            },
         },
-    ];
+    );
+
+    const projectName = projectInfo?.projectName || 'Unknown Project'; // 안전한 접근
+    const members = projectInfo?.members || []; // 안전한 접근
 
     useEffect(() => {
         const fetchMeetingData = async () => {
@@ -208,9 +217,12 @@ const ProjectDetailPage: React.FC = () => {
                 );
                 setMeetingData(
                     response.data.meetings.sort(
-                        (a: MeetingData, b: MeetingData) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime(),
+                        (a: MeetingData, b: MeetingData) => {
+                            return (
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                            );
+                        },
                     ),
                 );
                 // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
@@ -250,8 +262,8 @@ const ProjectDetailPage: React.FC = () => {
 
         // 주기적으로 데이터를 다시 가져오기 (5초 간격)
         const intervalId = setInterval(() => {
-            fetchMeetingData();
-            fetchSchedules();
+            // fetchMeetingData();
+            // fetchSchedules();
         }, 5000);
 
         // 컴포넌트 언마운트 시 interval 제거
@@ -327,7 +339,7 @@ const ProjectDetailPage: React.FC = () => {
             <Container>
                 {/* 왼쪽 컨텐츠 영역 */}
                 <LeftContentArea>
-                    <TitleTab type="project" title={`Project ${projectId}`} />
+                    <TitleTab type="project" title={`${projectName}`} />
                     <MemberArea>
                         <MemberTabArea>
                             <IconImage
