@@ -16,6 +16,7 @@ import {
 // -- 인터페이스 --
 interface MemberInviteModalProps {
     projectId: string;
+    projectName: string;
     onCancel: () => void;
 }
 
@@ -65,6 +66,7 @@ const Text = styled(ItemsCenterStartRow)`
 
 const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
     projectId,
+    projectName,
     onCancel,
 }) => {
     const [user, setUsers] = useState<string>('');
@@ -96,10 +98,7 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab
-                    type="project"
-                    title="D & X : W conference"
-                />
+                <LargeModalTitleTab type="project" title={projectName} />
                 <ContentArea>
                     <ProjectInput
                         type="invite"
