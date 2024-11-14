@@ -182,7 +182,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
 
         // 주기적으로 데이터 가져오기 (5초마다 실행)
         const intervalId = setInterval(() => {
-            // fetchMeetings();
+             fetchMeetings();
         }, 100);
 
         // 컴포넌트 언마운트 시 interval 제거
