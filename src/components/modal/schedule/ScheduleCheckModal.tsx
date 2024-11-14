@@ -71,15 +71,17 @@ const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
                     />
                 </HeaderArea>
                 <ContentArea>
-                    {scheduleData.map((schedule) => (
-                        <EventFile
-                            key={schedule.scheduleId || schedule.meetingId}
-                            meetingName={
-                                schedule.name || schedule.scheduleName || ''
-                            }
-                            dateTime={schedule.startDate}
-                        />
-                    ))}
+                    {scheduleData.map((schedule) => {
+                        return (
+                            <EventFile
+                                key={schedule.scheduleId || schedule.meetingId}
+                                meetingName={
+                                    schedule.name || schedule.scheduleName || ''
+                                }
+                                dateTime={schedule.startDate}
+                            />
+                        );
+                    })}
                 </ContentArea>
                 <ButtonArea>
                     <ModalButton text="확인" color="blue" onClick={onConfirm} />
