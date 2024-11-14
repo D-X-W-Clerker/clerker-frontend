@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useQuery } from 'react-query';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
-import { postTimeTable } from '../../apis';
+import { useAuthStore } from '@store';
+import { getTimeTable, postTimeTable } from '../../apis';
 
 // 타입 정의
 interface TimeTable {
@@ -12,7 +14,7 @@ interface TimeTable {
 interface Member {
     username: string;
     email: string;
-    type: string;
+    type: string | null;
     role: string;
     timeTables: TimeTable[];
 }
@@ -24,16 +26,19 @@ interface EventData {
 }
 
 interface When2meetProps {
+    projectID: string;
     scheduleID: string;
     startDate: string;
     endDate: string;
-    // startTime: string;
-    // endTime: string;
+    startTime: string;
+    endTime: string;
     onCancel: () => void;
 }
 
 const TimeGridContainer = styled(JustifyCenterRow)`
     gap: 25px;
+    overflow-x: auto;
+    width: 100%;
 `;
 
 const Title = styled.div`
@@ -47,91 +52,57 @@ const MemberContainer = styled(FlexCol)``;
 
 const ButtonContainer = styled(ItemsCenterEndRow)`
     gap: 7px;
+    margin-bottom: 30px;
 `;
 
-const myInfo: Member = {
-    username: '황현진',
-    email: 'jjini6530@kookmin.ac.kr',
-    role: 'member',
-    type: 'FE',
-    timeTables: [],
-};
-
-const fetchEventData = async (): Promise<EventData> => {
-    return {
-        times: [
-            '0800',
-            '0830',
-            '0900',
-            '0930',
-            '1000',
-            '1030',
-            '1100',
-            '1130',
-            '1200',
-            '1230',
-            '1300',
-            '1330',
-            '1400',
-            '1430',
-            '1500',
-            '1530',
-            '1600',
-            '1630',
-            '1700',
-            '1730',
-            '1800',
-            '1830',
-            '1900',
-            '1930',
-            '2000',
-            '2030',
-            '2100',
-            '2130',
-        ],
-        dates: ['1006', '1007', '1008', '1009', '1010'],
-        members: [
-            {
-                username: '류건',
-                email: 'sksnsfbjrjs@kookmin.ac.kr',
-                role: 'owner',
-                type: 'BE',
-                timeTables: [
-                    { time: '2024-10-06 16:00:00' },
-                    { time: '2024-10-06 16:30:00' },
-                    { time: '2024-10-06 17:00:00' },
-                    { time: '2024-10-07 16:00:00' },
-                    { time: '2024-10-07 16:30:00' },
-                    { time: '2024-10-07 17:00:00' },
-                ],
-            },
-            {
-                username: '신진욱',
-                email: 'jinwook2765@kookmin.ac.kr',
-                role: 'member',
-                type: 'FE',
-                timeTables: [
-                    { time: '2024-10-07 16:00:00' },
-                    { time: '2024-10-07 16:30:00' },
-                    { time: '2024-10-07 17:00:00' },
-                ],
-            },
-        ],
-    };
-};
-
 const When2meet: React.FC<When2meetProps> = ({
+    projectID,
     scheduleID,
     startDate,
     endDate,
-    // startTime,
-    // endTime,
+    startTime,
+    endTime,
     onCancel,
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
-    const [availableTimes, setAvailableTimes] = useState<string[]>([]);
-    const [availableDates, setAvailableDates] = useState<string[]>([]);
+    const { user } = useAuthStore();
+
+    const myInfo: Member = {
+        username: user?.name || 'Unknown User',
+        email: user?.email || 'unknown@example.com',
+        role: 'member',
+        type: 'FE',
+        timeTables: [],
+    };
+
+    const { data: timeTableData } = useQuery(
+        ['timeTable', scheduleID],
+        () => {
+            return getTimeTable(projectID || '', scheduleID);
+        },
+        {
+            enabled: !!scheduleID, // scheduleId가 있을 때만 실행
+            onSuccess: (data) => {
+                console.log('timeTable 불러오기 성공:', data);
+
+                // 데이터 매핑
+                const members = data.map((member) => {
+                    return {
+                        username: member.username,
+                        email: member.email,
+                        type: member.type,
+                        role: member.role,
+                        timeTables: member.timeTables,
+                    };
+                });
+                setMemberData(members);
+            },
+            onError: (error) => {
+                console.error('timeTable 불러오기 실패:', error);
+            },
+        },
+    );
 
     const updateMyInfo = (times: string[]): Member => {
         return {
@@ -168,16 +139,6 @@ const When2meet: React.FC<When2meetProps> = ({
     };
 
     useEffect(() => {
-        const loadEventData = async (): Promise<void> => {
-            const { times, dates, members } = await fetchEventData();
-            setAvailableTimes(times);
-            setAvailableDates(dates);
-            setMemberData(members);
-        };
-        loadEventData();
-    }, []);
-
-    useEffect(() => {
         if (personalAvailable.length === 0) {
             setMemberData((prev) => {
                 return prev.filter((member) => {
@@ -192,6 +153,7 @@ const When2meet: React.FC<When2meetProps> = ({
             setMemberData([...filteredMembers, myUpdatedInfo]);
         }
     }, [personalAvailable]);
+
     const timeCounts = formatMeetingTimesWithCounts();
 
     const handleToggleTime = (date: string, time: string): void => {
@@ -207,11 +169,21 @@ const When2meet: React.FC<When2meetProps> = ({
 
     const handleSaveSchedule = async (): Promise<void> => {
         try {
-            // const scheduleID = 123; // 예제 스케줄 ID (실제 ID로 교체 필요)
-            // await postTimeTable(scheduleID, { timeTable: personalAvailable });
-            // alert('일정이 성공적으로 저장되었습니다!');
+            const year = new Date(startDate).getFullYear(); // startDate에서 연도 가져오기
+
+            // 날짜와 시간을 올바른 포맷으로 변환
+            const timeTable = personalAvailable.map((time) => {
+                const [date, timePart] = time.split('-');
+                const month = date.slice(0, 2); // MM
+                const day = date.slice(2); // DD
+                const hour = timePart.slice(0, 2); // HH
+                const minute = timePart.slice(2); // mm
+                return `${year}-${month}-${day} ${hour}:${minute}:00`;
+            });
+
+            await postTimeTable(scheduleID, { timeTable });
+            alert('일정이 성공적으로 저장되었습니다!');
         } catch (error) {
-            console.log(personalAvailable);
             alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
         }
     };
@@ -221,8 +193,10 @@ const When2meet: React.FC<When2meetProps> = ({
             <TimeGridContainer>
                 <TimeGrid
                     title="개인 가능 시간"
-                    times={availableTimes}
-                    dates={availableDates}
+                    startDate={startDate}
+                    endDate={endDate}
+                    startTime={startTime}
+                    endTime={endTime}
                     timeCounts={{}}
                     selectedTimes={personalAvailable}
                     toggleTime={handleToggleTime}
@@ -230,8 +204,10 @@ const When2meet: React.FC<When2meetProps> = ({
                 />
                 <TimeGrid
                     title="회의 가능 시간"
-                    times={availableTimes}
-                    dates={availableDates}
+                    startDate={startDate}
+                    endDate={endDate}
+                    startTime={startTime}
+                    endTime={endTime}
                     timeCounts={timeCounts}
                     selectedTimes={[]}
                     toggleTime={(): void => {}}
@@ -260,7 +236,14 @@ const When2meet: React.FC<When2meetProps> = ({
                     text="일정 조율 저장"
                     color="blue"
                     disabled={personalAvailable.length === 0}
-                    onClick={handleSaveSchedule}
+                    onClick={async (): Promise<void> => {
+                        try {
+                            await handleSaveSchedule();
+                            onCancel();
+                        } catch (error) {
+                            console.error('스케줄 저장에 실패했습니다.', error);
+                        }
+                    }}
                 />
             </ButtonContainer>
         </>

@@ -1,5 +1,3 @@
-// src/pages/ProjectDetailPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
@@ -24,9 +22,10 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import axios from 'axios';
+import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
-import axios from 'axios';
 
 // Axios Instance 설정
 const axiosInstance = axios.create({
@@ -39,7 +38,9 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const token = document.cookie
             .split('; ')
-            .find((row) => row.startsWith('token='))
+            .find((row) => {
+                return row.startsWith('token=');
+            })
             ?.split('=')[1];
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -67,6 +68,8 @@ interface ScheduleData {
     scheduleName: string;
     startDate: string;
     endDate: string;
+    startTime: string;
+    endTime: string;
     createdAt: string;
     isEnded: boolean;
 }
@@ -98,6 +101,7 @@ const Container = styled(FlexRow)`
 
 const ContentArea = styled(FlexCol)`
     width: 50%;
+    overflow-x: auto;
     overflow-y: auto;
     height: calc(100vh - 50px);
     padding: 40px;
@@ -111,8 +115,12 @@ const ContentArea = styled(FlexCol)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props) => props.$width}px;
-    height: ${(props) => props.$height}px;
+    width: ${(props) => {
+        return props.$width;
+    }}px;
+    height: ${(props) => {
+        return props.$height;
+    }}px;
     cursor: pointer;
 `;
 
@@ -223,9 +231,12 @@ const ProjectDetailPage: React.FC = () => {
                 );
                 setScheduleData(
                     response.data.schedules.sort(
-                        (a: ScheduleData, b: ScheduleData) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime(),
+                        (a: ScheduleData, b: ScheduleData) => {
+                            return (
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                            );
+                        },
                     ),
                 );
             } catch (error) {
@@ -289,19 +300,21 @@ const ProjectDetailPage: React.FC = () => {
             }
         } else if (activeTab === 'schedule') {
             const schedule = event as ScheduleData;
+            setScheduleClicked(true);
             handleOpenModal('when2meet', undefined, schedule); // 모달 타입 'when2meet' 추가
         }
     };
 
     const addSchedule = (newSchedule: ScheduleData) => {
         if (newSchedule && newSchedule.scheduleId && newSchedule.scheduleName) {
-            setScheduleData((prev) =>
-                [newSchedule, ...prev].sort(
-                    (a, b) =>
+            setScheduleData((prev) => {
+                return [newSchedule, ...prev].sort((a, b) => {
+                    return (
                         new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime(),
-                ),
-            );
+                        new Date(a.createdAt).getTime()
+                    );
+                });
+            });
         } else {
             console.error('Invalid schedule data:', newSchedule);
         }
@@ -327,13 +340,17 @@ const ProjectDetailPage: React.FC = () => {
                                 src={ActiveSettingIcon}
                                 $width={16}
                                 $height={16}
-                                onClick={() => handleOpenModal('memberInfo')}
+                                onClick={() => {
+                                    return handleOpenModal('memberInfo');
+                                }}
                             />
                         </MemberTabArea>
                         <MemberTable data={members} />
                         <MemberAddArea>
                             <MemberAddButton
-                                onClick={() => handleOpenModal('memberAdd')}
+                                onClick={() => {
+                                    return handleOpenModal('memberAdd');
+                                }}
                             >
                                 <IconImage
                                     src={MemberAddIcon}
@@ -355,9 +372,11 @@ const ProjectDetailPage: React.FC = () => {
                                     <ActionButton
                                         icon={AddIcon}
                                         label="회의 생성"
-                                        onClick={() =>
-                                            handleOpenModal('meetCreate')
-                                        }
+                                        onClick={() => {
+                                            return handleOpenModal(
+                                                'meetCreate',
+                                            );
+                                        }}
                                     />
                                 </ButtonContainer>
                             )}
@@ -368,9 +387,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.meetingId}
                                             meetingName={event.name}
                                             dateTime={event.startDate}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -380,9 +399,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.scheduleId}
                                             meetingName={event.scheduleName}
                                             dateTime={event.startDate}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -393,12 +412,19 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 {/* 오른쪽 컨텐츠 영역 */}
                 <RightContentArea>
-                    {modalType === 'when2meet' && selectedSchedule ? (
+                    {scheduleClicked &&
+                    modalType === 'when2meet' &&
+                    selectedSchedule ? (
                         <When2meet
+                            projectID={projectId || ''}
                             scheduleID={selectedSchedule.scheduleId}
                             startDate={selectedSchedule.startDate}
                             endDate={selectedSchedule.endDate}
-                            onCancel={() => setScheduleClicked(false)}
+                            startTime={selectedSchedule.startTime}
+                            endTime={selectedSchedule.endTime}
+                            onCancel={(): void => {
+                                return setScheduleClicked(false);
+                            }}
                         />
                     ) : (
                         <ProjectCalendar
@@ -449,6 +475,17 @@ const ProjectDetailPage: React.FC = () => {
                         onConfirm={handleCloseModal}
                     />
                 )}
+            {modalType === 'endedMeeting' && selectedMeeting && (
+                <EndedMeetingModal
+                    meeting={{
+                        id: selectedMeeting.meetingId,
+                        meetingName: selectedMeeting.name,
+                        dateTime: selectedMeeting.startDate,
+                        url: selectedMeeting.url,
+                    }}
+                    onConfirm={handleCloseModal}
+                />
+            )}
         </Layout>
     );
 };

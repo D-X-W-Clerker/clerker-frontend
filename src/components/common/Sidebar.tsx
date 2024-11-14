@@ -145,12 +145,10 @@ const SideBar: React.FC = () => {
     // 알림 삭제
     const deleteMutation = useMutation(deleteNotification, {
         onSuccess: () => {
-            alert('알림이 삭제되었습니다.');
             refetch(); // 삭제 후 알림 목록 다시 가져오기
         },
         onError: (error) => {
             console.error('알림 삭제 실패:', error);
-            alert('알림 삭제에 실패했습니다.');
         },
     });
 
@@ -175,39 +173,6 @@ const SideBar: React.FC = () => {
     const onClickInboxDelete = (notificationId: string): void => {
         deleteMutation.mutate(notificationId); // 알림 삭제 호출
     };
-
-    // useEffect(() => {
-    //     // 프로젝트 목록 조회
-    //     const testProjects: Project[] = [
-    //         {
-    //             projectId: '1',
-    //             name: 'Clerker',
-    //             childProjects: [
-    //                 {
-    //                     id: '2',
-    //                     name: 'FE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '3',
-    //                     name: 'BE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '4',
-    //                     name: 'AI',
-    //                     childProjects: [],
-    //                     meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
-    //                 },
-    //             ],
-    //             meetings: [{ meetingId: '6', name: '기획 회의' }],
-    //         },
-    //     ];
-    //
-    //     setProjects(testProjects);
-    // }, []);
 
     // 프로젝트 생성
     const onClickCreateProject = (): void => {
