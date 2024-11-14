@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import styled from 'styled-components';
+import { useMutation } from 'react-query';
 import { MemberIcon } from '@assets';
 import { ModalButton, LargeModalTitleTab, MemberEditTable } from '@components';
 import {
@@ -9,10 +10,21 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import { modifyProject } from '../../../apis';
 
 // -- 인터페이스 --
+interface Member {
+    organizationId: string;
+    username: string;
+    email: string;
+    type: string | null;
+    role: string;
+}
+
 interface MemberInfoModalProps {
     projectId: string;
+    projectName: string;
+    memberData: Member[];
     onCancel: () => void;
 }
 
@@ -68,46 +80,44 @@ const SvgImage = styled.img`
     height: 17px;
 `;
 
-const ProjectInfo = {
-    projectName: 'Clerker',
-    members: [
-        {
-            organizationId: '1',
-            username: '이정욱',
-            email: 'dlwjddnr5438@kookmin.ac.kr',
-            type: 'BE',
-            role: 'owner',
-        },
-        {
-            organizationId: '2',
-            username: '신진욱',
-            email: 'jinwook2765@kookmin.ac.kr',
-            type: 'FE',
-            role: 'member',
-        },
-        {
-            organizationId: '3',
-            username: '임형빈',
-            email: 'gudqls3157@gmail.com',
-            type: 'AI',
-            role: 'member',
-        },
-        {
-            organizationId: '4',
-            username: '박건민',
-            email: 'pkm021118@kookmin.ac.kr',
-            type: 'DE',
-            role: 'member',
-        },
-    ],
-};
-
 const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
     projectId,
+    projectName,
+    memberData,
     onCancel,
 }) => {
-    const [members, setMembers] = useState(ProjectInfo.members);
-    const [originalMembers] = useState(ProjectInfo.members); // 원래 멤버 목록
+    const [members, setMembers] = useState(memberData);
+    const [originalMembers] = useState(memberData); // 원래 멤버 목록
+
+    const modifyMutation = useMutation(
+        (data: {
+            projectID: string;
+            projectName: string;
+            members: Member[];
+        }) => {
+            return modifyProject(data.projectID, {
+                projectName: data.projectName,
+                members: data.members.map((member) => {
+                    return {
+                        organizationId: member.organizationId,
+                        username: member.username,
+                        email: member.email,
+                        role: member.role,
+                        type: member.type || '',
+                    };
+                }),
+            });
+        },
+        {
+            onSuccess: () => {
+                alert('멤버 정보가 성공적으로 수정되었습니다.');
+                onCancel();
+            },
+            onError: (error) => {
+                console.error('멤버 정보 수정 중 오류 발생:', error);
+            },
+        },
+    );
 
     // onRoleChange 함수에 useCallback을 사용하여 무한 렌더링 방지
     const onChangeType = useCallback((id: string, newType: string): void => {
@@ -128,30 +138,17 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
             return member.type !== originalMembers[index].type;
         });
 
-        // 변경된 멤버들의 정보를 해당 형식에 맞춰 배열로 변환
-        const result = {
-            projectName: ProjectInfo.projectName,
-            members: changedMembers.map((member) => {
-                return {
-                    organizationId: member.organizationId,
-                    role: member.role,
-                    type: member.type || '',
-                };
-            }),
-        };
-
-        console.log('변경된 멤버 정보:', result);
-        alert('멤버 정보 변경 완료');
-        onCancel();
+        modifyMutation.mutate({
+            projectID: projectId,
+            projectName,
+            members: changedMembers,
+        });
     };
 
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab
-                    type="project"
-                    title="D & X : W conference"
-                />
+                <LargeModalTitleTab type="project" title={projectName} />
                 <ContentArea>
                     <TextArea>
                         <SvgImage src={MemberIcon} />

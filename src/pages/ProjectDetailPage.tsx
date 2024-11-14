@@ -1,8 +1,7 @@
-// src/pages/ProjectDetailPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
+import { useQuery } from 'react-query';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
@@ -24,10 +23,11 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import axios from 'axios';
+import { useAuthStore } from '@store';
 import Layout from '../Layout';
 import ProjectCalendar from '../components/calendar/ProjectCalendar';
-import axios from 'axios';
-import EndedMeetingModal from '@components/modal/meet/EndedMeetingModal';
+import { getProjectInfo } from '../apis';
 
 // Axios Instance 설정
 const axiosInstance = axios.create({
@@ -40,7 +40,9 @@ axiosInstance.interceptors.request.use(
     (config) => {
         const token = document.cookie
             .split('; ')
-            .find((row) => row.startsWith('token='))
+            .find((row) => {
+                return row.startsWith('token=');
+            })
             ?.split('=')[1];
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -68,16 +70,23 @@ interface ScheduleData {
     scheduleName: string;
     startDate: string;
     endDate: string;
+    startTime: string;
+    endTime: string;
     createdAt: string;
     isEnded: boolean;
 }
 
-interface MemberData {
+interface Member {
     organizationId: string;
     username: string;
     email: string;
     type: string | null;
     role: string;
+}
+
+interface ProjectInfo {
+    projectName: string;
+    members: Member[];
 }
 
 // ModalType에 'when2meet' 추가
@@ -99,6 +108,7 @@ const Container = styled(FlexRow)`
 
 const ContentArea = styled(FlexCol)`
     width: 50%;
+    overflow-x: auto;
     overflow-y: auto;
     height: calc(100vh - 50px);
     padding: 40px;
@@ -112,8 +122,12 @@ const ContentArea = styled(FlexCol)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props) => props.$width}px;
-    height: ${(props) => props.$height}px;
+    width: ${(props) => {
+        return props.$width;
+    }}px;
+    height: ${(props) => {
+        return props.$height;
+    }}px;
     cursor: pointer;
 `;
 
@@ -176,22 +190,36 @@ const ProjectDetailPage: React.FC = () => {
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [domain, setDomain] = useState<string>(''); // 도메인 상태
 
-    const members: MemberData[] = [
-        {
-            organizationId: '1',
-            username: '이정욱',
-            email: 'dlwjddnr5438@kookmin.ac.kr',
-            type: 'BE',
-            role: 'owner',
+    const { data: projectInfo } = useQuery(
+        ['projectInfo', projectId],
+        () => {
+            return getProjectInfo(projectId || '');
         },
         {
-            organizationId: '2',
-            username: '신진욱',
-            email: 'jinwook2765@kookmin.ac.kr',
-            type: 'FE',
-            role: 'member',
+            enabled: !!projectId,
+            onError: (error) => {
+                console.error(
+                    '프로젝트 정보를 불러오는 데 실패했습니다:',
+                    error,
+                );
+            },
         },
-    ];
+    );
+
+    const projectName = projectInfo?.projectName || 'Unknown Project'; // 안전한 접근
+    const members = projectInfo?.members || []; // 안전한 접근
+
+    // 현재 로그인 중인 사용자 정보
+    const { user } = useAuthStore.getState();
+    const currentUser = members.find((member) => {
+        return member.email === user?.email;
+    }) || {
+        organizationId: '',
+        username: 'Unknown User',
+        email: 'unknown@example.com',
+        type: null,
+        role: '',
+    };
 
     useEffect(() => {
         const fetchMeetingData = async () => {
@@ -199,7 +227,16 @@ const ProjectDetailPage: React.FC = () => {
                 const response = await axiosInstance.get(
                     `/api/schedule/${projectId}`,
                 );
-                setMeetingData(response.data.meetings);
+                setMeetingData(
+                    response.data.meetings.sort(
+                        (a: MeetingData, b: MeetingData) => {
+                            return (
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                            );
+                        },
+                    ),
+                );
                 // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
                 if (response.data.meetings.length > 0) {
                     setDomain(
@@ -218,9 +255,12 @@ const ProjectDetailPage: React.FC = () => {
                 );
                 setScheduleData(
                     response.data.schedules.sort(
-                        (a: ScheduleData, b: ScheduleData) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime(),
+                        (a: ScheduleData, b: ScheduleData) => {
+                            return (
+                                new Date(b.createdAt).getTime() -
+                                new Date(a.createdAt).getTime()
+                            );
+                        },
                     ),
                 );
             } catch (error) {
@@ -228,8 +268,20 @@ const ProjectDetailPage: React.FC = () => {
             }
         };
 
+        // 초기 데이터 로드
         fetchMeetingData();
         fetchSchedules();
+
+        // 주기적으로 데이터를 다시 가져오기 (5초 간격)
+        const intervalId = setInterval(() => {
+             fetchMeetingData();
+             fetchSchedules();
+        }, 100);
+
+        // 컴포넌트 언마운트 시 interval 제거
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [projectId]);
 
     const handleOpenModal = (
@@ -272,19 +324,21 @@ const ProjectDetailPage: React.FC = () => {
             }
         } else if (activeTab === 'schedule') {
             const schedule = event as ScheduleData;
+            setScheduleClicked(true);
             handleOpenModal('when2meet', undefined, schedule); // 모달 타입 'when2meet' 추가
         }
     };
 
     const addSchedule = (newSchedule: ScheduleData) => {
         if (newSchedule && newSchedule.scheduleId && newSchedule.scheduleName) {
-            setScheduleData((prev) =>
-                [newSchedule, ...prev].sort(
-                    (a, b) =>
+            setScheduleData((prev) => {
+                return [newSchedule, ...prev].sort((a, b) => {
+                    return (
                         new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime(),
-                ),
-            );
+                        new Date(a.createdAt).getTime()
+                    );
+                });
+            });
         } else {
             console.error('Invalid schedule data:', newSchedule);
         }
@@ -297,7 +351,7 @@ const ProjectDetailPage: React.FC = () => {
             <Container>
                 {/* 왼쪽 컨텐츠 영역 */}
                 <LeftContentArea>
-                    <TitleTab type="project" title={`Project ${projectId}`} />
+                    <TitleTab type="project" title={`${projectName}`} />
                     <MemberArea>
                         <MemberTabArea>
                             <IconImage
@@ -310,13 +364,17 @@ const ProjectDetailPage: React.FC = () => {
                                 src={ActiveSettingIcon}
                                 $width={16}
                                 $height={16}
-                                onClick={() => handleOpenModal('memberInfo')}
+                                onClick={() => {
+                                    return handleOpenModal('memberInfo');
+                                }}
                             />
                         </MemberTabArea>
                         <MemberTable data={members} />
                         <MemberAddArea>
                             <MemberAddButton
-                                onClick={() => handleOpenModal('memberAdd')}
+                                onClick={() => {
+                                    return handleOpenModal('memberAdd');
+                                }}
                             >
                                 <IconImage
                                     src={MemberAddIcon}
@@ -338,9 +396,11 @@ const ProjectDetailPage: React.FC = () => {
                                     <ActionButton
                                         icon={AddIcon}
                                         label="회의 생성"
-                                        onClick={() =>
-                                            handleOpenModal('meetCreate')
-                                        }
+                                        onClick={() => {
+                                            return handleOpenModal(
+                                                'meetCreate',
+                                            );
+                                        }}
                                     />
                                 </ButtonContainer>
                             )}
@@ -351,9 +411,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.meetingId}
                                             meetingName={event.name}
                                             dateTime={event.startDate}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -363,9 +423,9 @@ const ProjectDetailPage: React.FC = () => {
                                             key={event.scheduleId}
                                             meetingName={event.scheduleName}
                                             dateTime={event.startDate}
-                                            onClick={() =>
-                                                onClickEventFile(event)
-                                            }
+                                            onClick={() => {
+                                                return onClickEventFile(event);
+                                            }}
                                         />
                                     );
                                 }
@@ -376,12 +436,20 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 {/* 오른쪽 컨텐츠 영역 */}
                 <RightContentArea>
-                    {modalType === 'when2meet' && selectedSchedule ? (
+                    {scheduleClicked &&
+                    modalType === 'when2meet' &&
+                    selectedSchedule ? (
                         <When2meet
+                            projectID={projectId || ''}
                             scheduleID={selectedSchedule.scheduleId}
                             startDate={selectedSchedule.startDate}
                             endDate={selectedSchedule.endDate}
-                            onCancel={() => setScheduleClicked(false)}
+                            startTime={selectedSchedule.startTime}
+                            endTime={selectedSchedule.endTime}
+                            userInfo={currentUser}
+                            onCancel={(): void => {
+                                return setScheduleClicked(false);
+                            }}
                         />
                     ) : (
                         <ProjectCalendar
@@ -395,12 +463,15 @@ const ProjectDetailPage: React.FC = () => {
             {modalType === 'memberAdd' && (
                 <MemberInviteModal
                     projectId={projectId || ''}
+                    projectName={projectName || ''}
                     onCancel={handleCloseModal}
                 />
             )}
             {modalType === 'memberInfo' && (
                 <MemberInfoModal
                     projectId={projectId || ''}
+                    projectName={projectName || ''}
+                    memberData={members}
                     onCancel={handleCloseModal}
                 />
             )}
@@ -432,17 +503,6 @@ const ProjectDetailPage: React.FC = () => {
                         onConfirm={handleCloseModal}
                     />
                 )}
-            {modalType === 'endedMeeting' && selectedMeeting && (
-                <EndedMeetingModal
-                    meeting={{
-                        id: selectedMeeting.meetingId,
-                        meetingName: selectedMeeting.name,
-                        dateTime: selectedMeeting.startDate,
-                        url: selectedMeeting.url,
-                    }}
-                    onConfirm={handleCloseModal}
-                />
-            )}
         </Layout>
     );
 };

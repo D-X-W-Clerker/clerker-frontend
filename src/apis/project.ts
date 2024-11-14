@@ -5,14 +5,25 @@ import { Project, Meeting, ChildProject } from '../types';
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
 interface Member {
-    organizationId: number;
-    role: 'OWNER' | 'MEMBER' | 'ADMIN';
-    type: string;
+    organizationId: string;
+    username: string;
+    email: string;
+    type: string | null;
+    role: string;
 }
 
 interface ProjectRequest {
     projectName: string;
     members: Member[];
+}
+
+interface ProjectInfo {
+    projectName: string;
+    members: Member[];
+}
+
+interface Emails {
+    emails: string[];
 }
 
 export const getProject = async (): Promise<Project[]> => {
@@ -109,13 +120,14 @@ export const exitProject = async (projectID: string): Promise<void> => {
     }
 };
 
+// 프로젝트 정보(이름+멤버) 수정
 export const modifyProject = async (
     projectID: string,
     data: ProjectRequest,
 ): Promise<string> => {
     try {
         const { token } = useAuthStore.getState();
-        const response = await axios.post<string>(
+        const response = await axios.patch<string>(
             `${apiUrl}/api/project/${projectID}`,
             data,
             {
@@ -129,5 +141,50 @@ export const modifyProject = async (
         return response.data;
     } catch (error) {
         throw new Error(`프로젝트 정보 수정에 실패했습니다: ${error}`);
+    }
+};
+
+// 프로젝트 정보(이름+멤버) 조회
+export const getProjectInfo = async (
+    projectID: string,
+): Promise<ProjectInfo> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.get<ProjectInfo>(
+            `${apiUrl}/api/project/${projectID}/info`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`project 정보 조회에 실패했습니다: ${error}`);
+    }
+};
+
+// 프로젝트에 멤버 초대
+export const inviteMember = async (
+    projectID: string,
+    data: Emails,
+): Promise<Emails> => {
+    try {
+        const { token } = useAuthStore.getState();
+        const response = await axios.post<Emails>(
+            `${apiUrl}/api/project/${projectID}/join`,
+            data,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { projectID },
+            },
+        );
+        return response.data;
+    } catch (error) {
+        throw new Error(`멤버 초대에 실패했습니다: ${error}`);
     }
 };

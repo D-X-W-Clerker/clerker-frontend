@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import {
     AlarmIcon,
@@ -15,7 +15,7 @@ import {
     AccountSettingModal,
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 import {
     getNotification,
     deleteNotification,
@@ -23,7 +23,7 @@ import {
     createProject,
     createChildProject,
 } from '../../apis';
-import { Project, Meeting, ChildProject } from '../../types';
+import { Project } from '../../types';
 
 // -- 인터페이스 --
 interface InboxItem {
@@ -120,6 +120,7 @@ const menuItems = [
 const SideBar: React.FC = () => {
     const [showInbox, setShowInbox] = useState(false);
     const [showSettingModal, setShowSettingModal] = useState(false);
+    const queryClient = useQueryClient();
 
     const { data: projects = [], refetch: refetchProjects } = useQuery<
         Project[]
@@ -130,7 +131,7 @@ const SideBar: React.FC = () => {
         },
     });
 
-    const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
+    const { data: inboxItems = [], refetch } = useQuery<InboxItem[]>(
         'notifications',
         getNotification,
         {
@@ -145,78 +146,48 @@ const SideBar: React.FC = () => {
     // 알림 삭제
     const deleteMutation = useMutation(deleteNotification, {
         onSuccess: () => {
-            alert('알림이 삭제되었습니다.');
             refetch(); // 삭제 후 알림 목록 다시 가져오기
         },
         onError: (error) => {
             console.error('알림 삭제 실패:', error);
-            alert('알림 삭제에 실패했습니다.');
         },
     });
 
-    const exampleInboxItems: InboxItem[] = [
-        {
-            notificationId: '1',
-            content:
-                '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
-            createdAt: '2024-10-21T02:33:01.603Z',
-        },
-        {
-            notificationId: '2',
-            content: 'Clerker 프로젝트에 초대되었습니다.',
-            createdAt: '2024-10-21T02:33:01.603Z',
-        },
-    ];
-
-    // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
-    const inboxItems =
-        fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
+    // const exampleInboxItems: InboxItem[] = [
+    //     {
+    //         notificationId: '1',
+    //         content:
+    //             '안녕하세요 Clerker님! 프로젝트를 생성하여 서비스를 이용해보세요!',
+    //         createdAt: '2024-10-21T02:33:01.603Z',
+    //     },
+    //     {
+    //         notificationId: '2',
+    //         content: 'Clerker 프로젝트에 초대되었습니다.',
+    //         createdAt: '2024-10-21T02:33:01.603Z',
+    //     },
+    // ];
+    //
+    // // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
+    // const inboxItems =
+    //     fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
 
     const onClickInboxDelete = (notificationId: string): void => {
         deleteMutation.mutate(notificationId); // 알림 삭제 호출
     };
 
-    // useEffect(() => {
-    //     // 프로젝트 목록 조회
-    //     const testProjects: Project[] = [
-    //         {
-    //             projectId: '1',
-    //             name: 'Clerker',
-    //             childProjects: [
-    //                 {
-    //                     id: '2',
-    //                     name: 'FE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '3',
-    //                     name: 'BE',
-    //                     childProjects: [],
-    //                     meetings: [],
-    //                 },
-    //                 {
-    //                     id: '4',
-    //                     name: 'AI',
-    //                     childProjects: [],
-    //                     meetings: [{ meetingId: '5', name: '9월 12일 회의' }],
-    //                 },
-    //             ],
-    //             meetings: [{ meetingId: '6', name: '기획 회의' }],
-    //         },
-    //     ];
-    //
-    //     setProjects(testProjects);
-    // }, []);
-
     // 프로젝트 생성
-    const onClickCreateProject = (): void => {
-        try {
-            createProject();
-            refetchProjects(); // 데이터 새로고침
-        } catch (error) {
+    const { mutate: createProjectMutation } = useMutation(createProject, {
+        onSuccess: () => {
+            // 프로젝트 생성 성공 시 목록 새로고침
+            queryClient.invalidateQueries('projects');
+        },
+        onError: (error) => {
             console.error('프로젝트 생성 실패:', error);
-        }
+        },
+    });
+
+    const onClickCreateProject = (): void => {
+        createProjectMutation();
     };
 
     // 하위 프로젝트 생성

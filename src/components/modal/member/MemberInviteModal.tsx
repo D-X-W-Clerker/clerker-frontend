@@ -12,10 +12,13 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import { useMutation } from 'react-query';
+import { inviteMember } from '../../../apis';
 
 // -- 인터페이스 --
 interface MemberInviteModalProps {
     projectId: string;
+    projectName: string;
     onCancel: () => void;
 }
 
@@ -65,10 +68,28 @@ const Text = styled(ItemsCenterStartRow)`
 
 const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
     projectId,
+    projectName,
     onCancel,
 }) => {
     const [user, setUsers] = useState<string>('');
     const [emails, setEmails] = useState<string[]>([]);
+
+    const { mutate: invite, isLoading } = useMutation(
+        (data: { projectId: string; emails: string[] }) => {
+            return inviteMember(data.projectId, { emails: data.emails });
+        },
+        {
+            onSuccess: () => {
+                alert('사용자 초대가 완료되었습니다.');
+                setEmails([]); // 이메일 목록 초기화
+                onCancel();
+            },
+            onError: (error) => {
+                console.error('멤버 초대에 실패했습니다:', error);
+                alert('멤버 초대에 실패했습니다. 다시 시도해주세요.');
+            },
+        },
+    );
 
     const onAddEmail = (): void => {
         if (user) {
@@ -88,18 +109,17 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
     };
 
     const onClickConfirm = (): void => {
-        console.log('emails', emails);
-        alert('사용자 초대 완료');
-        onCancel();
+        if (emails.length === 0) {
+            alert('초대할 이메일을 추가해주세요.');
+            return;
+        }
+        invite({ projectId, emails });
     };
 
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab
-                    type="project"
-                    title="D & X : W conference"
-                />
+                <LargeModalTitleTab type="project" title={projectName} />
                 <ContentArea>
                     <ProjectInput
                         type="invite"
@@ -126,11 +146,17 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
                     </UserListArea>
                 </ContentArea>
                 <ButtonArea>
-                    <ModalButton text="취소" color="gray" onClick={onCancel} />
+                    <ModalButton
+                        text="취소"
+                        color="gray"
+                        onClick={onCancel}
+                        disabled={isLoading}
+                    />
                     <ModalButton
                         text="완료"
                         color="blue"
                         onClick={onClickConfirm}
+                        disabled={isLoading || emails.length === 0}
                     />
                 </ButtonArea>
             </Container>
