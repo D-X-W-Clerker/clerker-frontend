@@ -19,10 +19,12 @@ interface Member {
     timeTables: TimeTable[];
 }
 
-interface EventData {
-    times: string[];
-    dates: string[];
-    members: Member[];
+interface User {
+    organizationId: string;
+    username: string;
+    email: string;
+    type: string | null;
+    role: string;
 }
 
 interface When2meetProps {
@@ -32,6 +34,7 @@ interface When2meetProps {
     endDate: string;
     startTime: string;
     endTime: string;
+    userInfo: User;
     onCancel: () => void;
 }
 
@@ -62,6 +65,7 @@ const When2meet: React.FC<When2meetProps> = ({
     endDate,
     startTime,
     endTime,
+    userInfo,
     onCancel,
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
@@ -71,8 +75,8 @@ const When2meet: React.FC<When2meetProps> = ({
     const myInfo: Member = {
         username: user?.name || 'Unknown User',
         email: user?.email || 'unknown@example.com',
-        role: 'member',
-        type: 'FE',
+        role: userInfo?.role || '',
+        type: userInfo?.type || '',
         timeTables: [],
     };
 
