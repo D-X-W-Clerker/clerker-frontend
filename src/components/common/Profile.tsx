@@ -18,6 +18,7 @@ const ProfileImage = styled.img`
     width: 23px;
     height: 23px;
     border-radius: 50%;
+    object-fit: cover;
 `;
 
 const ProfileName = styled.span`
@@ -34,11 +35,13 @@ const Profile: React.FC = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user } = useAuthStore();
     const [userName, setUserName] = useState<string | null>(null);
+    const [profileImage, setProfileImage] = useState<string | null>(null);
 
-    // user 상태가 변경될 때마다 userName을 업데이트
+    // user 상태가 변경될 때마다 userName과 profileImage를 업데이트
     useEffect(() => {
         if (user) {
             setUserName(user.name);
+            setProfileImage(user.profileImage); // 프로필 이미지 설정
         }
     }, [user]);
 
@@ -53,6 +56,7 @@ const Profile: React.FC = () => {
     const onClickConfirmButton = (): void => {
         useAuthStore.getState().logout(); // 로그아웃 함수 호출
         setUserName(null); // 사용자 이름 초기화
+        setProfileImage(null); // 프로필 이미지 초기화
         setIsModalOpen(false);
 
         // 홈페이지로 리다이렉트
@@ -60,23 +64,23 @@ const Profile: React.FC = () => {
     };
 
     return (
-      <Container>
-          <UserInfoArea>
-              <ProfileImage src={ClerkerIcon} />
-              <ProfileName>{userName}</ProfileName>
-          </UserInfoArea>
-          <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
-          {isModalOpen && (
-            <SmallModal
-              type="logout"
-              title="로그아웃"
-              message="로그아웃 하시겠습니까?"
-              onConfirm={onClickConfirmButton}
-              onCancel={onClickCloseButton}
-              isDelete={false}
-            />
-          )}
-      </Container>
+        <Container>
+            <UserInfoArea>
+                <ProfileImage src={profileImage || ClerkerIcon} alt="프로필 이미지" />
+                <ProfileName>{userName}</ProfileName>
+            </UserInfoArea>
+            <LogoutButton src={LogoutIcon} onClick={onClickLogoutButton} />
+            {isModalOpen && (
+                <SmallModal
+                    type="logout"
+                    title="로그아웃"
+                    message="로그아웃 하시겠습니까?"
+                    onConfirm={onClickConfirmButton}
+                    onCancel={onClickCloseButton}
+                    isDelete={false}
+                />
+            )}
+        </Container>
     );
 };
 

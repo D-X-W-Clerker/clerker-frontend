@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@store';
-import {jwtDecode, JwtPayload } from 'jwt-decode';
+import { jwtDecode, JwtPayload } from 'jwt-decode';
 import axios from 'axios';
 
 // JWT 토큰의 커스텀 페이로드 정의
@@ -18,7 +18,6 @@ const GoogleCallback: React.FC = () => {
 
     useEffect(() => {
         const handleLogin = async (): Promise<void> => {
-            // 토큰이 없으면 로그인 실패
             if (!token) {
                 console.log('토큰이 없습니다.');
                 navigate('/');
@@ -43,19 +42,25 @@ const GoogleCallback: React.FC = () => {
                     window.location.protocol === 'https:' ? 'secure;' : ''
                 } samesite=strict`;
 
-                // 추가 API 호출로 프로필 데이터 가져오기
-                const response = await axios.patch(
+                // API 호출로 프로필 데이터 가져오기
+                const response = await axios.get(
                     `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
                     {
                         headers: { Authorization: `Bearer ${token}` },
                     },
                 );
 
-                const { profileURL } = response.data;
+                // API 응답 데이터 구조에 맞게 프로필 정보 추출
+                const { member, url } = response.data;
                 console.log('프로필 데이터 가져오기 성공:', response.data);
 
                 // 상태 업데이트
-                login(token, { name: username, email, profileImage: profileURL });
+                login(token, {
+                    name: member.username,
+                    email: member.email,
+                    profileImage: url, // 프로필 사진 URL 저장
+                });
+
                 setTimeout(() => navigate('/home'), 0);
             } catch (error) {
                 console.error('로그인 처리 중 오류:', error);
