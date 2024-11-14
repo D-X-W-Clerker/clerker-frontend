@@ -1,5 +1,3 @@
-// src/pages/ProjectDetailPage.tsx
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
@@ -284,6 +282,7 @@ const ProjectDetailPage: React.FC = () => {
             }
         } else if (activeTab === 'schedule') {
             const schedule = event as ScheduleData;
+            setScheduleClicked(true);
             handleOpenModal('when2meet', undefined, schedule); // 모달 타입 'when2meet' 추가
         }
     };
@@ -395,15 +394,17 @@ const ProjectDetailPage: React.FC = () => {
                 </LeftContentArea>
                 {/* 오른쪽 컨텐츠 영역 */}
                 <RightContentArea>
-                    {modalType === 'when2meet' && selectedSchedule ? (
+                    {scheduleClicked &&
+                    modalType === 'when2meet' &&
+                    selectedSchedule ? (
                         <When2meet
+                            projectID={projectId || ''}
                             scheduleID={selectedSchedule.scheduleId}
                             startDate={selectedSchedule.startDate}
                             endDate={selectedSchedule.endDate}
                             startTime={selectedSchedule.startTime}
                             endTime={selectedSchedule.endTime}
-                            onCancel={() => {
-                                console.log('Closing modal...');
+                            onCancel={(): void => {
                                 return setScheduleClicked(false);
                             }}
                         />

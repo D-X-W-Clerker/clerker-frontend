@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
 import { useAuthStore } from '@store';
-import { postTimeTable } from '../../apis';
+import { getTimeTable, postTimeTable } from '../../apis';
 
 // 타입 정의
 interface TimeTable {
@@ -14,7 +14,7 @@ interface TimeTable {
 interface Member {
     username: string;
     email: string;
-    type: string;
+    type: string | null;
     role: string;
     timeTables: TimeTable[];
 }
@@ -26,6 +26,7 @@ interface EventData {
 }
 
 interface When2meetProps {
+    projectID: string;
     scheduleID: string;
     startDate: string;
     endDate: string;
@@ -126,6 +127,7 @@ const fetchEventData = async (): Promise<EventData> => {
 };
 
 const When2meet: React.FC<When2meetProps> = ({
+    projectID,
     scheduleID,
     startDate,
     endDate,
@@ -135,8 +137,34 @@ const When2meet: React.FC<When2meetProps> = ({
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
     const [memberData, setMemberData] = useState<Member[]>([]);
-    const [availableTimes, setAvailableTimes] = useState<string[]>([]);
-    const [availableDates, setAvailableDates] = useState<string[]>([]);
+
+    const { data: timeTableData } = useQuery(
+        ['timeTable', scheduleID],
+        () => {
+            return getTimeTable(projectID || '', scheduleID);
+        },
+        {
+            enabled: !!scheduleID, // scheduleId가 있을 때만 실행
+            onSuccess: (data) => {
+                console.log('timeTable 불러오기 성공:', data);
+
+                // 데이터 매핑
+                const members = data.map((member) => {
+                    return {
+                        username: member.username,
+                        email: member.email,
+                        type: member.type,
+                        role: member.role,
+                        timeTables: member.timeTables,
+                    };
+                });
+                setMemberData(members);
+            },
+            onError: (error) => {
+                console.error('timeTable 불러오기 실패:', error);
+            },
+        },
+    );
 
     const updateMyInfo = (times: string[]): Member => {
         return {
@@ -173,16 +201,6 @@ const When2meet: React.FC<When2meetProps> = ({
     };
 
     useEffect(() => {
-        const loadEventData = async (): Promise<void> => {
-            const { times, dates, members } = await fetchEventData();
-            setAvailableTimes(times);
-            setAvailableDates(dates);
-            setMemberData(members);
-        };
-        loadEventData();
-    }, []);
-
-    useEffect(() => {
         if (personalAvailable.length === 0) {
             setMemberData((prev) => {
                 return prev.filter((member) => {
@@ -197,6 +215,7 @@ const When2meet: React.FC<When2meetProps> = ({
             setMemberData([...filteredMembers, myUpdatedInfo]);
         }
     }, [personalAvailable]);
+
     const timeCounts = formatMeetingTimesWithCounts();
 
     const handleToggleTime = (date: string, time: string): void => {
