@@ -210,10 +210,21 @@ const When2meet: React.FC<When2meetProps> = ({
 
     const handleSaveSchedule = async (): Promise<void> => {
         try {
-            await postTimeTable(scheduleID, { timeTable: personalAvailable });
+            const year = new Date(startDate).getFullYear(); // startDate에서 연도 가져오기
+
+            // 날짜와 시간을 올바른 포맷으로 변환
+            const timeTable = personalAvailable.map((time) => {
+                const [date, timePart] = time.split('-');
+                const month = date.slice(0, 2); // MM
+                const day = date.slice(2); // DD
+                const hour = timePart.slice(0, 2); // HH
+                const minute = timePart.slice(2); // mm
+                return `${year}-${month}-${day} ${hour}:${minute}:00`;
+            });
+
+            await postTimeTable(scheduleID, { timeTable });
             alert('일정이 성공적으로 저장되었습니다!');
         } catch (error) {
-            console.log(personalAvailable);
             alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
         }
     };
