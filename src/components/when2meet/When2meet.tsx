@@ -298,7 +298,14 @@ const When2meet: React.FC<When2meetProps> = ({
                     text="일정 조율 저장"
                     color="blue"
                     disabled={personalAvailable.length === 0}
-                    onClick={handleSaveSchedule}
+                    onClick={async (): Promise<void> => {
+                        try {
+                            await handleSaveSchedule();
+                            onCancel();
+                        } catch (error) {
+                            console.error('스케줄 저장에 실패했습니다.', error);
+                        }
+                    }}
                 />
             </ButtonContainer>
         </>
