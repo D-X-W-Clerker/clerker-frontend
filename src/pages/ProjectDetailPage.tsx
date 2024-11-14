@@ -103,6 +103,7 @@ const Container = styled(FlexRow)`
 
 const ContentArea = styled(FlexCol)`
     width: 50%;
+    overflow-x: auto;
     overflow-y: auto;
     height: calc(100vh - 50px);
     padding: 40px;

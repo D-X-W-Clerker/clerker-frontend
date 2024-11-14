@@ -34,6 +34,8 @@ interface When2meetProps {
 
 const TimeGridContainer = styled(JustifyCenterRow)`
     gap: 25px;
+    overflow-x: auto;
+    width: 100%;
 `;
 
 const Title = styled.div`
