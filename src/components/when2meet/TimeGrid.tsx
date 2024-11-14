@@ -58,8 +58,10 @@ const TimeLabel = styled(FlexRow)`
 
 type TimeGridProps = {
     title: string;
-    times: string[];
-    dates: string[];
+    startDate: string;
+    endDate: string;
+    startTime: string;
+    endTime: string;
     timeCounts: Record<string, number>;
     selectedTimes: string[];
     toggleTime: (date: string, time: string) => void;
@@ -69,8 +71,10 @@ type TimeGridProps = {
 
 const TimeGrid: React.FC<TimeGridProps> = ({
     title,
-    times,
-    dates,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
     timeCounts,
     selectedTimes,
     toggleTime,
@@ -78,6 +82,52 @@ const TimeGrid: React.FC<TimeGridProps> = ({
     isPersonal = false,
 }) => {
     const [isDragging, setIsDragging] = useState<boolean>(false);
+
+    // 날짜와 시간 배열 생성
+    const generateDates = (start: string, end: string): string[] => {
+        const dates: string[] = [];
+        const currentDate = new Date(start);
+        const computedEndDate = new Date(end);
+
+        while (currentDate <= computedEndDate) {
+            const month = (currentDate.getMonth() + 1)
+                .toString()
+                .padStart(2, '0');
+            const day = currentDate.getDate().toString().padStart(2, '0');
+            dates.push(`${month}${day}`);
+            currentDate.setDate(currentDate.getDate() + 1);
+        }
+        return dates;
+    };
+
+    const generateTimes = (start: string, end: string): string[] => {
+        const times: string[] = [];
+        const [startHour, startMinute] = start.split(':').map(Number);
+        const [endHour, endMinute] = end.split(':').map(Number);
+
+        let currentHour = startHour;
+        let currentMinute = startMinute;
+
+        while (
+            currentHour < endHour ||
+            (currentHour === endHour && currentMinute <= endMinute)
+        ) {
+            const formattedTime = `${currentHour.toString().padStart(2, '0')}${currentMinute.toString().padStart(2, '0')}`;
+            times.push(formattedTime);
+
+            // 30분 단위로 증가
+            currentMinute += 30;
+            if (currentMinute === 60) {
+                currentMinute = 0;
+                currentHour += 1;
+            }
+        }
+
+        return times;
+    };
+
+    const computedDates = generateDates(startDate, endDate);
+    const computedTimes = generateTimes(startTime, endTime);
 
     const handleMouseDown = (date: string, time: string): void => {
         if (isDisabled) return;
@@ -95,7 +145,6 @@ const TimeGrid: React.FC<TimeGridProps> = ({
         setIsDragging(false);
     };
 
-    // 정각인지 30분인지 확인하는 함수
     const isHalfHour = (time: string): boolean => {
         return time.endsWith('30');
     };
@@ -103,20 +152,19 @@ const TimeGrid: React.FC<TimeGridProps> = ({
     return (
         <ContentContainer onMouseUp={handleMouseUp}>
             <Title>{title}</Title>
-            <GridContainer $dateCount={dates.length}>
+            <GridContainer $dateCount={computedDates.length}>
                 <TimeLabel />
-                {dates.map((date) => {
+                {computedDates.map((date) => {
                     return <TimeLabel key={date}>{date}</TimeLabel>;
                 })}
 
-                {times.map((time) => {
+                {computedTimes.map((time) => {
                     return (
                         <React.Fragment key={time}>
-                            {/* 정각이면 시간 표시, 30분이면 빈 라벨 */}
                             <TimeLabel>
                                 {isHalfHour(time) ? '' : time}
                             </TimeLabel>
-                            {dates.map((date) => {
+                            {computedDates.map((date) => {
                                 const timeKey = `${date}-${time}`;
                                 const isSelected =
                                     selectedTimes.includes(timeKey);

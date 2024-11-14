@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
+import { useAuthStore } from '@store';
 import { postTimeTable } from '../../apis';
-
 // 타입 정의
 interface TimeTable {
     time: string;
@@ -27,8 +27,8 @@ interface When2meetProps {
     scheduleID: string;
     startDate: string;
     endDate: string;
-    // startTime: string;
-    // endTime: string;
+    startTime: string;
+    endTime: string;
     onCancel: () => void;
 }
 
@@ -106,7 +106,7 @@ const fetchEventData = async (): Promise<EventData> => {
                 ],
             },
             {
-                username: '신진욱',
+                username: '신욱욱',
                 email: 'jinwook2765@kookmin.ac.kr',
                 role: 'member',
                 type: 'FE',
@@ -124,8 +124,8 @@ const When2meet: React.FC<When2meetProps> = ({
     scheduleID,
     startDate,
     endDate,
-    // startTime,
-    // endTime,
+    startTime,
+    endTime,
     onCancel,
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
@@ -207,9 +207,8 @@ const When2meet: React.FC<When2meetProps> = ({
 
     const handleSaveSchedule = async (): Promise<void> => {
         try {
-            // const scheduleID = 123; // 예제 스케줄 ID (실제 ID로 교체 필요)
-            // await postTimeTable(scheduleID, { timeTable: personalAvailable });
-            // alert('일정이 성공적으로 저장되었습니다!');
+            await postTimeTable(scheduleID, { timeTable: personalAvailable });
+            alert('일정이 성공적으로 저장되었습니다!');
         } catch (error) {
             console.log(personalAvailable);
             alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
@@ -221,8 +220,10 @@ const When2meet: React.FC<When2meetProps> = ({
             <TimeGridContainer>
                 <TimeGrid
                     title="개인 가능 시간"
-                    times={availableTimes}
-                    dates={availableDates}
+                    startDate={startDate}
+                    endDate={endDate}
+                    startTime={startTime}
+                    endTime={endTime}
                     timeCounts={{}}
                     selectedTimes={personalAvailable}
                     toggleTime={handleToggleTime}
@@ -230,8 +231,10 @@ const When2meet: React.FC<When2meetProps> = ({
                 />
                 <TimeGrid
                     title="회의 가능 시간"
-                    times={availableTimes}
-                    dates={availableDates}
+                    startDate={startDate}
+                    endDate={endDate}
+                    startTime={startTime}
+                    endTime={endTime}
                     timeCounts={timeCounts}
                     selectedTimes={[]}
                     toggleTime={(): void => {}}

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuthStore } from '@store';
 
 interface ScheduleRequest {
     timeTable: string[];
@@ -7,16 +8,18 @@ interface ScheduleRequest {
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
 export const postTimeTable = async (
-    scheduleID: number,
+    scheduleID: string,
     data: ScheduleRequest,
 ): Promise<void> => {
     try {
+        const { token } = useAuthStore.getState();
         const response = await axios.post(
             `${apiUrl}/api/schedule/${scheduleID}`,
             data,
             {
                 headers: {
                     'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
                 },
             },
         );
@@ -27,12 +30,19 @@ export const postTimeTable = async (
 };
 
 export const getTimeTable = async (
-    projectID: number,
-    scheduleID: number,
+    projectID: string,
+    scheduleID: string,
 ): Promise<void> => {
     try {
+        const { token } = useAuthStore.getState();
         const response = await axios.get(
             `${apiUrl}/api/schedule/${projectID}/detail/${scheduleID}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+            },
         );
         return response.data;
     } catch (error) {

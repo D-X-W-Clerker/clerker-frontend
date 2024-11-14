@@ -12,7 +12,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = document.cookie
         .split('; ')
-        .find((row) => row.startsWith('token='))
+        .find((row) => {
+            return row.startsWith('token=');
+        })
         ?.split('=')[1];
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -20,20 +22,13 @@ axiosInstance.interceptors.request.use((config) => {
     return config;
 });
 
-interface TimeData {
-    hour: string;
-    minute: string;
-    second: string;
-    nano: string;
-}
-
 interface ScheduleData {
     scheduleId: string;
     scheduleName: string;
     startDate: string;
     endDate: string;
-    startTime: TimeData;
-    endTime: TimeData;
+    startTime: string;
+    endTime: string;
     createdAt: string;
     isEnded: boolean;
     meetingId?: string;
@@ -111,16 +106,18 @@ const DayCell = styled.div<DayCellProps>`
     text-align: center;
     margin: 10px 5px;
     cursor: pointer;
-    color: ${(props) =>
-        props.$isSelected
+    color: ${(props) => {
+        return props.$isSelected
             ? '#ffffff'
             : props.$isCurrentMonth
               ? '#000'
-              : '#aaa'};
+              : '#aaa';
+    }};
 
     &:hover {
-        background-color: ${(props) =>
-            props.$isSelected ? '#40A3FF' : '#d4e5f6'};
+        background-color: ${(props) => {
+            return props.$isSelected ? '#40A3FF' : '#d4e5f6';
+        }};
     }
 
     position: relative;
@@ -200,8 +197,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         setSelectedSchedules([]);
     };
 
-    const getMonthYear = (date: Date): string =>
-        date.toLocaleString('ko-KR', { year: 'numeric', month: 'long' });
+    const getMonthYear = (date: Date): string => {
+        return date.toLocaleString('ko-KR', { year: 'numeric', month: 'long' });
+    };
 
     const prevMonth = (): void => {
         setCurrentDate(
@@ -215,15 +213,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         );
     };
 
-    const getWeekdays = (): string[] => [
-        '일',
-        '월',
-        '화',
-        '수',
-        '목',
-        '금',
-        '토',
-    ];
+    const getWeekdays = (): string[] => {
+        return ['일', '월', '화', '수', '목', '금', '토'];
+    };
 
     const generateCalendar = (): Date[][] => {
         const startOfMonth = new Date(
@@ -252,17 +244,21 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         return dates;
     };
 
-    const isSameDay = (date1: Date, date2: Date): boolean =>
-        date1.getFullYear() === date2.getFullYear() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getDate() === date2.getDate();
+    const isSameDay = (date1: Date, date2: Date): boolean => {
+        return (
+            date1.getFullYear() === date2.getFullYear() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getDate() === date2.getDate()
+        );
+    };
 
-    const isSelected = (date: Date): boolean =>
-        selectedStartDate && selectedEndDate
+    const isSelected = (date: Date): boolean => {
+        return selectedStartDate && selectedEndDate
             ? date >= selectedStartDate && date <= selectedEndDate
             : selectedStartDate
               ? isSameDay(selectedStartDate, date)
               : false;
+    };
 
     const handleDateClick = (date: Date): void => {
         if (isSelectingDates) {
@@ -276,9 +272,9 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 setSelectedEndDate(null);
             }
         } else {
-            const schedulesOnDate = schedules.filter((s) =>
-                isSameDay(new Date(s.startDate), date),
-            );
+            const schedulesOnDate = schedules.filter((s) => {
+                return isSameDay(new Date(s.startDate), date);
+            });
             if (schedulesOnDate.length > 0) {
                 setSelectedSchedules(schedulesOnDate);
                 setIsCheckModalOpen(true);
@@ -286,10 +282,11 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         }
     };
 
-    const hasEvent = (date: Date): boolean =>
-        schedules.some((schedule) =>
-            isSameDay(new Date(schedule.startDate), date),
-        );
+    const hasEvent = (date: Date): boolean => {
+        return schedules.some((schedule) => {
+            return isSameDay(new Date(schedule.startDate), date);
+        });
+    };
 
     return (
         <CalendarContainer>
@@ -299,39 +296,46 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                 <NavButton onClick={nextMonth}>&gt;</NavButton>
             </CalendarNavigation>
             <WeekdaysRow>
-                {getWeekdays().map((day) => (
-                    <WeekdayCell key={day}>{day}</WeekdayCell>
-                ))}
+                {getWeekdays().map((day) => {
+                    return <WeekdayCell key={day}>{day}</WeekdayCell>;
+                })}
             </WeekdaysRow>
             <DaysGrid>
-                {generateCalendar().map((week) => (
-                    <WeekRow key={week[0].toISOString()}>
-                        {week.map((date) => (
-                            <DayCell
-                                key={date.toISOString()}
-                                $isCurrentMonth={
-                                    date.getMonth() === currentDate.getMonth()
-                                }
-                                $hasEvent={hasEvent(date)}
-                                $isSelected={isSelected(date)}
-                                onClick={() => handleDateClick(date)}
-                            >
-                                {date.getDate()}
-                                {hasEvent(date) && <EventDot />}
-                            </DayCell>
-                        ))}
-                    </WeekRow>
-                ))}
+                {generateCalendar().map((week) => {
+                    return (
+                        <WeekRow key={week[0].toISOString()}>
+                            {week.map((date) => {
+                                return (
+                                    <DayCell
+                                        key={date.toISOString()}
+                                        $isCurrentMonth={
+                                            date.getMonth() ===
+                                            currentDate.getMonth()
+                                        }
+                                        $hasEvent={hasEvent(date)}
+                                        $isSelected={isSelected(date)}
+                                        onClick={() => {
+                                            return handleDateClick(date);
+                                        }}
+                                    >
+                                        {date.getDate()}
+                                        {hasEvent(date) && <EventDot />}
+                                    </DayCell>
+                                );
+                            })}
+                        </WeekRow>
+                    );
+                })}
             </DaysGrid>
             <ScheduleButtonContainer>
                 <CalendarButton
                     isSelectingDates={isSelectingDates}
                     hasSelectedDates={!!selectedStartDate}
-                    onClick={() =>
-                        isSelectingDates && selectedStartDate
+                    onClick={() => {
+                        return isSelectingDates && selectedStartDate
                             ? setIsModalOpen(true)
-                            : setIsSelectingDates(!isSelectingDates)
-                    }
+                            : setIsSelectingDates(!isSelectingDates);
+                    }}
                     onCancel={() => {
                         resetSelection();
                         setIsSelectingDates(false);
