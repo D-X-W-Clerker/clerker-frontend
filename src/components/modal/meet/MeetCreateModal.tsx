@@ -162,8 +162,14 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         console.log('보낼 데이터:', meetingData);
 
         // startDateTime 형식 검증
-        if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(meetingData.startDateTime)) {
-            alert('날짜 및 시간 형식이 올바르지 않습니다. (예: YYYY-MM-DDTHH:mm:ss)');
+        if (
+            !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(
+                meetingData.startDateTime,
+            )
+        ) {
+            alert(
+                '날짜 및 시간 형식이 올바르지 않습니다. (예: YYYY-MM-DDTHH:mm:ss)',
+            );
             return;
         }
 
@@ -179,7 +185,10 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                 alert('회의가 성공적으로 생성되었습니다.');
                 onCancel();
             } else {
-                console.error('서버 응답에서 문제가 발생했습니다.', response.data);
+                console.error(
+                    '서버 응답에서 문제가 발생했습니다.',
+                    response.data,
+                );
                 alert('회의 생성 중 오류가 발생했습니다.');
             }
         } catch (error: any) {
@@ -187,7 +196,9 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
 
             if (error.response) {
                 console.error('서버 오류 메시지:', error.response.data);
-                alert(`회의 생성에 실패했습니다: ${error.response.data.message || '서버 오류'}`);
+                alert(
+                    `회의 생성에 실패했습니다: ${error.response.data.message || '서버 오류'}`,
+                );
             } else {
                 alert('회의 생성에 실패했습니다.');
             }

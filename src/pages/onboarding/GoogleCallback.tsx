@@ -66,7 +66,8 @@ const GoogleCallback: React.FC = () => {
 
                 console.log('API 응답 데이터:', response.data);
 
-                const { profileURL, username: fetchedUsername } = response.data || {};
+                const { profileURL, username: fetchedUsername } =
+                    response.data || {};
 
                 // profileURL이 null인 경우 기본 이미지 설정
                 const profileImage = profileURL || ClerkerIcon;
