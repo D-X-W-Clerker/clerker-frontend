@@ -86,6 +86,7 @@ const GoogleCallback: React.FC = () => {
                 });
 
                 navigate('/home');
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (error: any) {
                 if (error.response && error.response.status === 301) {
                     console.error('리디렉션 문제가 발생했습니다.');

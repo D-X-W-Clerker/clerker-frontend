@@ -23,7 +23,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = document.cookie
         .split('; ')
-        .find((row) => row.startsWith('token='))
+        .find((row) => {
+            return row.startsWith('token=');
+        })
         ?.split('=')[1];
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -191,6 +193,7 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                 );
                 alert('회의 생성 중 오류가 발생했습니다.');
             }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (error: any) {
             console.error('회의 생성 요청 실패:', error);
 
@@ -217,39 +220,47 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                         placeholder="회의 이름을 입력하세요."
                     />
                     <DateInputArea>
-                        {dateFields.map((field) => (
-                            <DateInput
-                                key={field.value}
-                                type="meet"
-                                label={field.label}
-                                value={
-                                    dateTime[
-                                        field.value as keyof typeof dateTime
-                                    ]
-                                }
-                                onChange={onChangeDate(field.value)}
-                                placeholder={field.placeholder}
-                            />
-                        ))}
+                        {dateFields.map((field) => {
+                            return (
+                                <DateInput
+                                    key={field.value}
+                                    type="meet"
+                                    label={field.label}
+                                    value={
+                                        dateTime[
+                                            field.value as keyof typeof dateTime
+                                        ]
+                                    }
+                                    onChange={onChangeDate(field.value)}
+                                    placeholder={field.placeholder}
+                                />
+                            );
+                        })}
                     </DateInputArea>
                 </ContentArea>
                 <RadioInput
                     label="멤버들에게 회의 생성 알림을 보낼까요?"
                     name="sendAlert"
                     checked={sendAlert}
-                    onChange={() => setSendAlert(!sendAlert)}
+                    onChange={() => {
+                        return setSendAlert(!sendAlert);
+                    }}
                 />
                 <DomainArea>
                     <DomainSelect
                         value={domain}
-                        onChange={(event) => setDomain(event.target.value)}
+                        onChange={(event) => {
+                            return setDomain(event.target.value);
+                        }}
                     >
                         <option value="">도메인 입력</option>
-                        {domains.map((option) => (
-                            <option key={option} value={option}>
-                                {option}
-                            </option>
-                        ))}
+                        {domains.map((option) => {
+                            return (
+                                <option key={option} value={option}>
+                                    {option}
+                                </option>
+                            );
+                        })}
                     </DomainSelect>
                     <DropdownArrow>▼</DropdownArrow>
                 </DomainArea>
