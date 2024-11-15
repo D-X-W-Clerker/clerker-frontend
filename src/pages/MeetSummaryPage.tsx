@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import { TitleTab } from '@components';
 import { FlexCol, FlexRow } from '@styles';
@@ -134,6 +135,7 @@ const fetchFileContent = async (url: string): Promise<string> => {
     try {
         const response = await axios.get(url, { responseType: 'text' });
         return response.data;
+        console.log(response.data);
     } catch (error) {
         console.error('파일 내용을 가져오는데 실패했습니다:', error);
         return '파일 내용을 불러오는데 실패했습니다.';
@@ -141,7 +143,7 @@ const fetchFileContent = async (url: string): Promise<string> => {
 };
 
 const MeetSummaryPage: React.FC = () => {
-    const meetingId = 9; // meetingId를 9로 고정
+    const { meetingId } = useParams<{ meetingId: string }>(); // useParams로 meetingId 가져오기
     const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [fileContents, setFileContents] = useState<Record<number, string>>(
@@ -151,6 +153,11 @@ const MeetSummaryPage: React.FC = () => {
 
     useEffect(() => {
         const fetchMeetingData = async () => {
+            if (!meetingId) {
+                console.error('meetingId가 제공되지 않았습니다.');
+                return;
+            }
+
             setIsLoading(true);
             try {
                 const response = await axiosInstance.get<MeetingData>(
