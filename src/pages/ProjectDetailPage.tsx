@@ -274,8 +274,8 @@ const ProjectDetailPage: React.FC = () => {
 
         // 주기적으로 데이터를 다시 가져오기 (5초 간격)
         const intervalId = setInterval(() => {
-            fetchMeetingData();
-            fetchSchedules();
+            //fetchMeetingData();
+            //fetchSchedules();
         }, 100);
 
         // 컴포넌트 언마운트 시 interval 제거
