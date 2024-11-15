@@ -114,7 +114,7 @@ const dateFields = [
     { label: '분', placeholder: 'mm', value: 'minute' },
 ];
 
-const domains = ['도메인 A', '도메인 B', '도메인 C', '도메인 D'];
+const domains = ['IT', '경제', '금융', '의료'];
 
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
     projectId,
