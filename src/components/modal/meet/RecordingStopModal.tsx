@@ -22,7 +22,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = document.cookie
         .split('; ')
-        .find((row) => row.startsWith('token='))
+        .find((row) => {
+            return row.startsWith('token=');
+        })
         ?.split('=')[1];
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -152,11 +154,8 @@ const RecordingStopModal: React.FC<RecordingStopModalProps> = ({
                 console.error('파일 전송 실패:', error);
                 if (axios.isAxiosError(error) && error.response) {
                     console.error('서버 응답:', error.response.data);
-                    alert(
-                        `파일 전송에 실패했습니다: ${error.response.data.message || '알 수 없는 오류'}`,
-                    );
                 } else {
-                    alert('파일 전송에 실패했습니다. 다시 시도해주세요.');
+                    // alert('파일 전송에 실패했습니다. 다시 시도해주세요.');
                 }
             } finally {
                 setIsUploading(false);
@@ -178,23 +177,29 @@ const RecordingStopModal: React.FC<RecordingStopModalProps> = ({
                         isEditable={false}
                     />
                     <DateInputArea>
-                        {dateFields.map((field) => (
-                            <DateInput
-                                key={field.label}
-                                type="meet"
-                                label={field.label}
-                                value={field.value}
-                                isEditable={false}
-                            />
-                        ))}
+                        {dateFields.map((field) => {
+                            return (
+                                <DateInput
+                                    key={field.label}
+                                    type="meet"
+                                    label={field.label}
+                                    value={field.value}
+                                    isEditable={false}
+                                />
+                            );
+                        })}
                     </DateInputArea>
                 </ContentArea>
                 <SubContentArea>
                     <SubText>회의가 종료되었습니다.</SubText>
                     <List>
-                        {infoMessages.map((message) => (
-                            <ListItem key={message.id}>{message.text}</ListItem>
-                        ))}
+                        {infoMessages.map((message) => {
+                            return (
+                                <ListItem key={message.id}>
+                                    {message.text}
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 </SubContentArea>
                 <ButtonArea>
