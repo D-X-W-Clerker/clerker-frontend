@@ -134,8 +134,8 @@ interface MeetingData {
 const fetchFileContent = async (url: string): Promise<string> => {
     try {
         const response = await axios.get(url, { responseType: 'text' });
+        console.log('파일 내용이에요', response.data);
         return response.data;
-        console.log(response.data);
     } catch (error) {
         console.error('파일 내용을 가져오는데 실패했습니다:', error);
         return '파일 내용을 불러오는데 실패했습니다.';
@@ -143,7 +143,7 @@ const fetchFileContent = async (url: string): Promise<string> => {
 };
 
 const MeetSummaryPage: React.FC = () => {
-    const { meetingId } = useParams<{ meetingId: string }>(); // useParams로 meetingId 가져오기
+    const { summaryId } = useParams<{ summaryId: string }>(); // useParams로 meetingId 가져오기
     const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [fileContents, setFileContents] = useState<Record<number, string>>(
@@ -153,7 +153,7 @@ const MeetSummaryPage: React.FC = () => {
 
     useEffect(() => {
         const fetchMeetingData = async () => {
-            if (!meetingId) {
+            if (!summaryId) {
                 console.error('meetingId가 제공되지 않았습니다.');
                 return;
             }
@@ -161,7 +161,7 @@ const MeetSummaryPage: React.FC = () => {
             setIsLoading(true);
             try {
                 const response = await axiosInstance.get<MeetingData>(
-                    `/api/meeting/result/${meetingId}`,
+                    `/api/meeting/result/${summaryId}`,
                 );
                 console.log('회의 데이터:', response.data);
                 setMeetingData(response.data);
@@ -198,11 +198,11 @@ const MeetSummaryPage: React.FC = () => {
         };
 
         fetchMeetingData();
-    }, [meetingId]);
+    }, [summaryId]);
 
-    if (isLoading) {
-        return <div>데이터를 불러오는 중입니다...</div>;
-    }
+    // if (isLoading) {
+    //     return <div>데이터를 불러오는 중입니다...</div>;
+    // }
 
     if (!meetingData) {
         return <div>회의 데이터를 찾을 수 없습니다.</div>;
