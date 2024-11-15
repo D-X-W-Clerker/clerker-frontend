@@ -150,9 +150,7 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                 setDomain(response.data.domain || 'defaultDomain'); // 실제 도메인 필드로 변경
             } catch (error) {
                 console.error('회의 정보를 가져오는데 실패했습니다:', error);
-                alert(
-                    '회의 정보를 가져오는데 실패했습니다. 다시 시도해주세요.',
-                );
+                alert('종료된 회의 입니다.');
             }
         };
 
