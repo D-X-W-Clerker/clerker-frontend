@@ -182,65 +182,212 @@ const Content = styled.div<{
     }};
 `;
 
+const titleTexts = [
+    { id: 'title1', text: '회의의 모든 것,', top: '20%', left: '20%' },
+    { id: 'title2', text: '클러커에서', top: '30%', left: '30%' },
+];
+
+const circles = [
+    {
+        id: 'circle1',
+        size: 300,
+        top: '-3%',
+        left: '-3%',
+        angle: -57.61,
+        color1: 'rgba(152, 173, 255, 70%) 33%',
+        color2: 'rgba(255, 255, 255, 70%) 100%',
+        opacity: 0.7,
+    },
+    {
+        id: 'circle2',
+        size: 350,
+        top: '7%',
+        left: '7%',
+        angle: -126.719,
+        color1: 'rgba(71, 156, 247, 60%) 0%',
+        color2: 'rgba(152, 173, 255, 60%) 100%',
+        opacity: 0.6,
+    },
+    {
+        id: 'circle3',
+        size: 400,
+        top: '75%',
+        left: '20%',
+        angle: -164.171,
+        color1: 'rgba(152, 173, 255, 70%) 2%',
+        color2: 'rgba(255, 255, 255, 70%) 100%',
+        opacity: 0.7,
+    },
+    {
+        id: 'circle4',
+        size: 800,
+        top: '45%',
+        left: '65%',
+        angle: -126.719,
+        color1: 'rgba(71, 156, 247, 60%) 0%',
+        color2: 'rgba(152, 173, 255, 60%) 100%',
+        opacity: 0.6,
+    },
+    {
+        id: 'circle5',
+        size: 350,
+        top: '15%',
+        left: '82%',
+        angle: 39.802,
+        color1: 'rgba(152, 173, 255, 70%) 18%',
+        color2: 'rgba(255, 255, 255, 70%) 100%',
+        opacity: 0.7,
+    },
+];
+
+const summaryContents = [
+    {
+        id: 'content1',
+        text: 'AI 회의 내용 요약 및 시각화 서비스',
+        top: '15%',
+        fontSize: '24px',
+        fontColor: 'var(--color-blue-400)',
+        textAlign: 'center',
+    },
+    {
+        id: 'content2',
+        text: (
+            <>
+                회의 내용 정리는 <br />
+                클러커에게
+            </>
+        ),
+        top: '25%',
+        fontSize: '52px',
+        textAlign: 'center',
+    },
+    {
+        id: 'content3',
+        text: (
+            <>
+                AI를 활용하여 회의 녹화 내용을 자동으로
+                <strong> 요약 텍스트, 시각적 다이어그램, 요약 영상</strong>
+                으로 제공하여 <br />
+                중요한 정보를 효율적으로 파악하고 공유할 수 있도록 지원합니다.
+            </>
+        ),
+        top: '50%',
+        fontSize: '24px',
+        fontWeight: 'var(--font-normal)',
+        textAlign: 'center',
+    },
+];
+
+const when2MeetContents = [
+    {
+        id: 'when2meet1',
+        text: '스마트한 일정 조율',
+        top: '35%',
+        transform: 'translateX(-300%)',
+        fontSize: '24px',
+        fontColor: 'var(--color-blue-400)',
+    },
+    {
+        id: 'when2meet2',
+        text: (
+            <>
+                모두가 가능한 시간 <br />
+                손쉽게 찾기
+            </>
+        ),
+        top: '45%',
+        transform: 'translateX(-140%)',
+        fontSize: '52px',
+    },
+    {
+        id: 'when2meet3',
+        text: (
+            <>
+                팀원이 가능한 시간대를 입력하면, <br />
+                <strong>최적의 회의 시간</strong>을 조율할 수 있습니다.
+            </>
+        ),
+        top: '65%',
+        transform: 'translateX(-145%)',
+        fontSize: '24px',
+        fontWeight: 'var(--font-normal)',
+    },
+];
+
+const projectContents = [
+    {
+        id: 'project1',
+        text: '프로젝트 단위 관리',
+        top: '25%',
+        transform: 'translateX(175%)',
+        fontSize: '24px',
+        fontColor: 'var(--color-blue-400)',
+    },
+    {
+        id: 'project2',
+        text: (
+            <>
+                프로젝트 관리
+                <br />
+                이제 더 편리하게
+            </>
+        ),
+        top: '35%',
+        transform: 'translateX(45%)',
+        fontSize: '52px',
+        textAlign: 'right',
+    },
+    {
+        id: 'project3',
+        text: (
+            <>
+                <strong>프로젝트 단위</strong>로 모든 회의와 일정을 손쉽게
+                관리하며,
+                <br />
+                복잡한 업무 속에서도 효율적인 협업이 가능합니다.
+            </>
+        ),
+        top: '55%',
+        transform: 'translateX(-30%)',
+        fontSize: '24px',
+        fontWeight: 'var(--font-normal)',
+        textAlign: 'right',
+    },
+];
+
 const OnboardingPage: React.FC = () => {
     return (
         <Container>
             <Header showGoogleIcon />
             <IntroSection>
                 <TitleWrapper>
-                    <TitleText $top="20%" $left="20%">
-                        회의의 모든 것,
-                    </TitleText>
-                    <TitleText $top="30%" $left="30%">
-                        클러커에서
-                    </TitleText>
+                    {titleTexts.map((title) => {
+                        return (
+                            <TitleText
+                                key={title.id}
+                                $top={title.top}
+                                $left={title.left}
+                            >
+                                {title.text}
+                            </TitleText>
+                        );
+                    })}
                 </TitleWrapper>
                 <CircleWrapper>
-                    <Circle
-                        $size={300}
-                        $top="-3%"
-                        $left="-3%"
-                        $angle={-57.61}
-                        $color1="rgba(152, 173, 255, 70%) 33%"
-                        $color2="rgba(255, 255, 255, 70%) 100%"
-                        $opacity={0.7}
-                    />
-                    <Circle
-                        $size={350}
-                        $top="7%"
-                        $left="7%"
-                        $angle={-126.719}
-                        $color1="rgba(71, 156, 247, 60%) 0%"
-                        $color2="rgba(152, 173, 255, 60%) 100%"
-                        $opacity={0.6}
-                    />
-                    <Circle
-                        $size={400}
-                        $top="75%"
-                        $left="20%"
-                        $angle={-164.171}
-                        $color1="rgba(152, 173, 255, 70%) 2%"
-                        $color2="rgba(255, 255, 255, 70%) 100%"
-                        $opacity={0.7}
-                    />
-                    <Circle
-                        $size={800}
-                        $top="45%"
-                        $left="65%"
-                        $angle={-126.719}
-                        $color1="rgba(71, 156, 247, 60%) 0%"
-                        $color2="rgba(152, 173, 255, 60%) 100%"
-                        $opacity={0.6}
-                    />
-                    <Circle
-                        $size={350}
-                        $top="15%"
-                        $left="82%"
-                        $angle={39.802}
-                        $color1="rgba(152, 173, 255, 70%) 18%"
-                        $color2="rgba(255, 255, 255, 70%) 100%"
-                        $opacity={0.7}
-                    />
+                    {circles.map((circle) => {
+                        return (
+                            <Circle
+                                key={circle.id}
+                                $size={circle.size}
+                                $top={circle.top}
+                                $left={circle.left}
+                                $angle={circle.angle}
+                                $color1={circle.color1}
+                                $color2={circle.color2}
+                                $opacity={circle.opacity}
+                            />
+                        );
+                    })}
                 </CircleWrapper>
                 <Image
                     src={WhiteGrayDownArrowIcon}
@@ -268,32 +415,20 @@ const OnboardingPage: React.FC = () => {
                 </Content>
             </FeatureSection>
             <SummarySection>
-                <Content
-                    $top="15%"
-                    $fontSize="24px"
-                    $fontColor="var(--color-blue-400)"
-                    $textAlign="center"
-                >
-                    AI 회의 내용 요약 및 시각화 서비스
-                </Content>
-                <Content $top="25%" $fontSize="52px" $textAlign="center">
-                    회의 내용 정리는
-                    <br />
-                    클러커에게
-                </Content>
-                <Content
-                    $top="50%"
-                    $fontSize="24px"
-                    $textAlign="center"
-                    $fontWeight="var(--font-normal)"
-                >
-                    AI를 활용하여 회의 녹화 내용을 자동으로
-                    <strong> 요약 텍스트, 시각적 다이어그램, 요약 영상</strong>
-                    으로 제공하여
-                    <br />
-                    중요한 정보를 효율적으로 파악하고 공유할 수 있도록
-                    지원합니다.
-                </Content>
+                {summaryContents.map((content) => {
+                    return (
+                        <Content
+                            key={content.id}
+                            $top={content.top}
+                            $fontSize={content.fontSize}
+                            $fontColor={content.fontColor}
+                            $textAlign={content.textAlign}
+                            $fontWeight={content.fontWeight}
+                        >
+                            {content.text}
+                        </Content>
+                    );
+                })}
                 <Image
                     src={SummarySectionImage}
                     $top="65%"
@@ -303,31 +438,20 @@ const OnboardingPage: React.FC = () => {
             </SummarySection>
             <When2meetSection>
                 <ContentWrapper>
-                    <Content
-                        $top="35%"
-                        $transform="translateX(-300%)"
-                        $fontSize="24px"
-                        $fontColor="var(--color-blue-400)"
-                    >
-                        스마트한 일정 조율
-                    </Content>
-                    <Content
-                        $top="45%"
-                        $transform="translateX(-140%)"
-                        $fontSize="52px"
-                    >
-                        모두가 가능한 시간 <br />
-                        손쉽게 찾기
-                    </Content>
-                    <Content
-                        $top="65%"
-                        $transform="translateX(-145%)"
-                        $fontSize="24px"
-                        $fontWeight="var(--font-normal)"
-                    >
-                        팀원이 가능한 시간대를 입력하면, <br />
-                        <strong>최적의 회의 시간</strong>을 조율할 수 있습니다.
-                    </Content>
+                    {when2MeetContents.map((content) => {
+                        return (
+                            <Content
+                                key={content.id}
+                                $top={content.top}
+                                $transform={content.transform}
+                                $fontSize={content.fontSize}
+                                $fontColor={content.fontColor}
+                                $fontWeight={content.fontWeight}
+                            >
+                                {content.text}
+                            </Content>
+                        );
+                    })}
                 </ContentWrapper>
                 <Image
                     src={When2meetSectionImage}
@@ -346,44 +470,21 @@ const OnboardingPage: React.FC = () => {
                     $height={456}
                 />
                 <ContentWrapper>
-                    <Content
-                        $top="25%"
-                        $transform="translateX(175%)"
-                        $fontSize="24px"
-                        $fontColor="var(--color-blue-400)"
-                    >
-                        프로젝트 단위 관리
-                    </Content>
-                    <Content
-                        $top="35%"
-                        $transform="translateX(45%)"
-                        $fontSize="52px"
-                        $textAlign="right"
-                    >
-                        프로젝트 관리
-                        <br />
-                        이제 더 편리하게
-                    </Content>
-                    <Content
-                        $top="55%"
-                        $transform="translateX(-30%)"
-                        $fontSize="24px"
-                        $fontWeight="var(--font-normal)"
-                        $textAlign="right"
-                    >
-                        클러커는 <strong>프로젝트 단위</strong>로 회의를 처리할
-                        수 있는 강력한 도구입니다.
-                        <br />
-                        <br />
-                        <br />
-                        프로젝트별로 모든 회의와 일정을 한곳에서 손쉽게
-                        관리하며,
-                        <br />
-                        팀의 목표와 계획을 명확하게 유지할 수 있도록 도와줍니다.
-                        <br />
-                        복잡한 업무 속에서도 효율적인 협업을 가능하게 하는
-                        클러커와 함께하세요.
-                    </Content>
+                    {projectContents.map((content) => {
+                        return (
+                            <Content
+                                key={content.id}
+                                $top={content.top}
+                                $transform={content.transform}
+                                $fontSize={content.fontSize}
+                                $fontColor={content.fontColor}
+                                $fontWeight={content.fontWeight}
+                                $textAlign={content.textAlign}
+                            >
+                                {content.text}
+                            </Content>
+                        );
+                    })}
                 </ContentWrapper>
             </ProjectSection>
         </Container>
