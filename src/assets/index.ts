@@ -6,3 +6,5 @@ export { Clerker, ClerkerIcon, ClerkerIconPNG };
 
 export * from './action';
 export * from './project';
+export * from './onboarding';
+export * from './tutorial';
