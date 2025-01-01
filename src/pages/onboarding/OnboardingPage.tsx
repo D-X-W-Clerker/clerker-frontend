@@ -6,103 +6,106 @@ import {
     When2meetSectionImage,
     SummarySectionImage,
     ProjectSectionImage,
+    IntroSectionBg,
 } from '@assets';
 import { Header } from '@components';
-import { CenterCol, FlexCol, FlexRow, ItemsCenterCol } from '@styles';
+import { CenterRow, FlexCol, ItemsCenterCol } from '@styles';
 
-const Container = styled.div`
-    height: 100vh;
-    overflow-y: auto;
+// --- 레이아웃 스타일
+const Container = styled(FlexCol)`
+    min-height: 100vh;
+    overflow-y: scroll;
     scroll-snap-type: y mandatory;
 `;
 
+const ColumnWrapper = styled(FlexCol)`
+    gap: 45px;
+`;
+
+const IntroWrapper = styled.div`
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin: 200px 0 100px;
+    right: 50%;
+    transform: translateX(43%);
+`;
+
+const CenterRowSection = styled(CenterRow)`
+    height: 100vh;
+    scroll-snap-align: start;
+`;
+
 const IntroSection = styled(ItemsCenterCol)`
-    height: 100vh;
+    height: calc(100vh - 50px);
+    margin-top: 50px;
     scroll-snap-align: start;
-    position: relative;
+    background-image: url(${IntroSectionBg});
+    background-size: cover;
 `;
 
-const FeatureSection = styled(CenterCol)`
-    height: 100vh;
-    scroll-snap-align: start;
-    position: relative;
-    margin-top: 500px;
+const FeatureSection = styled(CenterRowSection)`
+    gap: 20px;
 `;
 
-const SummarySection = styled(CenterCol)`
-    height: 100vh;
-    scroll-snap-align: start;
-    position: relative;
+const SummarySection = styled(CenterRowSection)`
+    flex-direction: column;
+    gap: 45px;
 `;
 
-const When2meetSection = styled(CenterCol)`
-    height: 100vh;
-    scroll-snap-align: start;
-    position: relative;
+const When2meetSection = styled(CenterRowSection)`
+    gap: 80px;
 `;
 
-const ProjectSection = styled(CenterCol)`
-    height: 100vh;
-    scroll-snap-align: start;
-    position: relative;
+const ProjectSection = styled(CenterRowSection)`
+    gap: 100px;
 `;
 
-const Circle = styled.div<{
-    $size: number;
-    $top: string;
-    $left: string;
-    $angle: number;
-    $color1: string;
-    $color2: string;
-    $opacity: number;
+// --- 이미지 스타일
+const Image = styled.img<{
+    $width: number;
+    $height: number;
 }>`
-    border-radius: 50%;
-    position: absolute;
     width: ${(props): number => {
-        return props.$size;
+        return props.$width;
     }}px;
     height: ${(props): number => {
-        return props.$size;
+        return props.$height;
     }}px;
-    top: ${(props): string => {
-        return props.$top;
-    }};
-    left: ${(props): string => {
-        return props.$left;
-    }};
-    background: linear-gradient(
-        ${(props): number => {
-            return props.$angle;
-        }}deg,
-        ${(props): string => {
-            return props.$color1;
-        }},
-        ${(props): string => {
-            return props.$color2;
-        }}
-    );
-    opacity: ${(props): number => {
-        return props.$opacity;
-    }};
-    border: 1px solid rgba(60, 60, 60, 0.02);
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(4px);
 `;
 
-const CircleWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
+// --- 텍스트 스타일
+const BaseText = styled.div<{
+    $textAlign?: string;
+}>`
+    line-height: 1.3;
+    ${(props) => {
+        return (
+            props.$textAlign &&
+            `
+        text-align: ${props.$textAlign};
+    `
+        );
+    }}
 `;
 
-const TitleWrapper = styled(FlexRow)`
-    z-index: 2;
+const FeatureText = styled(BaseText)`
+    font-size: 24px;
+    font-weight: var(--font-bold);
+    color: var(--color-blue-100);
 `;
 
-const TitleText = styled.h1<{
+const MainText = styled(BaseText)`
+    font-size: 50px;
+    font-weight: var(--font-extrabold);
+`;
+
+const DetailText = styled(BaseText)`
+    font-size: 24px;
+    font-weight: var(--font-normal);
+`;
+
+const IntroText = styled(BaseText)<{
     $top: string;
     $left: string;
 }>`
@@ -115,243 +118,30 @@ const TitleText = styled.h1<{
     }};
     font-size: 64px;
     font-weight: var(--font-bold);
-    color: var(--color-gray-700);
 `;
 
+// --- 버튼 스타일
 const StartButton = styled.div`
+    margin-top: 20px;
     color: var(--color-blue-400);
     font-size: 20px;
-    position: absolute;
-    top: 80%;
     text-align: center;
     cursor: pointer;
 `;
 
-const Image = styled.img<{
-    $top?: string;
-    $transform?: string;
-    $width: number;
-    $height: number;
-}>`
-    top: ${(props): string => {
-        return props.$top || 'auto';
-    }};
-    transform: ${(props): string => {
-        return props.$transform || 'none';
-    }};
-    width: ${(props): number => {
-        return props.$width;
-    }}px;
-    height: ${(props): number => {
-        return props.$height;
-    }}px;
-    position: absolute;
-`;
-
-const ContentWrapper = styled(FlexCol)`
-    gap: 45px;
-`;
-
-const Content = styled.div<{
-    $top: string;
-    $transform?: string;
-    $fontSize: string;
-    $fontWeight?: string;
-    $fontColor?: string;
-    $textAlign?: string;
-}>`
-    position: absolute;
-    line-height: 1.5;
-    top: ${(props): string => {
-        return props.$top;
-    }};
-    transform: ${(props): string => {
-        return props.$transform || 'none';
-    }};
-    font-size: ${(props): string => {
-        return props.$fontSize;
-    }};
-    font-weight: ${(props): string => {
-        return props.$fontWeight || 'var(--font-bold)';
-    }};
-    color: ${(props): string => {
-        return props.$fontColor || 'var(--color-gray-700)';
-    }};
-    text-align: ${(props): string => {
-        return props.$textAlign || 'left';
-    }};
-`;
-
-const titleTexts = [
-    { id: 'title1', text: '회의의 모든 것,', top: '20%', left: '20%' },
-    { id: 'title2', text: '클러커에서', top: '30%', left: '30%' },
-];
-
-const circles = [
+// --- 더미데이터
+const introTexts = [
     {
-        id: 'circle1',
-        size: 300,
-        top: '-3%',
-        left: '-3%',
-        angle: -57.61,
-        color1: 'rgba(152, 173, 255, 70%) 33%',
-        color2: 'rgba(255, 255, 255, 70%) 100%',
-        opacity: 0.7,
+        id: 'introText1',
+        text: '회의의 모든 것,',
+        top: '20px',
+        left: 'calc(50% - 300px)',
     },
     {
-        id: 'circle2',
-        size: 350,
-        top: '7%',
-        left: '7%',
-        angle: -126.719,
-        color1: 'rgba(71, 156, 247, 60%) 0%',
-        color2: 'rgba(152, 173, 255, 60%) 100%',
-        opacity: 0.6,
-    },
-    {
-        id: 'circle3',
-        size: 400,
-        top: '75%',
-        left: '20%',
-        angle: -164.171,
-        color1: 'rgba(152, 173, 255, 70%) 2%',
-        color2: 'rgba(255, 255, 255, 70%) 100%',
-        opacity: 0.7,
-    },
-    {
-        id: 'circle4',
-        size: 800,
-        top: '45%',
-        left: '65%',
-        angle: -126.719,
-        color1: 'rgba(71, 156, 247, 60%) 0%',
-        color2: 'rgba(152, 173, 255, 60%) 100%',
-        opacity: 0.6,
-    },
-    {
-        id: 'circle5',
-        size: 350,
-        top: '15%',
-        left: '82%',
-        angle: 39.802,
-        color1: 'rgba(152, 173, 255, 70%) 18%',
-        color2: 'rgba(255, 255, 255, 70%) 100%',
-        opacity: 0.7,
-    },
-];
-
-const summaryContents = [
-    {
-        id: 'content1',
-        text: 'AI 회의 내용 요약 및 시각화 서비스',
-        top: '15%',
-        fontSize: '24px',
-        fontColor: 'var(--color-blue-400)',
-        textAlign: 'center',
-    },
-    {
-        id: 'content2',
-        text: (
-            <>
-                회의 내용 정리는 <br />
-                클러커에게
-            </>
-        ),
-        top: '25%',
-        fontSize: '52px',
-        textAlign: 'center',
-    },
-    {
-        id: 'content3',
-        text: (
-            <>
-                AI를 활용하여 회의 녹화 내용을 자동으로
-                <strong> 요약 텍스트, 시각적 다이어그램, 요약 영상</strong>
-                으로 제공하여 <br />
-                중요한 정보를 효율적으로 파악하고 공유할 수 있도록 지원합니다.
-            </>
-        ),
-        top: '50%',
-        fontSize: '24px',
-        fontWeight: 'var(--font-normal)',
-        textAlign: 'center',
-    },
-];
-
-const when2MeetContents = [
-    {
-        id: 'when2meet1',
-        text: '스마트한 일정 조율',
-        top: '35%',
-        transform: 'translateX(-300%)',
-        fontSize: '24px',
-        fontColor: 'var(--color-blue-400)',
-    },
-    {
-        id: 'when2meet2',
-        text: (
-            <>
-                모두가 가능한 시간 <br />
-                손쉽게 찾기
-            </>
-        ),
-        top: '45%',
-        transform: 'translateX(-140%)',
-        fontSize: '52px',
-    },
-    {
-        id: 'when2meet3',
-        text: (
-            <>
-                팀원이 가능한 시간대를 입력하면, <br />
-                <strong>최적의 회의 시간</strong>을 조율할 수 있습니다.
-            </>
-        ),
-        top: '65%',
-        transform: 'translateX(-145%)',
-        fontSize: '24px',
-        fontWeight: 'var(--font-normal)',
-    },
-];
-
-const projectContents = [
-    {
-        id: 'project1',
-        text: '프로젝트 단위 관리',
-        top: '25%',
-        transform: 'translateX(175%)',
-        fontSize: '24px',
-        fontColor: 'var(--color-blue-400)',
-    },
-    {
-        id: 'project2',
-        text: (
-            <>
-                프로젝트 관리
-                <br />
-                이제 더 편리하게
-            </>
-        ),
-        top: '35%',
-        transform: 'translateX(45%)',
-        fontSize: '52px',
-        textAlign: 'right',
-    },
-    {
-        id: 'project3',
-        text: (
-            <>
-                <strong>프로젝트 단위</strong>로 모든 회의와 일정을 손쉽게
-                관리하며,
-                <br />
-                복잡한 업무 속에서도 효율적인 협업이 가능합니다.
-            </>
-        ),
-        top: '55%',
-        transform: 'translateX(-30%)',
-        fontSize: '24px',
-        fontWeight: 'var(--font-normal)',
-        textAlign: 'right',
+        id: 'introText2',
+        text: '클러커에서',
+        top: '100px',
+        left: 'calc(50% - 140px)',
     },
 ];
 
@@ -360,132 +150,75 @@ const OnboardingPage: React.FC = () => {
         <Container>
             <Header showGoogleIcon />
             <IntroSection>
-                <TitleWrapper>
-                    {titleTexts.map((title) => {
+                <IntroWrapper>
+                    {introTexts.map((introText) => {
                         return (
-                            <TitleText
-                                key={title.id}
-                                $top={title.top}
-                                $left={title.left}
+                            <IntroText
+                                key={introText.id}
+                                $top={introText.top}
+                                $left={introText.left}
                             >
-                                {title.text}
-                            </TitleText>
+                                {introText.text}
+                            </IntroText>
                         );
                     })}
-                </TitleWrapper>
-                <CircleWrapper>
-                    {circles.map((circle) => {
-                        return (
-                            <Circle
-                                key={circle.id}
-                                $size={circle.size}
-                                $top={circle.top}
-                                $left={circle.left}
-                                $angle={circle.angle}
-                                $color1={circle.color1}
-                                $color2={circle.color2}
-                                $opacity={circle.opacity}
-                            />
-                        );
-                    })}
-                </CircleWrapper>
-                <Image
-                    src={WhiteGrayDownArrowIcon}
-                    $top="67%"
-                    $width={89}
-                    $height={32}
-                />
-                <StartButton>시작하기</StartButton>
+                </IntroWrapper>
+                <ColumnWrapper>
+                    <Image
+                        src={WhiteGrayDownArrowIcon}
+                        $width={89}
+                        $height={32}
+                    />
+                    <StartButton>시작하기</StartButton>
+                </ColumnWrapper>
             </IntroSection>
             <FeatureSection>
-                <Image
-                    src={FeatureSectionImage}
-                    $top="25%"
-                    $transform="translateX(-30%)"
-                    $width={774}
-                    $height={517}
-                />
-                <Content
-                    $top="45%"
-                    $transform="translateX(120%)"
-                    $fontSize="48px"
-                >
-                    회의는 간편하게 <br />
-                    요약은 정확하게
-                </Content>
+                <Image src={FeatureSectionImage} $width={774} $height={517} />
+                <MainText>
+                    회의는 간편하게 <br /> 요약은 정확하게
+                </MainText>
             </FeatureSection>
             <SummarySection>
-                {summaryContents.map((content) => {
-                    return (
-                        <Content
-                            key={content.id}
-                            $top={content.top}
-                            $fontSize={content.fontSize}
-                            $fontColor={content.fontColor}
-                            $textAlign={content.textAlign}
-                            $fontWeight={content.fontWeight}
-                        >
-                            {content.text}
-                        </Content>
-                    );
-                })}
-                <Image
-                    src={SummarySectionImage}
-                    $top="65%"
-                    $width={785}
-                    $height={250}
-                />
+                <FeatureText>AI 회의 내용 요약 및 시각화 서비스</FeatureText>
+                <MainText $textAlign="center">
+                    회의 내용 정리는 <br /> 클러커에게
+                </MainText>
+                <DetailText $textAlign="center">
+                    AI를 활용하여 회의 녹화 내용을 자동으로
+                    <strong> 요약 텍스트, 시각적 다이어그램, 요약 영상</strong>
+                    으로 제공하여 <br /> 중요한 정보를 효율적으로 파악하고
+                    공유할 수 있도록 지원합니다.
+                </DetailText>
+                <Image src={SummarySectionImage} $width={785} $height={250} />
             </SummarySection>
             <When2meetSection>
-                <ContentWrapper>
-                    {when2MeetContents.map((content) => {
-                        return (
-                            <Content
-                                key={content.id}
-                                $top={content.top}
-                                $transform={content.transform}
-                                $fontSize={content.fontSize}
-                                $fontColor={content.fontColor}
-                                $fontWeight={content.fontWeight}
-                            >
-                                {content.text}
-                            </Content>
-                        );
-                    })}
-                </ContentWrapper>
-                <Image
-                    src={When2meetSectionImage}
-                    $top="20%"
-                    $transform="translateX(40%)"
-                    $width={774}
-                    $height={517}
-                />
+                <ColumnWrapper>
+                    <FeatureText>스마트한 일정 조율</FeatureText>
+                    <MainText $textAlign="left">
+                        모두가 가능한 시간 <br /> 손쉽게 찾기
+                    </MainText>
+                    <DetailText $textAlign="left">
+                        팀원이 가능한 시간대를 입력하면, <br />
+                        <strong>최적의 회의 시간</strong>을 조율할 수 있습니다.
+                    </DetailText>
+                </ColumnWrapper>
+                <Image src={When2meetSectionImage} $width={520} $height={624} />
             </When2meetSection>
             <ProjectSection>
-                <Image
-                    src={ProjectSectionImage}
-                    $top="25%"
-                    $transform="translateX(-120%)"
-                    $width={377}
-                    $height={456}
-                />
-                <ContentWrapper>
-                    {projectContents.map((content) => {
-                        return (
-                            <Content
-                                key={content.id}
-                                $top={content.top}
-                                $transform={content.transform}
-                                $fontSize={content.fontSize}
-                                $fontColor={content.fontColor}
-                                $fontWeight={content.fontWeight}
-                                $textAlign={content.textAlign}
-                            >
-                                {content.text}
-                            </Content>
-                        );
-                    })}
-                </ContentWrapper>
+                <Image src={ProjectSectionImage} $width={377} $height={456} />
+                <ColumnWrapper>
+                    <FeatureText $textAlign="right">
+                        프로젝트 단위 관리
+                    </FeatureText>
+                    <MainText $textAlign="right">
+                        프로젝트 관리 <br /> 이제 더 편리하게
+                    </MainText>
+                    <DetailText $textAlign="right">
+                        <strong>프로젝트 단위</strong>로 모든 회의와 일정을
+                        손쉽게 관리하며, <br /> 복잡한 업무 속에서도 효율적인
+                        협업이 가능합니다.
+                    </DetailText>
+                </ColumnWrapper>
             </ProjectSection>
         </Container>
     );
