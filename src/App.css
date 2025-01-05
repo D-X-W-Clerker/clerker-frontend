@@ -2,7 +2,10 @@
 
 :root {
     /* color */
-    --background-color: #fefefe;
+    --background-color: #ffffff;
+    /* color-white */
+    --color-white-50: #f9f9f9;
+    --color-white-100: #f0f0f0;
     /* color-gray */
     --color-gray-50: #ececec;
     --color-gray-100: #d2d2d2;
