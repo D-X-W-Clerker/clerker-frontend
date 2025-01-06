@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
+// import axios from 'axios';
 import CalendarButton from './CalendarButton';
 import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal';
 import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal';
 
-const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
-});
+// const axiosInstance = axios.create({
+//     baseURL: process.env.REACT_APP_BASE_URL,
+// });
 
-axiosInstance.interceptors.request.use((config) => {
-    const token = document.cookie
-        .split('; ')
-        .find((row) => {
-            return row.startsWith('token=');
-        })
-        ?.split('=')[1];
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
+// axiosInstance.interceptors.request.use((config) => {
+//     const token = document.cookie
+//         .split('; ')
+//         .find((row) => row.startsWith('token='))
+//         ?.split('=')[1];
+//     if (token) {
+//         config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+// });
 
 interface ScheduleData {
     scheduleId: string;
@@ -36,7 +34,7 @@ interface ScheduleData {
 }
 
 const CalendarContainer = styled.div`
-    margin-top: 40px;
+    margin-top: 44px;
 `;
 
 const CalendarNavigation = styled.div`
@@ -66,7 +64,7 @@ const WeekdaysRow = styled.div`
     display: flex;
     justify-content: space-around;
     text-align: center;
-    font-weight: medium;
+    font-weight: var(--font-medium);
     color: #2f2f2f;
     margin-top: 25px;
     margin-bottom: 10px;
@@ -163,31 +161,31 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     );
 
     useEffect(() => {
-        const fetchMeetings = async () => {
-            try {
-                const response = await axiosInstance.get(
-                    `/api/schedule/${projectId}`,
-                );
-                setSchedules(response.data.meetings);
-            } catch (error) {
-                console.error(
-                    '회의 일정 데이터를 가져오는데 실패했습니다:',
-                    error,
-                );
-            }
-        };
+        // const fetchMeetings = async () => {
+        //     try {
+        //         const response = await axiosInstance.get(
+        //             `/api/schedule/${projectId}`,
+        //         );
+        //         setSchedules(response.data.meetings);
+        //     } catch (error) {
+        //         console.error(
+        //             '회의 일정 데이터를 가져오는데 실패했습니다:',
+        //             error,
+        //         );
+        //     }
+        // };
 
         // 초기 데이터 로드
-        fetchMeetings();
+        // fetchMeetings();
 
         // 주기적으로 데이터 가져오기 (5초마다 실행)
         const intervalId = setInterval(() => {
-            fetchMeetings();
+            // fetchMeetings();
         }, 100);
 
         // 컴포넌트 언마운트 시 interval 제거
         return () => {
-            return clearInterval(intervalId);
+            clearInterval(intervalId);
         };
     }, [projectId]);
 

@@ -15,14 +15,14 @@ import {
     AccountSettingModal,
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
-import { useQuery, useMutation, useQueryClient } from 'react-query';
-import {
-    getNotification,
-    deleteNotification,
-    getProject,
-    createProject,
-    createChildProject,
-} from '../../apis';
+// import { useQuery, useMutation, useQueryClient } from 'react-query';
+// import {
+//     getNotification,
+//     deleteNotification,
+//     getProject,
+//     createProject,
+//     createChildProject,
+// } from '../../apis';
 import { Project } from '../../types';
 
 // -- 인터페이스 --
@@ -120,38 +120,38 @@ const menuItems = [
 const SideBar: React.FC = () => {
     const [showInbox, setShowInbox] = useState(false);
     const [showSettingModal, setShowSettingModal] = useState(false);
-    const queryClient = useQueryClient();
+    // const queryClient = useQueryClient();
 
-    const { data: projects = [], refetch: refetchProjects } = useQuery<
-        Project[]
-    >('projects', getProject, {
-        staleTime: 5 * 60 * 1000,
-        onError: (error) => {
-            console.error('프로젝트 데이터를 불러오는 데 실패했습니다:', error);
-        },
-    });
+    // const { data: projects = [], refetch: refetchProjects } = useQuery<
+    //     Project[]
+    // >('projects', getProject, {
+    //     staleTime: 5 * 60 * 1000,
+    //     onError: (error) => {
+    //         console.error('프로젝트 데이터를 불러오는 데 실패했습니다:', error);
+    //     },
+    // });
 
-    const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
-        'notifications',
-        getNotification,
-        {
-            enabled: false,
-            staleTime: 5 * 60 * 1000,
-            onError: (error) => {
-                console.error('알림 데이터를 불러오는 데 실패했습니다:', error);
-            },
-        },
-    );
+    // const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
+    //     'notifications',
+    //     getNotification,
+    //     {
+    //         enabled: false,
+    //         staleTime: 5 * 60 * 1000,
+    //         onError: (error) => {
+    //             console.error('알림 데이터를 불러오는 데 실패했습니다:', error);
+    //         },
+    //     },
+    // );
 
-    // 알림 삭제
-    const deleteMutation = useMutation(deleteNotification, {
-        onSuccess: () => {
-            refetch(); // 삭제 후 알림 목록 다시 가져오기
-        },
-        onError: (error) => {
-            console.error('알림 삭제 실패:', error);
-        },
-    });
+    // // 알림 삭제
+    // const deleteMutation = useMutation(deleteNotification, {
+    //     onSuccess: () => {
+    //         refetch(); // 삭제 후 알림 목록 다시 가져오기
+    //     },
+    //     onError: (error) => {
+    //         console.error('알림 삭제 실패:', error);
+    //     },
+    // });
 
     const exampleInboxItems: InboxItem[] = [
         {
@@ -167,62 +167,37 @@ const SideBar: React.FC = () => {
         },
     ];
 
-    // 결합된 데이터 (API 데이터 우선, 없으면 예시 데이터 사용, 없앨때 api 연동 부분에 fetchedInboxItems -> inboxItems으로 수정)
-    const inboxItems =
-        fetchedInboxItems.length > 0 ? fetchedInboxItems : exampleInboxItems;
+    const inboxItems = exampleInboxItems;
 
     const onClickInboxDelete = (notificationId: string): void => {
-        deleteMutation.mutate(notificationId); // 알림 삭제 호출
+        // deleteMutation.mutate(notificationId); // 알림 삭제 호출
     };
-
-    // 프로젝트 생성
-    const { mutate: createProjectMutation } = useMutation(createProject, {
-        onSuccess: () => {
-            // 프로젝트 생성 성공 시 목록 새로고침
-            queryClient.invalidateQueries('projects');
-        },
-        onError: (error) => {
-            console.error('프로젝트 생성 실패:', error);
-        },
-    });
 
     const onClickCreateProject = (): void => {
-        createProjectMutation();
+        // createProjectMutation();
     };
 
-    // 하위 프로젝트 생성
     const onClickCreateChildProject = (projectId: string): void => {
-        try {
-            createChildProject(projectId);
-            refetchProjects(); // 데이터 새로고침
-        } catch (error) {
-            console.error(
-                `하위 프로젝트 생성 실패 (프로젝트 ID: ${projectId}):`,
-                error,
-            );
-        }
+        // try {
+        //     createChildProject(projectId);
+        //     refetchProjects(); // 데이터 새로고침
+        // } catch (error) {
+        //     console.error(
+        //         `하위 프로젝트 생성 실패 (프로젝트 ID: ${projectId}):`,
+        //         error,
+        //     );
+        // }
     };
 
     const onClickMenuItem = (itemId: string): void => {
         if (itemId === '1') {
             setShowInbox(true);
-            refetch();
+            // refetch();
         } else if (itemId === '2') {
             setShowSettingModal(true);
         } else {
             onClickCreateProject();
         }
-    };
-
-    // 클릭시, 읽음 처리 함수 -> 추후 백엔드와 얘기
-    const onClickInboxItem = (itemId: string): void => {
-        // setInboxItems((prevItems) => {
-        //     return prevItems.map((item) => {
-        //         return item.notificationId === itemId
-        //             ? { ...item, isUnread: false }
-        //             : item;
-        //     });
-        // });
     };
 
     return (
@@ -244,11 +219,7 @@ const SideBar: React.FC = () => {
                                     <InboxContentItem
                                         key={item.notificationId}
                                         content={item.content}
-                                        onClick={(): void => {
-                                            return onClickInboxItem(
-                                                item.notificationId,
-                                            );
-                                        }}
+                                        onClick={(): void => {}}
                                         onDelete={(): void => {
                                             return onClickInboxDelete(
                                                 item.notificationId,
@@ -287,17 +258,17 @@ const SideBar: React.FC = () => {
                             })}
                         </MenuArea>
                         <ProjectListArea>
-                            {projects.map((project) => {
-                                return (
-                                    <RootFolder
-                                        key={project.projectId}
-                                        project={project}
-                                        onClickCreateSubFolder={
-                                            onClickCreateChildProject
-                                        }
-                                    />
-                                );
-                            })}
+                            {/* {projects.map((project) => { */}
+                            {/*     return ( */}
+                            {/*         <RootFolder */}
+                            {/*             key={project.projectId} */}
+                            {/*             project={project} */}
+                            {/*             onClickCreateSubFolder={ */}
+                            {/*                 onClickCreateChildProject */}
+                            {/*             } */}
+                            {/*         /> */}
+                            {/*     ); */}
+                            {/* })} */}
                         </ProjectListArea>
                         <UserInfoArea>
                             <Profile />

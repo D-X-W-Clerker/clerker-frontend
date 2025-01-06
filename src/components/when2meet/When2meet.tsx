@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useQuery } from 'react-query';
+// import { useQuery } from 'react-query';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
 import { useAuthStore } from '@store';
-import { getTimeTable, postTimeTable } from '../../apis';
+// import { getTimeTable, postTimeTable } from '../../apis';
 
 // 타입 정의
 interface TimeTable {
@@ -80,33 +80,33 @@ const When2meet: React.FC<When2meetProps> = ({
         timeTables: [],
     };
 
-    const { data: timeTableData } = useQuery(
-        ['timeTable', scheduleID],
-        () => {
-            return getTimeTable(projectID || '', scheduleID);
-        },
-        {
-            enabled: !!scheduleID, // scheduleId가 있을 때만 실행
-            onSuccess: (data) => {
-                console.log('timeTable 불러오기 성공:', data);
+    // const { data: timeTableData } = useQuery(
+    //     ['timeTable', scheduleID],
+    //     () => {
+    //         return getTimeTable(projectID || '', scheduleID);
+    //     },
+    //     {
+    //         enabled: !!scheduleID, // scheduleId가 있을 때만 실행
+    //         onSuccess: (data) => {
+    //             console.log('timeTable 불러오기 성공:', data);
 
-                // 데이터 매핑
-                const members = data.map((member) => {
-                    return {
-                        username: member.username,
-                        email: member.email,
-                        type: member.type,
-                        role: member.role,
-                        timeTables: member.timeTables,
-                    };
-                });
-                setMemberData(members);
-            },
-            onError: (error) => {
-                console.error('timeTable 불러오기 실패:', error);
-            },
-        },
-    );
+    //             // 데이터 매핑
+    //             const members = data.map((member) => {
+    //                 return {
+    //                     username: member.username,
+    //                     email: member.email,
+    //                     type: member.type,
+    //                     role: member.role,
+    //                     timeTables: member.timeTables,
+    //                 };
+    //             });
+    //             setMemberData(members);
+    //         },
+    //         onError: (error) => {
+    //             console.error('timeTable 불러오기 실패:', error);
+    //         },
+    //     },
+    // );
 
     const updateMyInfo = (times: string[]): Member => {
         return {
@@ -185,7 +185,7 @@ const When2meet: React.FC<When2meetProps> = ({
                 return `${year}-${month}-${day} ${hour}:${minute}:00`;
             });
 
-            await postTimeTable(scheduleID, { timeTable });
+            // await postTimeTable(scheduleID, { timeTable });
             alert('일정이 성공적으로 저장되었습니다!');
         } catch (error) {
             alert('일정 저장에 실패했습니다. 다시 시도해 주세요.');
