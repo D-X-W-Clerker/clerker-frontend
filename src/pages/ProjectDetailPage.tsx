@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { useQuery } from 'react-query';
+// import { useQuery } from 'react-query';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
@@ -15,44 +15,39 @@ import {
     MeetJoinModal,
     RecordingStopModal,
     When2meet,
+    ProjectCalendar,
 } from '@components';
-import {
-    FlexCol,
-    FlexRow,
-    ItemsCenterRow,
-    ItemsCenterStartRow,
-    ItemsCenterEndRow,
-} from '@styles';
+import { projectInfo, dummyMeetingData, dummyScheduleData } from '@data';
+import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import axios from 'axios';
 import { useAuthStore } from '@store';
 import Layout from '../Layout';
-import ProjectCalendar from '../components/calendar/ProjectCalendar';
-import { getProjectInfo } from '../apis';
+// import { getProjectInfo } from '../apis';
 
 // Axios Instance 설정
-const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
-    withCredentials: true, // 인증 정보 포함
-});
-
-// Axios 인터셉터 설정
-axiosInstance.interceptors.request.use(
-    (config) => {
-        const token = document.cookie
-            .split('; ')
-            .find((row) => {
-                return row.startsWith('token=');
-            })
-            ?.split('=')[1];
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    },
-);
+// const axiosInstance = axios.create({
+//     baseURL: process.env.REACT_APP_BASE_URL,
+//     withCredentials: true, // 인증 정보 포함
+// });
+//
+// // Axios 인터셉터 설정
+// axiosInstance.interceptors.request.use(
+//     (config) => {
+//         const token = document.cookie
+//             .split('; ')
+//             .find((row) => {
+//                 return row.startsWith('token=');
+//             })
+//             ?.split('=')[1];
+//         if (token) {
+//             config.headers.Authorization = `Bearer ${token}`;
+//         }
+//         return config;
+//     },
+//     (error) => {
+//         return Promise.reject(error);
+//     },
+// );
 
 // TypeScript 인터페이스 정의
 interface MeetingData {
@@ -100,14 +95,13 @@ type ModalType =
     | 'when2meet' // 추가된 타입
     | null;
 
-// 스타일 컴포넌트
+// 레이아웃 스타일
 const Container = styled(FlexRow)`
     width: 100%;
     max-width: 1100px;
 `;
 
 const ContentArea = styled(FlexCol)`
-    width: 50%;
     overflow-x: auto;
     overflow-y: auto;
     height: calc(100vh - 50px);
@@ -121,21 +115,13 @@ const ContentArea = styled(FlexCol)`
     scrollbar-width: none;
 `;
 
-const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props) => {
-        return props.$width;
-    }}px;
-    height: ${(props) => {
-        return props.$height;
-    }}px;
-    cursor: pointer;
+const LeftContentArea = styled(ContentArea)`
+    width: 50%;
 `;
 
-const ButtonContainer = styled.div`
-    text-align: right;
+const RightContentArea = styled(ContentArea)`
+    width: 50%;
 `;
-
-const LeftContentArea = styled(ContentArea)``;
 
 const MemberArea = styled(FlexCol)``;
 
@@ -152,6 +138,23 @@ const MemberAddArea = styled(ItemsCenterStartRow)`
     border-bottom: 0.5px solid var(--color-gray-300);
 `;
 
+const ContentTabArea = styled(FlexCol)``;
+
+const ContentFileArea = styled(FlexCol)`
+    gap: 4px;
+`;
+
+// 컴포넌트 스타일
+const IconImage = styled.img<{ $width: number; $height: number }>`
+    width: ${(props) => {
+        return props.$width;
+    }}px;
+    height: ${(props) => {
+        return props.$height;
+    }}px;
+    cursor: pointer;
+`;
+
 const MemberAddButton = styled(ItemsCenterRow)`
     background-color: var(--color-gray-50);
     border-radius: 3px;
@@ -162,52 +165,45 @@ const MemberAddButton = styled(ItemsCenterRow)`
     cursor: pointer;
 `;
 
-const ContentTabArea = styled(FlexCol)``;
-
-const ContentFileArea = styled(FlexCol)`
-    gap: 4px;
-`;
-
-const RightContentArea = styled(ContentArea)``;
-
-// ProjectDetailPage 컴포넌트
+// 프로젝트 상세 페이지 컴포넌트
 const ProjectDetailPage: React.FC = () => {
     const { projectId } = useParams<{ projectId: string }>();
     const [activeTab, setActiveTab] = useState<'meeting' | 'schedule'>(
         'meeting',
     );
-    const [meetingData, setMeetingData] = useState<MeetingData[]>([]);
-    const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
-    const [modalType, setModalType] = useState<ModalType>(null);
+    const [meetingData, setMeetingData] =
+        useState<MeetingData[]>(dummyMeetingData); // 리팩토링 위해 더미데이터 초기값으로 설정
+    const [scheduleData, setScheduleData] =
+        useState<ScheduleData[]>(dummyScheduleData); // 리팩토링 위해 더미데이터 초기값으로 설정
     const [selectedMeeting, setSelectedMeeting] = useState<MeetingData | null>(
         null,
     );
     const [selectedSchedule, setSelectedSchedule] =
-        useState<ScheduleData | null>(null); // 추가된 상태
-    const [scheduleClicked, setScheduleClicked] = useState(false);
-
-    // Recording 관련 상태 추가
-    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
+        useState<ScheduleData | null>(null);
+    const [modalType, setModalType] = useState<ModalType>(null); // 모달 타입 상태
+    const [scheduleClicked, setScheduleClicked] = useState(false); // when2meet 열람 유무 상태
+    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null); // 화면 녹화 관련 상태
     const [domain, setDomain] = useState<string>(''); // 도메인 상태
 
-    const { data: projectInfo } = useQuery(
-        ['projectInfo', projectId],
-        () => {
-            return getProjectInfo(projectId || '');
-        },
-        {
-            enabled: !!projectId,
-            onError: (error) => {
-                console.error(
-                    '프로젝트 정보를 불러오는 데 실패했습니다:',
-                    error,
-                );
-            },
-        },
-    );
+    // const { data: projectInfo } = useQuery(
+    //     ['projectInfo', projectId],
+    //     () => {
+    //         return getProjectInfo(projectId || '');
+    //     },
+    //     {
+    //         enabled: !!projectId,
+    //         onError: (error) => {
+    //             console.error(
+    //                 '프로젝트 정보를 불러오는 데 실패했습니다:',
+    //                 error,
+    //             );
+    //         },
+    //     },
+    // );
 
     const projectName = projectInfo?.projectName || 'Unknown Project'; // 안전한 접근
     const members = projectInfo?.members || []; // 안전한 접근
+    const eventData = activeTab === 'meeting' ? meetingData : scheduleData; // 파일 데이터
 
     // 현재 로그인 중인 사용자 정보
     const { user } = useAuthStore.getState();
@@ -221,91 +217,92 @@ const ProjectDetailPage: React.FC = () => {
         role: '',
     };
 
-    useEffect(() => {
-        const fetchMeetingData = async () => {
-            try {
-                const response = await axiosInstance.get(
-                    `/api/schedule/${projectId}`,
-                );
-                setMeetingData(
-                    response.data.meetings.sort(
-                        (a: MeetingData, b: MeetingData) => {
-                            return (
-                                new Date(b.createdAt).getTime() -
-                                new Date(a.createdAt).getTime()
-                            );
-                        },
-                    ),
-                );
-                // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
-                if (response.data.meetings.length > 0) {
-                    setDomain(
-                        response.data.meetings[0].domain || 'defaultDomain',
-                    );
-                }
-            } catch (error) {
-                console.error('Failed to fetch meeting data:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchMeetingData = async () => {
+    //         try {
+    //             const response = await axiosInstance.get(
+    //                 `/api/schedule/${projectId}`,
+    //             );
+    //             setMeetingData(
+    //                 response.data.meetings.sort(
+    //                     (a: MeetingData, b: MeetingData) => {
+    //                         return (
+    //                             new Date(b.createdAt).getTime() -
+    //                             new Date(a.createdAt).getTime()
+    //                         );
+    //                     },
+    //                 ),
+    //             );
+    //             // 도메인 설정 (예시: 첫 번째 미팅의 도메인)
+    //             if (response.data.meetings.length > 0) {
+    //                 setDomain(
+    //                     response.data.meetings[0].domain || 'defaultDomain',
+    //                 );
+    //             }
+    //         } catch (error) {
+    //             console.error('Failed to fetch meeting data:', error);
+    //         }
+    //     };
+    //
+    //     const fetchSchedules = async () => {
+    //         try {
+    //             const response = await axiosInstance.get(
+    //                 `/api/schedule/${projectId}`,
+    //             );
+    //             setScheduleData(
+    //                 response.data.schedules.sort(
+    //                     (a: ScheduleData, b: ScheduleData) => {
+    //                         return (
+    //                             new Date(b.createdAt).getTime() -
+    //                             new Date(a.createdAt).getTime()
+    //                         );
+    //                     },
+    //                 ),
+    //             );
+    //         } catch (error) {
+    //             console.error('Failed to fetch schedules:', error);
+    //         }
+    //     };
+    //
+    //     // 초기 데이터 로드
+    //     fetchMeetingData();
+    //     fetchSchedules();
+    //
+    //     // 주기적으로 데이터를 다시 가져오기 (5초 간격)
+    //     const intervalId = setInterval(() => {
+    //         // fetchMeetingData();
+    //         // fetchSchedules();
+    //     }, 100);
+    //
+    //     // 컴포넌트 언마운트 시 interval 제거
+    //     return () => {
+    //         clearInterval(intervalId);
+    //     };
+    // }, [projectId]);
 
-        const fetchSchedules = async () => {
-            try {
-                const response = await axiosInstance.get(
-                    `/api/schedule/${projectId}`,
-                );
-                setScheduleData(
-                    response.data.schedules.sort(
-                        (a: ScheduleData, b: ScheduleData) => {
-                            return (
-                                new Date(b.createdAt).getTime() -
-                                new Date(a.createdAt).getTime()
-                            );
-                        },
-                    ),
-                );
-            } catch (error) {
-                console.error('Failed to fetch schedules:', error);
-            }
-        };
-
-        // 초기 데이터 로드
-        fetchMeetingData();
-        fetchSchedules();
-
-        // 주기적으로 데이터를 다시 가져오기 (5초 간격)
-        const intervalId = setInterval(() => {
-            // fetchMeetingData();
-            // fetchSchedules();
-        }, 100);
-
-        // 컴포넌트 언마운트 시 interval 제거
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [projectId]);
-
-    const handleOpenModal = (
+    // 모달 열기 함수
+    const onClickOpenModal = (
         type: ModalType,
-        meeting?: MeetingData,
-        schedule?: ScheduleData,
+        event?: MeetingData | ScheduleData,
     ) => {
         setModalType(type);
-        if (meeting) {
-            setSelectedMeeting(meeting);
-        }
-        if (schedule) {
-            setSelectedSchedule(schedule);
+        if (!event) return;
+        if ('meetingId' in event) {
+            setSelectedMeeting(event as MeetingData);
+        } else if ('scheduleId' in event) {
+            setSelectedSchedule(event as ScheduleData);
         }
     };
 
-    const handleCloseModal = () => {
+    // 모달 닫기 함수
+    const onClickCloseModal = () => {
         setModalType(null);
         setSelectedMeeting(null);
-        setSelectedSchedule(null); // 추가
+        setSelectedSchedule(null);
     };
 
-    // 녹음이 중지되었을 때 Blob을 저장하고 RecordingStopModal을 표시
-    const handleRecordingStop = (blob: Blob | null) => {
+    // 녹음 중지 함수 (녹음이 중지되었을 때 Blob을 저장하고 RecordingStopModal을 표시)
+    const onClickRecordingStop = (blob: Blob | null) => {
         if (blob) {
             setRecordedBlob(blob);
             setModalType('recordingStop');
@@ -314,21 +311,35 @@ const ProjectDetailPage: React.FC = () => {
         }
     };
 
+    // 이벤트 파일 클릭 함수
     const onClickEventFile = (event: MeetingData | ScheduleData) => {
         if (activeTab === 'meeting') {
             const meeting = event as MeetingData;
-            if (meeting.isEnded) {
-                handleOpenModal('endedMeeting', meeting);
-            } else {
-                handleOpenModal('meetJoin', meeting);
-            }
+            const type = meeting.isEnded ? 'endedMeeting' : 'meetJoin';
+            onClickOpenModal(type, meeting);
         } else if (activeTab === 'schedule') {
             const schedule = event as ScheduleData;
             setScheduleClicked(true);
-            handleOpenModal('when2meet', undefined, schedule); // 모달 타입 'when2meet' 추가
+            onClickOpenModal('when2meet', schedule); // 모달 타입 'when2meet' 추가
         }
     };
 
+    // 이벤트 파일 렌더링 함수
+    const renderEventFile = (event: MeetingData | ScheduleData) => {
+        const isMeeting = 'meetingId' in event;
+        return (
+            <EventFile
+                key={isMeeting ? event.meetingId : event.scheduleId}
+                meetingName={isMeeting ? event.name : event.scheduleName}
+                dateTime={event.startDate}
+                onClick={() => {
+                    return onClickEventFile(event);
+                }}
+            />
+        );
+    };
+
+    // 회의 일정 파일 생성 함수
     const addSchedule = (newSchedule: ScheduleData) => {
         if (newSchedule && newSchedule.scheduleId && newSchedule.scheduleName) {
             setScheduleData((prev) => {
@@ -343,8 +354,6 @@ const ProjectDetailPage: React.FC = () => {
             console.error('Invalid schedule data:', newSchedule);
         }
     };
-
-    const eventData = activeTab === 'meeting' ? meetingData : scheduleData;
 
     return (
         <Layout>
@@ -365,7 +374,7 @@ const ProjectDetailPage: React.FC = () => {
                                 $width={16}
                                 $height={16}
                                 onClick={() => {
-                                    return handleOpenModal('memberInfo');
+                                    return onClickOpenModal('memberInfo');
                                 }}
                             />
                         </MemberTabArea>
@@ -373,7 +382,7 @@ const ProjectDetailPage: React.FC = () => {
                         <MemberAddArea>
                             <MemberAddButton
                                 onClick={() => {
-                                    return handleOpenModal('memberAdd');
+                                    return onClickOpenModal('memberAdd');
                                 }}
                             >
                                 <IconImage
@@ -392,45 +401,15 @@ const ProjectDetailPage: React.FC = () => {
                         />
                         <ContentFileArea>
                             {activeTab === 'meeting' && (
-                                <ButtonContainer>
-                                    <ActionButton
-                                        icon={AddIcon}
-                                        label="회의 생성"
-                                        onClick={() => {
-                                            return handleOpenModal(
-                                                'meetCreate',
-                                            );
-                                        }}
-                                    />
-                                </ButtonContainer>
+                                <ActionButton
+                                    icon={AddIcon}
+                                    label="회의 생성"
+                                    onClick={() => {
+                                        return onClickOpenModal('meetCreate');
+                                    }}
+                                />
                             )}
-                            {eventData.map((event) => {
-                                if ('meetingId' in event) {
-                                    return (
-                                        <EventFile
-                                            key={event.meetingId}
-                                            meetingName={event.name}
-                                            dateTime={event.startDate}
-                                            onClick={() => {
-                                                return onClickEventFile(event);
-                                            }}
-                                        />
-                                    );
-                                }
-                                if ('scheduleId' in event) {
-                                    return (
-                                        <EventFile
-                                            key={event.scheduleId}
-                                            meetingName={event.scheduleName}
-                                            dateTime={event.startDate}
-                                            onClick={() => {
-                                                return onClickEventFile(event);
-                                            }}
-                                        />
-                                    );
-                                }
-                                return null;
-                            })}
+                            {eventData.map(renderEventFile)}
                         </ContentFileArea>
                     </ContentTabArea>
                 </LeftContentArea>
@@ -464,7 +443,7 @@ const ProjectDetailPage: React.FC = () => {
                 <MemberInviteModal
                     projectId={projectId || ''}
                     projectName={projectName || ''}
-                    onCancel={handleCloseModal}
+                    onCancel={onClickCloseModal}
                 />
             )}
             {modalType === 'memberInfo' && (
@@ -472,20 +451,20 @@ const ProjectDetailPage: React.FC = () => {
                     projectId={projectId || ''}
                     projectName={projectName || ''}
                     memberData={members}
-                    onCancel={handleCloseModal}
+                    onCancel={onClickCloseModal}
                 />
             )}
             {modalType === 'meetCreate' && (
                 <MeetCreateModal
                     projectId={projectId || ''}
-                    onCancel={handleCloseModal}
+                    onCancel={onClickCloseModal}
                 />
             )}
             {modalType === 'meetJoin' && selectedMeeting && (
                 <MeetJoinModal
                     meetingId={selectedMeeting.meetingId}
-                    onCancel={handleCloseModal}
-                    onRecordingStop={handleRecordingStop} // 필수 prop 추가
+                    onCancel={onClickCloseModal}
+                    onRecordingStop={onClickRecordingStop} // 필수 prop 추가
                 />
             )}
             {modalType === 'recordingStop' &&
@@ -500,7 +479,7 @@ const ProjectDetailPage: React.FC = () => {
                         }}
                         domain={domain} // 도메인 전달
                         recordingBlob={recordedBlob} // Blob 전달
-                        onConfirm={handleCloseModal}
+                        onConfirm={onClickCloseModal}
                     />
                 )}
         </Layout>
