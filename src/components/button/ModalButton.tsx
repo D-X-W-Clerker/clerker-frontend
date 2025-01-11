@@ -43,7 +43,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         color === 'blue'
             ? 'var(--color-blue-200)'
             : color === 'red'
-              ? '#FF6464' // 빨간색 배경 추가
+              ? 'var(--color-red)'
               : 'var(--color-gray-400)';
 
     return (

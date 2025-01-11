@@ -29,12 +29,12 @@ const FileInfo = styled(ItemsCenterRow)`
 `;
 
 const MeetingName = styled.span`
-    color: #494949;
+    color: var(--color-gray-600);
     font-size: 12.6px;
 `;
 
 const DateTime = styled.span`
-    color: #494949;
+    color: var(--color-gray-600);
     font-size: 12.6px;
 `;
 

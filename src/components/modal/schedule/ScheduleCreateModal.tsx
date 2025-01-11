@@ -83,7 +83,7 @@ const StyledSelectWrapper = styled.div`
 
 const StyledSelect = styled.select`
     border: none;
-    background-color: #ececec;
+    background-color: var(--color-gray-50);
     font-size: inherit;
     padding: 5px 10px 5px 0;
     width: 100%;

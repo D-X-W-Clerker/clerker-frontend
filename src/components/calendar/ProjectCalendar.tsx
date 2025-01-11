@@ -46,18 +46,17 @@ const CalendarNavigation = styled.div`
 const NavButton = styled.button`
     background-color: transparent;
     border: none;
-    color: #000000;
     font-size: 26px;
     cursor: pointer;
 
     &:hover {
-        color: #007bff;
+        color: var(--color-blue-200);
     }
 `;
 
 const MonthYearTitle = styled.span`
     font-size: 26px;
-    font-weight: bold;
+    font-weight: var(--font-bold);
 `;
 
 const WeekdaysRow = styled.div`
@@ -65,7 +64,7 @@ const WeekdaysRow = styled.div`
     justify-content: space-around;
     text-align: center;
     font-weight: var(--font-medium);
-    color: #2f2f2f;
+    color: var(--color-gray-700);
     margin-top: 25px;
     margin-bottom: 10px;
 `;
@@ -93,12 +92,13 @@ interface DayCellProps {
 
 const DayCell = styled.div<DayCellProps>`
     flex: 1;
+    position: relative;
     padding: 15px 15px;
     font-size: 18px;
     background-color: ${(props) => {
-        if (props.$isSelected) return '#40A3FF';
+        if (props.$isSelected) return 'var(--color-blue-100)';
         if (props.$hasEvent) return '#E0F0FF';
-        return '#ececec';
+        return 'var(--color-gray-50)';
     }};
     border-radius: 13px;
     text-align: center;
@@ -106,7 +106,7 @@ const DayCell = styled.div<DayCellProps>`
     cursor: pointer;
     color: ${(props) => {
         return props.$isSelected
-            ? '#ffffff'
+            ? 'var(--background-color)'
             : props.$isCurrentMonth
               ? '#000'
               : '#aaa';
@@ -114,17 +114,15 @@ const DayCell = styled.div<DayCellProps>`
 
     &:hover {
         background-color: ${(props) => {
-            return props.$isSelected ? '#40A3FF' : '#d4e5f6';
+            return props.$isSelected ? 'var(--color-blue-100)' : '#d4e5f6';
         }};
     }
-
-    position: relative;
 `;
 
 const EventDot = styled.div`
     width: 6px;
     height: 6px;
-    background-color: #40a3ff;
+    background-color: var(--color-blue-100);
     border-radius: 50%;
     position: absolute;
     bottom: 5px;

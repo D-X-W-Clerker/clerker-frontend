@@ -34,7 +34,7 @@ const TimeBlockButton = styled.button<{
     background-color: ${({ selectedCount }): string => {
         return selectedCount > 0
             ? `rgba(0, 132, 255, ${Math.min(0.1 + selectedCount * 0.3, 1)})`
-            : '#d3d3d3';
+            : 'var(--color-gray-100)';
     }};
     border: none;
     cursor: ${({ disabled }): string => {
@@ -44,7 +44,7 @@ const TimeBlockButton = styled.button<{
     &:hover {
         background-color: ${({ selectedCount, disabled }): string => {
             return disabled
-                ? '#d3d3d3'
+                ? 'var(--color-gray-100)'
                 : `rgba(0, 132, 255, ${Math.min(0.1 + selectedCount * 0.3, 1)})`;
         }};
     }

@@ -20,12 +20,12 @@ const Button = styled.button<{
 }>`
     background-color: ${(props): string => {
         return props.$isSelectingDates && !props.$hasSelectedDates
-            ? '#CCCCCC'
-            : '#40a3ff';
+            ? 'var(--color-gray-200)'
+            : 'var(--color-blue-100)';
     }};
-    color: #ffffff;
+    color: var(--background-color);
     border: none;
-    padding: 8px 20px;
+    padding: 8px 16px;
     font-size: 16px;
     border-radius: 10px;
     cursor: pointer;
@@ -33,23 +33,23 @@ const Button = styled.button<{
     &:hover {
         background-color: ${(props): string => {
             return props.$isSelectingDates && !props.$hasSelectedDates
-                ? '#CCCCCC'
-                : '#3392e6';
+                ? 'var(--color-gray-200)'
+                : 'var(--color-blue-200)';
         }};
     }
 `;
 
 const CancelButton = styled.button`
-    background-color: #40a3ff;
-    color: #ffffff;
+    background-color: var(--color-blue-100);
+    color: var(--background-color);
     border: none;
-    padding: 8px 20px;
+    padding: 8px 16px;
     font-size: 16px;
     border-radius: 10px;
     cursor: pointer;
 
     &:hover {
-        background-color: #3392e6;
+        background-color: var(--color-blue-200);
     }
 `;
 

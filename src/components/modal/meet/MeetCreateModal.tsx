@@ -82,10 +82,10 @@ const DomainArea = styled.div`
 const DomainSelect = styled.select`
     padding: 8px;
     border: none;
-    background-color: #ececec;
+    background-color: var(--color-gray-50);
     border-radius: 4px;
     width: 200px;
-    color: #333;
+    color: var(--color-gray-600);
     outline: none;
     appearance: none;
     text-align: left;
@@ -100,7 +100,7 @@ const DropdownArrow = styled.div`
     transform: translateY(-50%);
     pointer-events: none;
     font-size: 12px;
-    color: #333;
+    color: var(--color-gray-600);
     z-index: 0;
 `;
 
