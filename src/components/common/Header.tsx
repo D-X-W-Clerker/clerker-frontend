@@ -54,8 +54,8 @@ const Header: React.FC<HeaderProps> = ({ showGoogleIcon }) => {
     };
 
     return (
-        <Container onClick={onClickLogo}>
-            <IconImage src={Clerker} />
+        <Container>
+            <IconImage src={Clerker} onClick={onClickLogo} />
             {showGoogleIcon && (
                 <GoogleIconImage
                     src={GoogleIcon}
