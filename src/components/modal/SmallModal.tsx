@@ -10,7 +10,7 @@ interface SmallModalProps {
     message: string;
     onConfirm: () => void;
     onCancel: () => void;
-    isDelete: boolean;
+    isDelete?: boolean;
 }
 
 // -- 스타일 컴포넌트 --
@@ -28,7 +28,7 @@ const Backdrop = styled(CenterRow)`
 const Container = styled(FlexCol)`
     width: 100%;
     max-width: 360px;
-    padding: 20px 20px;
+    padding: 20px;
     gap: 50px;
     background-color: var(--background-color);
     border-radius: 7px;
@@ -49,41 +49,39 @@ const SmallModal: React.FC<SmallModalProps> = ({
     message,
     onConfirm,
     onCancel,
-    isDelete,
+    isDelete = false,
 }) => {
+    const buttons = [
+        {
+            text: '취소',
+            color: isDelete ? 'blue' : 'gray',
+            onClick: onCancel,
+            key: 'cancel-button',
+        },
+        {
+            text: '확인',
+            color: isDelete ? 'gray' : 'blue',
+            onClick: onConfirm,
+            key: 'confirm-button',
+        },
+    ];
+
     return (
         <Backdrop>
             <Container>
                 <SmallModalTitleTab type={type} title={title} />
                 <MessageArea>{message}</MessageArea>
                 <ButtonArea>
-                    {isDelete ? (
-                        <>
+                    {buttons.map((button) => {
+                        return (
                             <ModalButton
-                                text="취소"
-                                color="blue"
-                                onClick={onCancel}
+                                key={button.key}
+                                text={button.text}
+                                color={button.color}
+                                onClick={button.onClick}
                             />
-                            <ModalButton
-                                text="확인"
-                                color="gray"
-                                onClick={onConfirm}
-                            />
-                        </>
-                    ) : (
-                        <>
-                            <ModalButton
-                                text="취소"
-                                color="gray"
-                                onClick={onCancel}
-                            />
-                            <ModalButton
-                                text="확인"
-                                color="blue"
-                                onClick={onConfirm}
-                            />
-                        </>
-                    )}
+                        );
+                    })}
                 </ButtonArea>
             </Container>
         </Backdrop>
