@@ -45,17 +45,14 @@ const Container = styled(FlexCol)`
 const IconArea = styled(ItemsCenterStartRow)``;
 
 const TextArea = styled(CenterCol)`
+    font-size: 16px;
+    color: var(--color-gray-600);
     text-align: center;
 `;
 
 const Icon = styled.img`
     width: 24px;
     height: 24px;
-`;
-
-const Text = styled.div`
-    font-size: 16px;
-    color: var(--color-gray-600);
 `;
 
 const TutorialModal: React.FC<TutorialButtonProps> = ({
@@ -69,9 +66,7 @@ const TutorialModal: React.FC<TutorialButtonProps> = ({
             <IconArea>
                 <Icon src={IconSrc} alt={icon} />
             </IconArea>
-            <TextArea>
-                <Text>{text}</Text>
-            </TextArea>
+            <TextArea>{text}</TextArea>
         </Container>
     );
 };
