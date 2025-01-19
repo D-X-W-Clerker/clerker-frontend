@@ -1,11 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FolderIcon, ActiveSettingIcon } from '@assets';
+import { FolderIcon, ActiveSettingIcon, CheckIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
 
 // -- 인터페이스 --
 interface LargeModalTitleTabProps {
-    type: string;
+    type: 'project' | 'accountSetting' | 'scheduleCheck';
     title: string;
 }
 
@@ -18,28 +18,44 @@ const Container = styled(ItemsCenterRow)`
 `;
 
 const IconImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props): number => {
+    width: ${(props) => {
         return props.$width;
     }}px;
-    height: ${(props): number => {
+    height: ${(props) => {
         return props.$height;
     }}px;
 `;
+
+const iconConfig = {
+    project: {
+        src: FolderIcon,
+        alt: 'Folder Icon',
+        width: 30,
+        height: 23,
+    },
+    accountSetting: {
+        src: ActiveSettingIcon,
+        alt: 'Setting Icon',
+        width: 24,
+        height: 24,
+    },
+    scheduleCheck: {
+        src: CheckIcon,
+        alt: 'Check Icon',
+        width: 26,
+        height: 20,
+    },
+};
 
 const LargeModalTitleTab: React.FC<LargeModalTitleTabProps> = ({
     type,
     title,
 }) => {
-    const isProject = type === 'project';
+    const { src, alt, width, height } = iconConfig[type];
 
     return (
         <Container>
-            <IconImage
-                src={isProject ? FolderIcon : ActiveSettingIcon}
-                alt={isProject ? 'Folder Icon' : 'Setting Icon'}
-                $width={isProject ? 30 : 24}
-                $height={isProject ? 23 : 24}
-            />
+            <IconImage src={src} alt={alt} $width={width} $height={height} />
             {title}
         </Container>
     );
