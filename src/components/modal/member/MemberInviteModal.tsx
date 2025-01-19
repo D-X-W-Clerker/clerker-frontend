@@ -40,7 +40,7 @@ const Container = styled(FlexCol)`
     height: 350px;
     box-sizing: border-box;
     gap: 20px;
-    padding: 20px 20px;
+    padding: 20px;
     background-color: var(--background-color);
     border-radius: 10px;
 `;
@@ -116,6 +116,23 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
         invite({ projectId, emails });
     };
 
+    const modalButtons = [
+        {
+            text: '취소',
+            color: 'gray',
+            onClick: onCancel,
+            disabled: isLoading,
+            key: 'cancel-button',
+        },
+        {
+            text: '완료',
+            color: 'blue',
+            onClick: onClickConfirm,
+            disabled: isLoading || emails.length === 0,
+            key: 'confirm-button',
+        },
+    ];
+
     return (
         <Backdrop>
             <Container>
@@ -146,18 +163,17 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
                     </UserListArea>
                 </ContentArea>
                 <ButtonArea>
-                    <ModalButton
-                        text="취소"
-                        color="gray"
-                        onClick={onCancel}
-                        disabled={isLoading}
-                    />
-                    <ModalButton
-                        text="완료"
-                        color="blue"
-                        onClick={onClickConfirm}
-                        disabled={isLoading || emails.length === 0}
-                    />
+                    {modalButtons.map((button) => {
+                        return (
+                            <ModalButton
+                                key={button.key}
+                                text={button.text}
+                                color={button.color}
+                                onClick={button.onClick}
+                                disabled={button.disabled}
+                            />
+                        );
+                    })}
                 </ButtonArea>
             </Container>
         </Backdrop>
