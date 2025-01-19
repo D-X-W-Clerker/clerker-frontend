@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { LargeModalTitleTab, ModalButton, EventFile } from '@components';
-import { CenterRow, FlexCol } from '@styles';
+import { CenterRow, FlexCol, ItemsCenterEndRow } from '@styles';
 
 interface ScheduleData {
     meetingId?: string; // 회의 ID
@@ -28,34 +28,23 @@ const Backdrop = styled(CenterRow)`
 `;
 
 const Container = styled(FlexCol)`
-    width: 520px; /* 고정 너비 */
-    height: 300px; /* 고정 높이 */
+    width: 100%;
+    max-width: 520px;
+    height: 300px;
     box-sizing: border-box;
-    padding: 20px 20px;
+    padding: 20px;
     background-color: var(--background-color);
     border-radius: 10px;
-    position: relative;
-`;
-
-const HeaderArea = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 20px;
 `;
 
 const ContentArea = styled(FlexCol)`
     flex: 1; /* 공간을 채우도록 설정 */
     gap: 10px;
-    align-items: center;
     overflow-y: auto; /* 내용이 넘칠 경우 스크롤 */
 `;
 
-const ButtonArea = styled.div`
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-`;
+const ButtonArea = styled(ItemsCenterEndRow)``;
 
 const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
     scheduleData,
@@ -64,12 +53,7 @@ const ScheduleCheckModal: React.FC<ScheduleCheckModalProps> = ({
     return (
         <Backdrop>
             <Container>
-                <HeaderArea>
-                    <LargeModalTitleTab
-                        type="scheduleCheck"
-                        title="일정 확인"
-                    />
-                </HeaderArea>
+                <LargeModalTitleTab type="scheduleCheck" title="일정 확인" />
                 <ContentArea>
                     {scheduleData.map((schedule) => {
                         return (
