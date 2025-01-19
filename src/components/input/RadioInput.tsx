@@ -13,10 +13,12 @@ interface RadioProps {
 // -- 스타일 컴포넌트 --
 const Container = styled(ItemsCenterRow)`
     cursor: pointer;
+    padding-left: 5px;
+    gap: 5px;
 `;
 
 const Radio = styled.input`
-    margin-right: 10px;
+    margin: 0;
 `;
 
 const Label = styled.span`
