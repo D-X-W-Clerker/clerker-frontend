@@ -44,18 +44,18 @@ const TimeGridContainer = styled(JustifyCenterRow)`
     width: 100%;
 `;
 
-const Title = styled.div`
-    font-size: 20px;
-    font-weight: var(--font-medium);
-    padding-bottom: 6px;
-    margin-top: 10px;
+const MemberContainer = styled(FlexCol)`
+    gap: 6px;
 `;
-
-const MemberContainer = styled(FlexCol)``;
 
 const ButtonContainer = styled(ItemsCenterEndRow)`
     gap: 7px;
     margin-bottom: 30px;
+`;
+
+const Title = styled.div`
+    font-size: 20px;
+    font-weight: var(--font-medium);
 `;
 
 const When2meet: React.FC<When2meetProps> = ({
@@ -192,33 +192,72 @@ const When2meet: React.FC<When2meetProps> = ({
         }
     };
 
+    const timeGridData = [
+        {
+            title: '개인 가능 시간',
+            timeCounts: {},
+            selectedTimes: personalAvailable,
+            toggleTime: handleToggleTime,
+            isPersonal: true,
+            isDisabled: false,
+            key: 'personal',
+        },
+        {
+            title: '회의 가능 시간',
+            timeCounts,
+            selectedTimes: [],
+            toggleTime: (): void => {},
+            isPersonal: false,
+            isDisabled: true,
+            key: 'meeting',
+        },
+    ];
+
+    const buttons = [
+        {
+            text: '취소',
+            color: 'blue',
+            onClick: onCancel,
+            disabled: false,
+            key: 'cancel-button',
+        },
+        {
+            text: '일정 조율 저장',
+            color: 'blue',
+            onClick: async (): Promise<void> => {
+                try {
+                    await handleSaveSchedule();
+                    onCancel();
+                } catch (error) {
+                    console.error('스케줄 저장에 실패했습니다.', error);
+                }
+            },
+            disabled: personalAvailable.length === 0,
+            key: 'save-button',
+        },
+    ];
+
     return (
         <>
             <TimeGridContainer>
-                <TimeGrid
-                    title="개인 가능 시간"
-                    startDate={startDate}
-                    endDate={endDate}
-                    startTime={startTime}
-                    endTime={endTime}
-                    timeCounts={{}}
-                    selectedTimes={personalAvailable}
-                    toggleTime={handleToggleTime}
-                    isPersonal
-                />
-                <TimeGrid
-                    title="회의 가능 시간"
-                    startDate={startDate}
-                    endDate={endDate}
-                    startTime={startTime}
-                    endTime={endTime}
-                    timeCounts={timeCounts}
-                    selectedTimes={[]}
-                    toggleTime={(): void => {}}
-                    isDisabled
-                />
+                {timeGridData.map((grid) => {
+                    return (
+                        <TimeGrid
+                            key={grid.key}
+                            title={grid.title}
+                            startDate={startDate}
+                            endDate={endDate}
+                            startTime={startTime}
+                            endTime={endTime}
+                            timeCounts={grid.timeCounts}
+                            selectedTimes={grid.selectedTimes}
+                            toggleTime={grid.toggleTime}
+                            isPersonal={grid.isPersonal}
+                            isDisabled={grid.isDisabled}
+                        />
+                    );
+                })}
             </TimeGridContainer>
-
             <MemberContainer>
                 <Title>참여 인원</Title>
                 <MemberTable
@@ -233,22 +272,18 @@ const When2meet: React.FC<When2meetProps> = ({
                     })}
                 />
             </MemberContainer>
-
             <ButtonContainer>
-                <ModalButton text="취소" color="blue" onClick={onCancel} />
-                <ModalButton
-                    text="일정 조율 저장"
-                    color="blue"
-                    disabled={personalAvailable.length === 0}
-                    onClick={async (): Promise<void> => {
-                        try {
-                            await handleSaveSchedule();
-                            onCancel();
-                        } catch (error) {
-                            console.error('스케줄 저장에 실패했습니다.', error);
-                        }
-                    }}
-                />
+                {buttons.map((button) => {
+                    return (
+                        <ModalButton
+                            key={button.key}
+                            text={button.text}
+                            color={button.color}
+                            onClick={button.onClick}
+                            disabled={button.disabled}
+                        />
+                    );
+                })}
             </ButtonContainer>
         </>
     );
