@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 // import axios from 'axios';
-import CalendarButton from './CalendarButton';
-import ScheduleCreateModal from '../modal/schedule/ScheduleCreateModal';
-import ScheduleCheckModal from '../modal/schedule/ScheduleCheckModal';
-
+import {
+    ScheduleCreateModal,
+    ScheduleCheckModal,
+    CalendarButton,
+} from '@components';
+import {
+    FlexCol,
+    FlexRow,
+    ItemsCenterEndRow,
+    ItemsCenterRow,
+    ItemsCenterSpaceRow,
+} from '@styles';
+import { getMonthYear, generateCalendar, isSameDay } from '@utils';
 // const axiosInstance = axios.create({
 //     baseURL: process.env.REACT_APP_BASE_URL,
 // });
@@ -33,20 +42,38 @@ interface ScheduleData {
     name?: string;
 }
 
-const CalendarContainer = styled.div`
+interface DayCellProps {
+    $isCurrentMonth: boolean;
+    $hasEvent?: boolean;
+    $isSelected?: boolean;
+}
+
+interface ProjectCalendarProps {
+    projectId: string;
+    addSchedule: (newSchedule: ScheduleData) => void;
+}
+
+// 레이아웃 스타일
+const Container = styled(FlexCol)`
     margin-top: 44px;
+    gap: 20px;
 `;
 
-const CalendarNavigation = styled.div`
-    display: flex;
-    justify-content: space-between;
-    padding: 0 10px;
+const NavArea = styled(ItemsCenterSpaceRow)`
+    padding: 0 20px;
 `;
 
+const WeekdaysArea = styled(ItemsCenterRow)``;
+
+const ScheduleButtonArea = styled(ItemsCenterEndRow)`
+    gap: 10px;
+`;
+
+// 컴포넌트 스타일
 const NavButton = styled.button`
     background-color: transparent;
     border: none;
-    font-size: 26px;
+    font-size: 30px;
     cursor: pointer;
 
     &:hover {
@@ -59,51 +86,36 @@ const MonthYearTitle = styled.span`
     font-weight: var(--font-bold);
 `;
 
-const WeekdaysRow = styled.div`
-    display: flex;
-    justify-content: space-around;
+const WeekdayCell = styled.div`
+    flex: 1;
     text-align: center;
+    font-size: 20px;
     font-weight: var(--font-medium);
     color: var(--color-gray-700);
-    margin-top: 25px;
-    margin-bottom: 10px;
 `;
 
-const WeekdayCell = styled.div`
-    width: 14.28%;
-    text-align: center;
+const DaysArea = styled(FlexCol)`
+    gap: 20px;
 `;
 
-const DaysGrid = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const WeekRow = styled.div`
-    display: flex;
+const WeekRow = styled(FlexRow)`
     width: 100%;
+    gap: 10px;
 `;
-
-interface DayCellProps {
-    $isCurrentMonth: boolean;
-    $hasEvent?: boolean;
-    $isSelected?: boolean;
-}
 
 const DayCell = styled.div<DayCellProps>`
     flex: 1;
     position: relative;
-    padding: 15px 15px;
+    padding: 15px;
     font-size: 18px;
+    border-radius: 13px;
+    text-align: center;
+    cursor: pointer;
     background-color: ${(props) => {
         if (props.$isSelected) return 'var(--color-blue-100)';
         if (props.$hasEvent) return '#E0F0FF';
         return 'var(--color-gray-50)';
     }};
-    border-radius: 13px;
-    text-align: center;
-    margin: 10px 5px;
-    cursor: pointer;
     color: ${(props) => {
         return props.$isSelected
             ? 'var(--background-color)'
@@ -130,16 +142,40 @@ const EventDot = styled.div`
     transform: translateX(-50%);
 `;
 
-const ScheduleButtonContainer = styled.div`
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-`;
+const weekdays: string[] = ['일', '월', '화', '수', '목', '금', '토'];
 
-interface ProjectCalendarProps {
-    projectId: string;
-    addSchedule: (newSchedule: ScheduleData) => void;
-}
+const dummySchedules: ScheduleData[] = [
+    {
+        scheduleId: '1',
+        scheduleName: 'Team Meeting',
+        startDate: '2025-01-10',
+        endDate: '2025-01-10',
+        startTime: '10:00',
+        endTime: '11:00',
+        createdAt: '2025-01-01',
+        isEnded: false,
+    },
+    {
+        scheduleId: '2',
+        scheduleName: 'Project Deadline',
+        startDate: '2025-01-15',
+        endDate: '2025-01-15',
+        startTime: '12:00',
+        endTime: '13:00',
+        createdAt: '2025-01-05',
+        isEnded: false,
+    },
+    {
+        scheduleId: '3',
+        scheduleName: 'Client Presentation',
+        startDate: '2025-01-15',
+        endDate: '2025-01-15',
+        startTime: '15:00',
+        endTime: '16:00',
+        createdAt: '2025-01-07',
+        isEnded: false,
+    },
+];
 
 const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     projectId,
@@ -153,7 +189,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     const [selectedEndDate, setSelectedEndDate] = useState<Date | null>(null);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [isCheckModalOpen, setIsCheckModalOpen] = useState<boolean>(false);
-    const [schedules, setSchedules] = useState<ScheduleData[]>([]);
+    const [schedules, setSchedules] = useState<ScheduleData[]>(dummySchedules);
     const [selectedSchedules, setSelectedSchedules] = useState<ScheduleData[]>(
         [],
     );
@@ -203,10 +239,6 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         setSelectedSchedules([]);
     };
 
-    const getMonthYear = (date: Date): string => {
-        return date.toLocaleString('ko-KR', { year: 'numeric', month: 'long' });
-    };
-
     const prevMonth = (): void => {
         setCurrentDate(
             new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
@@ -219,45 +251,6 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
         );
     };
 
-    const getWeekdays = (): string[] => {
-        return ['일', '월', '화', '수', '목', '금', '토'];
-    };
-
-    const generateCalendar = (): Date[][] => {
-        const startOfMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth(),
-            1,
-        );
-        const endOfMonth = new Date(
-            currentDate.getFullYear(),
-            currentDate.getMonth() + 1,
-            0,
-        );
-        const dates: Date[][] = [];
-        const current = new Date(startOfMonth);
-        current.setDate(current.getDate() - current.getDay());
-
-        while (current <= endOfMonth || current.getDay() !== 0) {
-            const week: Date[] = [];
-            for (let i = 0; i < 7; i += 1) {
-                week.push(new Date(current));
-                current.setDate(current.getDate() + 1);
-            }
-            dates.push(week);
-        }
-
-        return dates;
-    };
-
-    const isSameDay = (date1: Date, date2: Date): boolean => {
-        return (
-            date1.getFullYear() === date2.getFullYear() &&
-            date1.getMonth() === date2.getMonth() &&
-            date1.getDate() === date2.getDate()
-        );
-    };
-
     const isSelected = (date: Date): boolean => {
         return selectedStartDate && selectedEndDate
             ? date >= selectedStartDate && date <= selectedEndDate
@@ -266,7 +259,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
               : false;
     };
 
-    const handleDateClick = (date: Date): void => {
+    const onClickDate = (date: Date): void => {
         if (isSelectingDates) {
             if (!selectedStartDate) setSelectedStartDate(date);
             else if (!selectedEndDate) {
@@ -295,19 +288,19 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
     };
 
     return (
-        <CalendarContainer>
-            <CalendarNavigation>
+        <Container>
+            <NavArea>
                 <NavButton onClick={prevMonth}>&lt;</NavButton>
                 <MonthYearTitle>{getMonthYear(currentDate)}</MonthYearTitle>
                 <NavButton onClick={nextMonth}>&gt;</NavButton>
-            </CalendarNavigation>
-            <WeekdaysRow>
-                {getWeekdays().map((day) => {
+            </NavArea>
+            <WeekdaysArea>
+                {weekdays.map((day) => {
                     return <WeekdayCell key={day}>{day}</WeekdayCell>;
                 })}
-            </WeekdaysRow>
-            <DaysGrid>
-                {generateCalendar().map((week) => {
+            </WeekdaysArea>
+            <DaysArea>
+                {generateCalendar(currentDate).map((week) => {
                     return (
                         <WeekRow key={week[0].toISOString()}>
                             {week.map((date) => {
@@ -321,7 +314,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                                         $hasEvent={hasEvent(date)}
                                         $isSelected={isSelected(date)}
                                         onClick={() => {
-                                            return handleDateClick(date);
+                                            return onClickDate(date);
                                         }}
                                     >
                                         {date.getDate()}
@@ -332,9 +325,19 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                         </WeekRow>
                     );
                 })}
-            </DaysGrid>
-            <ScheduleButtonContainer>
+            </DaysArea>
+            <ScheduleButtonArea>
+                {isSelectingDates && (
+                    <CalendarButton
+                        type="cancel"
+                        onCancel={() => {
+                            resetSelection();
+                            setIsSelectingDates(false);
+                        }}
+                    />
+                )}
                 <CalendarButton
+                    type="schedule"
                     isSelectingDates={isSelectingDates}
                     hasSelectedDates={!!selectedStartDate}
                     onClick={() => {
@@ -342,12 +345,8 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                             ? setIsModalOpen(true)
                             : setIsSelectingDates(!isSelectingDates);
                     }}
-                    onCancel={() => {
-                        resetSelection();
-                        setIsSelectingDates(false);
-                    }}
                 />
-            </ScheduleButtonContainer>
+            </ScheduleButtonArea>
             {isModalOpen && selectedStartDate && selectedEndDate && (
                 <ScheduleCreateModal
                     projectId={projectId}
@@ -366,7 +365,7 @@ const ProjectCalendar: React.FC<ProjectCalendarProps> = ({
                     onConfirm={closeCheckModal}
                 />
             )}
-        </CalendarContainer>
+        </Container>
     );
 };
 
