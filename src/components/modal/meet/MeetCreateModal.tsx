@@ -12,8 +12,11 @@ import {
     CenterRow,
     FlexCol,
     ItemsCenterSpaceRow,
+    ItemsCenterStartRow,
     ItemsCenterEndRow,
+    SpaceBetweenCol,
 } from '@styles';
+import { FormatModalDateTime } from '@utils';
 
 // -- Axios Instance 설정 --
 const axiosInstance = axios.create({
@@ -51,18 +54,21 @@ const Backdrop = styled(CenterRow)`
     z-index: 1000;
 `;
 
-const Container = styled(FlexCol)`
+const Container = styled(SpaceBetweenCol)`
     width: 100%;
     max-width: 520px;
     height: 300px;
     box-sizing: border-box;
-    gap: 20px;
-    padding: 20px 20px;
+    padding: 20px;
     background-color: var(--background-color);
     border-radius: 10px;
 `;
 
 const ContentArea = styled(FlexCol)`
+    gap: 20px;
+`;
+
+const ProjectInfoArea = styled(FlexCol)`
     gap: 10px;
 `;
 
@@ -71,37 +77,34 @@ const DateInputArea = styled(ItemsCenterSpaceRow)`
     gap: 10px;
 `;
 
-const DomainArea = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    width: fit-content;
-    margin-top: 10px;
+const DomainArea = styled(ItemsCenterStartRow)`
     position: relative;
+    width: fit-content;
 `;
 
 const DomainSelect = styled.select`
+    position: relative;
+    width: 150px;
     padding: 8px;
-    border: none;
     background-color: var(--color-gray-50);
-    border-radius: 4px;
-    width: 200px;
     color: var(--color-gray-600);
+    border-radius: 4px;
+    border: none;
     outline: none;
     appearance: none;
     text-align: left;
-    position: relative;
-    z-index: 1;
+    cursor: pointer;
 `;
 
 const DropdownArrow = styled.div`
     position: absolute;
-    right: 15px;
+    right: 10px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
     font-size: 12px;
     color: var(--color-gray-600);
-    z-index: 0;
+    z-index: 1;
 `;
 
 const ButtonArea = styled(ItemsCenterEndRow)`
@@ -116,7 +119,7 @@ const dateFields = [
     { label: '분', placeholder: 'mm', value: 'minute' },
 ];
 
-const domains = ['IT', '경제', '금융', '의료'];
+const domains = ['IT', '경제', '금융', '의료', '기획'];
 
 const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
     projectId,
@@ -148,15 +151,10 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         };
     };
 
-    const formatDateTime = (): string => {
-        const { year, month, day, hour, minute } = dateTime;
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hour.padStart(2, '0')}:${minute.padStart(2, '0')}:00`;
-    };
-
     const onClickCreateButton = async (): Promise<void> => {
         const meetingData = {
             name,
-            startDateTime: formatDateTime(),
+            startDateTime: FormatModalDateTime(dateTime),
             domain,
             isNotify: sendAlert,
         };
@@ -208,69 +206,90 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
         }
     };
 
+    const buttons = [
+        {
+            text: '취소',
+            color: 'gray',
+            onClick: onCancel,
+            key: 'cancel-button',
+        },
+        {
+            text: '생성',
+            color: 'blue',
+            onClick: onClickCreateButton,
+            key: 'create-button',
+        },
+    ];
+
     return (
         <Backdrop>
             <Container>
-                <LargeModalTitleTab type="project" title="회의 생성" />
                 <ContentArea>
-                    <ProjectInput
-                        type="text"
-                        value={name}
-                        onChange={onChangeInput}
-                        placeholder="회의 이름을 입력하세요."
-                    />
-                    <DateInputArea>
-                        {dateFields.map((field) => {
-                            return (
-                                <DateInput
-                                    key={field.value}
-                                    type="meet"
-                                    label={field.label}
-                                    value={
-                                        dateTime[
-                                            field.value as keyof typeof dateTime
-                                        ]
-                                    }
-                                    onChange={onChangeDate(field.value)}
-                                    placeholder={field.placeholder}
-                                />
-                            );
-                        })}
-                    </DateInputArea>
-                </ContentArea>
-                <RadioInput
-                    label="멤버들에게 회의 생성 알림을 보낼까요?"
-                    name="sendAlert"
-                    checked={sendAlert}
-                    onChange={() => {
-                        return setSendAlert(!sendAlert);
-                    }}
-                />
-                <DomainArea>
-                    <DomainSelect
-                        value={domain}
-                        onChange={(event) => {
-                            return setDomain(event.target.value);
+                    <LargeModalTitleTab type="project" title="회의 생성" />
+                    <ProjectInfoArea>
+                        <ProjectInput
+                            type="text"
+                            value={name}
+                            onChange={onChangeInput}
+                            placeholder="회의 이름을 입력하세요."
+                        />
+                        <DateInputArea>
+                            {dateFields.map((field) => {
+                                return (
+                                    <DateInput
+                                        key={field.value}
+                                        type="meet"
+                                        label={field.label}
+                                        value={
+                                            dateTime[
+                                                field.value as keyof typeof dateTime
+                                            ]
+                                        }
+                                        onChange={onChangeDate(field.value)}
+                                        placeholder={field.placeholder}
+                                    />
+                                );
+                            })}
+                        </DateInputArea>
+                    </ProjectInfoArea>
+                    <RadioInput
+                        label="멤버들에게 회의 생성 알림을 보낼까요?"
+                        name="sendAlert"
+                        checked={sendAlert}
+                        onChange={() => {
+                            return setSendAlert(!sendAlert);
                         }}
-                    >
-                        <option value="">도메인 입력</option>
-                        {domains.map((option) => {
-                            return (
-                                <option key={option} value={option}>
-                                    {option}
-                                </option>
-                            );
-                        })}
-                    </DomainSelect>
-                    <DropdownArrow>▼</DropdownArrow>
-                </DomainArea>
-                <ButtonArea>
-                    <ModalButton text="취소" color="gray" onClick={onCancel} />
-                    <ModalButton
-                        text="생성"
-                        color="blue"
-                        onClick={onClickCreateButton}
                     />
+                    <DomainArea>
+                        <DomainSelect
+                            value={domain}
+                            onChange={(event) => {
+                                return setDomain(event.target.value);
+                            }}
+                        >
+                            <option value="">도메인 선택</option>
+                            {domains.map((option) => {
+                                return (
+                                    <option key={option} value={option}>
+                                        {option}
+                                    </option>
+                                );
+                            })}
+                        </DomainSelect>
+                        <DropdownArrow>▼</DropdownArrow>
+                    </DomainArea>
+                </ContentArea>
+                <ButtonArea>
+                    {buttons.map((button) => {
+                        return (
+                            <ModalButton
+                                key={button.key}
+                                text={button.text}
+                                color={button.color}
+                                onClick={button.onClick}
+                            />
+                        );
+                    })}
                 </ButtonArea>
             </Container>
         </Backdrop>
