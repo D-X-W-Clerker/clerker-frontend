@@ -6,3 +6,4 @@ export { default as WelcomeModal } from './WelcomeModal';
 
 export * from './member';
 export * from './meet';
+export * from './schedule';
