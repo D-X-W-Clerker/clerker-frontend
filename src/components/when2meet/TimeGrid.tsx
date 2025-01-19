@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { FlexRow, ItemsCenterRow } from '@styles';
+import { FlexRow, ItemsCenterCol } from '@styles';
 
-const ContentContainer = styled(ItemsCenterRow)`
-    flex-direction: column;
+const Container = styled(ItemsCenterCol)`
+    margin-top: 44px;
+    gap: 10px;
 `;
 
-const GridContainer = styled.div<{ $dateCount: number }>`
+const GridArea = styled.div<{ $dateCount: number }>`
     display: grid;
     grid-template-columns: 25px repeat(
             ${({ $dateCount }): number => {
@@ -20,8 +21,6 @@ const GridContainer = styled.div<{ $dateCount: number }>`
 const Title = styled.div`
     font-size: 20px;
     font-weight: var(--font-medium);
-    padding-bottom: 10px;
-    margin-top: 44px;
 `;
 
 const TimeBlockButton = styled.button<{
@@ -150,9 +149,9 @@ const TimeGrid: React.FC<TimeGridProps> = ({
     };
 
     return (
-        <ContentContainer onMouseUp={handleMouseUp}>
+        <Container onMouseUp={handleMouseUp}>
             <Title>{title}</Title>
-            <GridContainer $dateCount={computedDates.length}>
+            <GridArea $dateCount={computedDates.length}>
                 <TimeLabel />
                 {computedDates.map((date) => {
                     return <TimeLabel key={date}>{date}</TimeLabel>;
@@ -192,8 +191,8 @@ const TimeGrid: React.FC<TimeGridProps> = ({
                         </React.Fragment>
                     );
                 })}
-            </GridContainer>
-        </ContentContainer>
+            </GridArea>
+        </Container>
     );
 };
 
