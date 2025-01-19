@@ -45,7 +45,7 @@ const Container = styled(FlexCol)`
     max-width: 520px;
     box-sizing: border-box;
     gap: 40px;
-    padding: 20px 20px;
+    padding: 20px;
     background-color: var(--background-color);
     border-radius: 10px;
 `;
@@ -68,8 +68,12 @@ const ProfileImageArea = styled.div`
 `;
 
 const SvgImage = styled.img<{ $width: number; $height: number }>`
-    width: ${(props): number => props.$width}px;
-    height: ${(props): number => props.$height}px;
+    width: ${(props): number => {
+        return props.$width;
+    }}px;
+    height: ${(props): number => {
+        return props.$height;
+    }}px;
     cursor: pointer;
 `;
 
@@ -104,7 +108,7 @@ const ButtonArea = styled(ItemsCenterRow)`
 
 const FooterArea = styled(ItemsCenterSpaceRow)``;
 
-// `convertImageToFile` 함수 추가
+// 이미지 파일 변환 함수
 const convertImageToFile = async (imageSrc: string): Promise<File> => {
     const response = await fetch(imageSrc);
     const blob = await response.blob();
@@ -152,7 +156,9 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
             formData.append('username', name);
 
             console.log('전송할 formData:');
-            formData.forEach((value, key) => console.log(key, value));
+            formData.forEach((value, key) => {
+                return console.log(key, value);
+            });
 
             const response = await axios.patch(
                 `${process.env.REACT_APP_BASE_URL}/api/auth/profile`,
@@ -190,13 +196,30 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
         }
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (user) {
             setName(user.name);
             setEmail(user.email);
             setProfileImage(null); // 파일 입력 초기화
         }
     }, [user]);
+
+    const modalButtons = [
+        {
+            text: '취소',
+            color: 'gray',
+            onClick: onCancel,
+            key: 'cancel-button',
+        },
+        {
+            text: '확인',
+            color: 'blue',
+            onClick: async () => {
+                await onClickConfirmButton();
+            },
+            key: 'confirm-button',
+        },
+    ];
 
     return (
         <>
@@ -243,7 +266,11 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                         </ProfileInfoArea>
                     </ContentArea>
                     <FooterArea>
-                        <DeleteButton onClick={() => setShowModal(true)}>
+                        <DeleteButton
+                            onClick={() => {
+                                return setShowModal(true);
+                            }}
+                        >
                             <SvgImage
                                 src={DeleteIcon}
                                 $width={18}
@@ -252,16 +279,16 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                             계정 삭제
                         </DeleteButton>
                         <ButtonArea>
-                            <ModalButton
-                                text="취소"
-                                color="gray"
-                                onClick={onCancel}
-                            />
-                            <ModalButton
-                                text="확인"
-                                color="blue"
-                                onClick={onClickConfirmButton}
-                            />
+                            {modalButtons.map((button) => {
+                                return (
+                                    <ModalButton
+                                        key={button.key}
+                                        text={button.text}
+                                        color={button.color}
+                                        onClick={button.onClick}
+                                    />
+                                );
+                            })}
                         </ButtonArea>
                     </FooterArea>
                 </Container>
@@ -290,7 +317,9 @@ const AccountSettingModal: React.FC<AccountSettingModalProps> = ({
                             setShowModal(false);
                         }
                     }}
-                    onCancel={() => setShowModal(false)}
+                    onCancel={() => {
+                        return setShowModal(false);
+                    }}
                     isDelete
                 />
             )}
