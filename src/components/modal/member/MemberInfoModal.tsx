@@ -46,7 +46,7 @@ const Container = styled(FlexCol)`
     height: 350px;
     box-sizing: border-box;
     gap: 20px;
-    padding: 20px 20px;
+    padding: 20px;
     background-color: var(--background-color);
     border-radius: 10px;
 `;
@@ -145,6 +145,21 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
         });
     };
 
+    const modalButtons = [
+        {
+            text: '취소',
+            color: 'gray',
+            onClick: onCancel,
+            key: 'cancel-button',
+        },
+        {
+            text: '완료',
+            color: 'blue',
+            onClick: onClickConfirm,
+            key: 'confirm-button',
+        },
+    ];
+
     return (
         <Backdrop>
             <Container>
@@ -162,12 +177,16 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
                     </MemberTableArea>
                 </ContentArea>
                 <ButtonArea>
-                    <ModalButton text="취소" color="gray" onClick={onCancel} />
-                    <ModalButton
-                        text="완료"
-                        color="blue"
-                        onClick={onClickConfirm}
-                    />
+                    {modalButtons.map((button) => {
+                        return (
+                            <ModalButton
+                                key={button.key}
+                                text={button.text}
+                                color={button.color}
+                                onClick={button.onClick}
+                            />
+                        );
+                    })}
                 </ButtonArea>
             </Container>
         </Backdrop>
