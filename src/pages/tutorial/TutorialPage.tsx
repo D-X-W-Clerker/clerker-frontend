@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Clerker, WhiteAddIcon } from '@assets';
 import { TutorialModal } from '@components';
+import { TutorialModalData } from '@data';
 import { CenterCol, ItemsCenterRow, CenterRow } from '@styles';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 Hook
 import Layout from '@layout';
@@ -67,60 +68,15 @@ const SvgImage = styled.img<{ $width: number; $height: number }>`
     }}px;
 `;
 
-const ModalData: {
-    type: string;
-    text: React.ReactNode;
-}[] = [
-    {
-        type: 'CreateProject',
-        text: (
-            <>
-                새로운 프로젝트를 생성하여
-                <br />
-                회의를 시작해보세요!
-            </>
-        ),
-    },
-    {
-        type: 'ScheduleMeeting',
-        text: (
-            <>
-                회의 일정을 편리하게
-                <br />
-                조율할 수 있어요
-            </>
-        ),
-    },
-    {
-        type: 'CreateMeeting',
-        text: (
-            <>
-                회의를 빠르고 간편하게!
-                <br />
-                모든 과정을 한번에 해결해요
-            </>
-        ),
-    },
-    {
-        type: 'AISummarize',
-        text: (
-            <>
-                귀찮은 회의 정리,
-                <br />
-                이젠 모두 Clerker에서!
-            </>
-        ),
-    },
-];
-
 const TutorialPage: React.FC = () => {
     const navigate = useNavigate(); // 페이지 이동을 관리하는 Hook을 사용
 
     // 모달이 클릭됐을 때 실행되는 함수
-    const handleModalClick = (key: string): void => {
+    const onClickModal = (key: string): void => {
         // 특정 모달을 클릭하면, 해당 모달의 key 값을 경로에 넣어 페이지 이동
         navigate(`/tutorial/${key}`);
     };
+
     return (
         <Layout>
             <Container>
@@ -129,15 +85,15 @@ const TutorialPage: React.FC = () => {
                     <Title>에 오신 것을 환영해요!</Title>
                 </WelcomeArea>
                 <ModalArea>
-                    {ModalData.map((button) => {
+                    {TutorialModalData.map((data) => {
                         // 각 모달 데이터를 버튼으로 렌더링
                         return (
                             <TutorialModal
-                                key={button.type}
-                                icon={button.type}
-                                text={button.text}
+                                key={data.type}
+                                icon={data.type}
+                                text={data.text}
                                 onClick={(): void => {
-                                    return handleModalClick(button.type);
+                                    return onClickModal(data.type);
                                 }} // 버튼 클릭 시 페이지 이동
                             />
                         );

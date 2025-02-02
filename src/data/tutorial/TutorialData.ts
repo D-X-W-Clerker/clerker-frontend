@@ -1,6 +1,5 @@
 import React from 'react';
 
-// -- 더미 데이터 --
 export const TutorialData: {
     [key: string]: {
         title: string;

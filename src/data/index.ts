@@ -1,2 +1,2 @@
-export { default as TutorialData } from './TutorialData';
+export * from './tutorial';
 export * from './ProjectDummyData';
