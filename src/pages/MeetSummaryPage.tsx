@@ -8,13 +8,13 @@ import axios from 'axios';
 import { DomainArrowIcon } from '@assets';
 import Layout from '@layout';
 
-// --- 인터페이스
+// 인터페이스
 interface FileItem {
     fileId: number;
     url: string;
 }
 
-interface MeetingData {
+interface SummaryMeetData {
     meetingId: number;
     name: string;
     domain: string | null;
@@ -38,7 +38,7 @@ interface MeetingData {
 //     return config;
 // });
 
-// --- 레이아웃 스타일
+// 스타일 컴포넌트
 const Container = styled(FlexCol)`
     width: 100%;
     max-width: 1300px;
@@ -74,7 +74,6 @@ const FileArea = styled.div`
     background-color: var(--color-white-50);
 `;
 
-// --- 컴포넌트 스타일
 const IconImage = styled.img`
     width: 16px;
     height: 16px;
@@ -145,8 +144,8 @@ const MarkdownContent = styled(ReactMarkdown)`
 //     }
 // };
 
-// 더미데이터
-const meetingDataExample: MeetingData = {
+// 예시 더미데이터
+const SummaryMeetDataExample: SummaryMeetData = {
     meetingId: 3,
     name: '전체 회의 요약 보고서',
     domain: 'IT',
@@ -162,9 +161,12 @@ const meetingDataExample: MeetingData = {
     },
 };
 
+// 메인 함수 컴포넌트
 const MeetSummaryPage: React.FC = () => {
     const { summaryId } = useParams<{ summaryId: string }>();
-    const [meetingData, setMeetingData] = useState<MeetingData | null>(null);
+    const [meetingData, setMeetingData] = useState<SummaryMeetData | null>(
+        null,
+    );
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [fileContents, setFileContents] = useState<Record<number, string>>(
         {},
@@ -220,7 +222,7 @@ const MeetSummaryPage: React.FC = () => {
         // fetchMeetingData();
 
         // 더미데이터 meetingData 할당
-        setMeetingData(meetingDataExample);
+        setMeetingData(SummaryMeetDataExample);
 
         // 더미데이터 fetch 코드
         const fetchFileContents = async () => {
@@ -240,7 +242,7 @@ const MeetSummaryPage: React.FC = () => {
                 });
 
                 // 첫 번째 파일을 기본 활성 탭으로 설정
-                const firstTab = Object.keys(meetingDataExample.files)[0];
+                const firstTab = Object.keys(SummaryMeetDataExample.files)[0];
                 setActiveTab(firstTab);
             } catch (error) {
                 console.error('파일 내용을 가져오는데 실패했습니다:', error);
