@@ -11,6 +11,9 @@
             "@components": ["components/index.ts"],
             "@components/*": ["components/*"],
 
+            "@data": ["data/index.ts"],
+            "@data/*": ["data/*"],
+
             "@pages": ["pages/index.ts"],
             "@pages/*": ["pages/*"],
 
@@ -20,11 +23,11 @@
             "@styles": ["styles/index.ts"],
             "@styles/*": ["styles/*"],
 
+            "@types": ["types/index.ts"],
+            "@types/*": ["types/*"],
+
             "@utils": ["utils/index.ts"],
             "@utils/*": ["utils/*"],
-
-            "@data": ["data/index.ts"],
-            "@data/*": ["data/*"],
 
             "@layout": ["Layout"],
         }

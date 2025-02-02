@@ -23,7 +23,7 @@ import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
 //     createProject,
 //     createChildProject,
 // } from '../../apis';
-import { Project } from '../../types';
+import { Project } from '@types';
 
 // -- 인터페이스 --
 interface InboxItem {

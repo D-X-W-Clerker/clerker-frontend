@@ -5,7 +5,7 @@ import { AddIcon } from '@assets';
 import { ActionButton, FolderItem } from '@components';
 import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
-import { Project, Meeting, ChildProject } from '../../types';
+import { Project, Meeting, ChildProject } from '@types';
 
 // -- 인터페이스 --
 // interface Meeting {
