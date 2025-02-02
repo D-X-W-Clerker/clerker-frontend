@@ -84,6 +84,7 @@ module.exports = {
                     ['@styles', './src/styles'],
                     ['@utils', './src/utils'],
                     ['@data', './src/data'],
+                    ['@layout', './src/Layout'],
                 ],
                 extensions: ['.ts', '.tsx', '.js', '.jsx'],
             },

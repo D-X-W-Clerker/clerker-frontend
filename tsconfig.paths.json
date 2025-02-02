@@ -24,7 +24,9 @@
             "@utils/*": ["utils/*"],
 
             "@data": ["data/index.ts"],
-            "@data/*": ["data/*"]
+            "@data/*": ["data/*"],
+
+            "@layout": ["Layout"],
         }
     }
 }

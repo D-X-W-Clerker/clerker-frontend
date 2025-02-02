@@ -18,7 +18,7 @@ import {
 } from '@styles';
 import { TutorialData } from '@data';
 import { useParams, useNavigate } from 'react-router-dom'; // URL 경로에서 파라미터를 가져오는 Hook
-import Layout from '../../Layout';
+import Layout from '@layout';
 
 // -- 스타일 컴포넌트 --
 const Container = styled(SpaceBetweenCol)`

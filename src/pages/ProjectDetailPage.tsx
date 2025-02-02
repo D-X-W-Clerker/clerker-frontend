@@ -21,7 +21,7 @@ import { projectInfo, dummyMeetingData, dummyScheduleData } from '@data';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import axios from 'axios';
 import { useAuthStore } from '@store';
-import Layout from '../Layout';
+import Layout from '@layout';
 // import { getProjectInfo } from '../apis';
 
 // Axios Instance 설정

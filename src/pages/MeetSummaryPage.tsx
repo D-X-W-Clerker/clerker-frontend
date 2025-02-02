@@ -6,7 +6,7 @@ import { TitleTab } from '@components';
 import { FlexCol, ItemsCenterRow } from '@styles';
 import axios from 'axios';
 import { DomainArrowIcon } from '@assets';
-import Layout from '../Layout';
+import Layout from '@layout';
 
 // --- 인터페이스
 interface FileItem {

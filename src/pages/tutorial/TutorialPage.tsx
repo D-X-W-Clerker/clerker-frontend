@@ -4,7 +4,7 @@ import { Clerker, WhiteAddIcon } from '@assets';
 import { TutorialModal } from '@components';
 import { CenterCol, ItemsCenterRow, CenterRow } from '@styles';
 import { useNavigate } from 'react-router-dom'; // 페이지 이동을 위한 Hook
-import Layout from '../../Layout';
+import Layout from '@layout';
 
 // -- 스타일 컴포넌트 --
 const Container = styled(CenterCol)`
