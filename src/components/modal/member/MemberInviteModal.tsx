@@ -12,8 +12,9 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import { Emails } from '@types';
 import { useMutation } from 'react-query';
-import { inviteMember } from '../../../apis';
+import { inviteMember } from '@api';
 
 // -- 인터페이스 --
 interface MemberInviteModalProps {
@@ -72,10 +73,10 @@ const MemberInviteModal: React.FC<MemberInviteModalProps> = ({
     onCancel,
 }) => {
     const [user, setUsers] = useState<string>('');
-    const [emails, setEmails] = useState<string[]>([]);
+    const [emails, setEmails] = useState<Emails['emails']>([]);
 
     const { mutate: invite, isLoading } = useMutation(
-        (data: { projectId: string; emails: string[] }) => {
+        (data: { projectId: string; emails: Emails['emails'] }) => {
             return inviteMember(data.projectId, { emails: data.emails });
         },
         {

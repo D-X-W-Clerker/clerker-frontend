@@ -15,14 +15,14 @@ import {
     AccountSettingModal,
 } from '@components';
 import { CenterRow, FlexCol, ItemsCenterRow } from '@styles';
-// import { useQuery, useMutation, useQueryClient } from 'react-query';
-// import {
-//     getNotification,
-//     deleteNotification,
-//     getProject,
-//     createProject,
-//     createChildProject,
-// } from '../../apis';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
+import {
+    getNotification,
+    deleteNotification,
+    getProject,
+    createProject,
+    createChildProject,
+} from '@api';
 import { Project } from '@types';
 
 // -- 인터페이스 --

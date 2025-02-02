@@ -2,8 +2,8 @@
     "compilerOptions": {
         "baseUrl": "src",
         "paths": {
-            "@apis": ["apis/index.ts"],
-            "@apis/*": ["apis/*"],
+            "@api": ["api/index.ts"],
+            "@api/*": ["api/*"],
 
             "@assets": ["assets/index.ts"],
             "@assets/*": ["assets/*"],

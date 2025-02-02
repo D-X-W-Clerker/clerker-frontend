@@ -10,7 +10,7 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
-import { modifyProject } from '../../../apis';
+import { modifyProject } from '@api';
 
 // -- 인터페이스 --
 interface Member {

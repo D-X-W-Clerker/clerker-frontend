@@ -10,7 +10,7 @@ import {
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
 import { useMutation, useQueryClient } from 'react-query';
-import { deleteProject, exitProject, modifyProject } from '../../apis';
+import { deleteProject, exitProject, modifyProject } from '@api';
 
 // -- 인터페이스 --
 interface FolderItemProps {

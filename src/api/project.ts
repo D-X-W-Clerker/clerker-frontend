@@ -1,29 +1,17 @@
 import axios from 'axios';
 import { useAuthStore } from '@store';
-import { Project, Meeting, ChildProject } from '@types';
+import { Project, ProjectMember, Emails, Meeting, ChildProject } from '@types';
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
-interface Member {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
 interface ProjectRequest {
     projectName: string;
-    members: Member[];
+    members: ProjectMember[];
 }
 
 interface ProjectInfo {
     projectName: string;
-    members: Member[];
-}
-
-interface Emails {
-    emails: string[];
+    members: ProjectMember[];
 }
 
 export const getProject = async (): Promise<Project[]> => {

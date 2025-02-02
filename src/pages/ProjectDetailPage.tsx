@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-// import { useQuery } from 'react-query';
+import { useQuery } from 'react-query';
 import { ActiveSettingIcon, MemberIcon, MemberAddIcon, AddIcon } from '@assets';
 import {
     MemberTable,
@@ -22,7 +22,7 @@ import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
 import axios from 'axios';
 import { useAuthStore } from '@store';
 import Layout from '@layout';
-// import { getProjectInfo } from '../apis';
+import { getProjectInfo } from '@api';
 
 // Axios Instance 설정
 // const axiosInstance = axios.create({
