@@ -4,14 +4,14 @@ import { FileIcon } from '@assets';
 import { ItemsCenterSpaceRow, ItemsCenterRow } from '@styles';
 import { FormatDateTime } from '@utils';
 
-// -- 인터페이스 --
-interface MeetFileProps {
+// 인터페이스
+interface EventFileProps {
     meetingName: string;
     dateTime: string; // 백엔드에서 받아오는 날짜와 시간 (ISO 형식)
     onClick?: () => void;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(ItemsCenterSpaceRow)`
     width: 100%;
     box-sizing: border-box;
@@ -43,8 +43,7 @@ const SvgImage = styled.img`
     height: 14px;
 `;
 
-// isEnded로 navigate 조건부 렌더링
-const EventFile: React.FC<MeetFileProps> = ({
+const EventFile: React.FC<EventFileProps> = ({
     meetingName,
     dateTime,
     onClick,
