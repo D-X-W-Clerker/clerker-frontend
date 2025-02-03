@@ -2,14 +2,9 @@ import React from 'react';
 import styled from 'styled-components';
 import { FolderIcon, ActiveLogoutIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
+import { TitleTabProps } from '@types';
 
-// -- 인터페이스 --
-interface SmallModalTitleTabProps {
-    type: string;
-    title: string;
-}
-
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(ItemsCenterRow)`
     gap: 5px;
     font-size: 20px;
@@ -25,10 +20,8 @@ const IconImage = styled.img<{ $width: number; $height: number }>`
     }}px;
 `;
 
-const SmallModalTitleTab: React.FC<SmallModalTitleTabProps> = ({
-    type,
-    title,
-}) => {
+// 메인 함수 컴포넌트
+const SmallModalTitleTab: React.FC<TitleTabProps> = ({ type, title }) => {
     const isProject = type === 'project';
 
     return (
