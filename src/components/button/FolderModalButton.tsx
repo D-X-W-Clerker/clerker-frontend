@@ -1,15 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ItemsCenterRow } from '@styles';
+import { LabelButtonProps } from '@types';
 
-interface FolderModalButtonProps {
-    icon: string;
-    label: string;
-    onClick: () => void;
-    type: string;
+// 인터페이스
+interface FolderModalButtonProps extends LabelButtonProps {
+    type: 'change' | 'delete' | 'out';
 }
 
-const Container = styled(ItemsCenterRow)<{ $type: string }>`
+// 스타일 컴포넌트
+const Container = styled(ItemsCenterRow)<{
+    $type: 'change' | 'delete' | 'out';
+}>`
     width: 100%;
     box-sizing: border-box;
     padding: 5px;
@@ -33,7 +35,8 @@ const SvgIcon = styled.img`
     height: 14px;
 `;
 
-const MenuTab: React.FC<FolderModalButtonProps> = ({
+// 메인 함수 컴포넌트
+const FolderModalButton: React.FC<FolderModalButtonProps> = ({
     icon,
     label,
     onClick,
@@ -47,4 +50,4 @@ const MenuTab: React.FC<FolderModalButtonProps> = ({
     );
 };
 
-export default MenuTab;
+export default FolderModalButton;

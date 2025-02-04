@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { ModalButton } from '@components';
 import { ItemsCenterRow } from '@styles';
 
-// -- 인터페이스 --
+// 인터페이스
 interface ProjectInputProps {
     type: string;
     value: string;
@@ -13,7 +13,7 @@ interface ProjectInputProps {
     isEditable?: boolean;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(ItemsCenterRow)`
     width: 100%;
     box-sizing: border-box;
@@ -45,12 +45,13 @@ const Value = styled.span`
     font-size: 14px;
 `;
 
+// 메인 함수 컴포넌트
 const ProjectInput: React.FC<ProjectInputProps> = ({
     type,
     value,
     onChange,
     placeholder,
-    onClick,
+    onClick = () => {},
     isEditable = true,
 }) => {
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value); // 이메일 유효성 체크
@@ -70,7 +71,7 @@ const ProjectInput: React.FC<ProjectInputProps> = ({
                 <ModalButton
                     text="초대"
                     color={isEmailValid ? 'blue' : 'gray'}
-                    onClick={isEmailValid ? onClick : undefined} // 이메일이 유효하지 않으면 비활성화
+                    onClick={onClick}
                     disabled={!isEmailValid}
                 />
             )}

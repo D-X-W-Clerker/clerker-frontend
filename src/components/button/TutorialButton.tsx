@@ -1,13 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+import { TextButtonProps } from '@types';
 
-// -- 인터페이스 --
-interface ModalButtonProps {
-    text: string;
-    onClick: () => void;
-}
-
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled.button`
     font-size: 17px;
     color: var(--background-color);
@@ -22,8 +17,9 @@ const Container = styled.button`
     }
 `;
 
-const ModalButton: React.FC<ModalButtonProps> = ({ text, onClick }) => {
+// 메인 함수 컴포넌트
+const TutorialButton: React.FC<TextButtonProps> = ({ text, onClick }) => {
     return <Container onClick={onClick}>{text}</Container>;
 };
 
-export default ModalButton;
+export default TutorialButton;

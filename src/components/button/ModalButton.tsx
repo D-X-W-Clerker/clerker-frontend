@@ -1,15 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
+import { TextButtonProps } from '@types';
 
-// -- 인터페이스 --
-interface ModalButtonProps {
-    text: string;
+interface ModalButtonProps extends TextButtonProps {
     color: string;
-    onClick?: () => void;
     disabled?: boolean; // disabled 속성 추가
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled.button<{ $bgColor: string; $disabled: boolean }>`
     font-size: 15px;
     color: var(--background-color);
@@ -33,6 +31,7 @@ const Container = styled.button<{ $bgColor: string; $disabled: boolean }>`
     }
 `;
 
+// 메인 함수 컴포넌트
 const ModalButton: React.FC<ModalButtonProps> = ({
     text,
     color,
@@ -50,7 +49,7 @@ const ModalButton: React.FC<ModalButtonProps> = ({
         <Container
             $bgColor={bgColor}
             $disabled={disabled}
-            onClick={!disabled && onClick ? onClick : undefined}
+            onClick={onClick}
             disabled={disabled}
         >
             {text}

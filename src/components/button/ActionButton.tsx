@@ -1,13 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ItemsCenterRow } from '@styles';
+import { LabelButtonProps } from '@types';
 
-interface ActionButtonProps {
-    icon: string;
-    label: string;
-    onClick: () => void;
-}
-
+// 스타일 컴포넌트
 const Container = styled(ItemsCenterRow)`
     width: 100%;
     box-sizing: border-box;
@@ -28,7 +24,8 @@ const SvgIcon = styled.img`
     height: 14px;
 `;
 
-const MenuTab: React.FC<ActionButtonProps> = ({ icon, label, onClick }) => {
+// 메인 함수 컴포넌트
+const ActionButton: React.FC<LabelButtonProps> = ({ icon, label, onClick }) => {
     return (
         <Container onClick={onClick}>
             <SvgIcon src={icon} />
@@ -37,4 +34,4 @@ const MenuTab: React.FC<ActionButtonProps> = ({ icon, label, onClick }) => {
     );
 };
 
-export default MenuTab;
+export default ActionButton;
