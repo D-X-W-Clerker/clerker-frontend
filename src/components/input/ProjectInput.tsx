@@ -2,15 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { ModalButton } from '@components';
 import { ItemsCenterRow } from '@styles';
+import { BaseInputProps } from '@types';
 
 // 인터페이스
-interface ProjectInputProps {
+interface ProjectInputProps extends BaseInputProps {
     type: string;
-    value: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
     onClick?: () => void;
-    isEditable?: boolean;
 }
 
 // 스타일 컴포넌트

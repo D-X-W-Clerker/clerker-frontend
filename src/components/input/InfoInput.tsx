@@ -1,17 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { FlexCol } from '@styles';
+import { LabelInputProps } from '@types';
 
-// -- 인터페이스 --
-interface InfoInputProps {
-    label: string;
-    value: string;
-    isEditable?: boolean;
-    onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-}
-
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(FlexCol)`
     gap: 5px;
 `;
@@ -35,7 +27,8 @@ const NameInput = styled.input`
     }
 `;
 
-const InfoInput: React.FC<InfoInputProps> = ({
+// 메인 함수 컴포넌트
+const InfoInput: React.FC<LabelInputProps> = ({
     label,
     value = '',
     isEditable = false,

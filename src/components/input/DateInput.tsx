@@ -1,15 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ItemsCenterEndRow } from '@styles';
-
-// 인터페이스
-interface DateInputProps {
-    label: string;
-    value: string;
-    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    placeholder?: string;
-    isEditable?: boolean;
-}
+import { LabelInputProps } from '@types';
 
 // 스타일 컴포넌트
 const Container = styled(ItemsCenterEndRow)`
@@ -50,7 +42,7 @@ const Label = styled.span`
 `;
 
 // 메인 함수 컴포넌트
-const DateInput: React.FC<DateInputProps> = ({
+const DateInput: React.FC<LabelInputProps> = ({
     label,
     value,
     onChange,
