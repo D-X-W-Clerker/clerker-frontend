@@ -4,14 +4,14 @@ import { ProjectLogoutIcon, DeleteIcon, NewNameAddIcon } from '@assets';
 import { FolderModalButton } from '@components';
 import { FlexCol } from '@styles';
 
-// -- 인터페이스 --
+// 인터페이스
 interface FolderModalProps {
     onRename: () => void;
     onDelete: () => void;
     onLeave: () => void;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(FlexCol)`
     background-color: var(--background-color);
     border-radius: 20px;
@@ -46,7 +46,7 @@ const FolderModal: React.FC<FolderModalProps> = ({
             onClick: onLeave,
             type: 'out',
         },
-    ];
+    ] as const;
 
     return (
         <Container>
