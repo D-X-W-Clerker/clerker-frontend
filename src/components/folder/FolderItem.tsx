@@ -9,10 +9,11 @@ import {
 } from '@assets';
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
+import { ProjectMember } from '@types';
 import { useMutation, useQueryClient } from 'react-query';
 import { deleteProject, exitProject, modifyProject } from '@api';
 
-// -- 인터페이스 --
+// 인터페이스
 interface FolderItemProps {
     id: string;
     name: string;
@@ -23,19 +24,12 @@ interface FolderItemProps {
     isSubFolder?: boolean;
 }
 
-interface Member {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
 interface ProjectRequest {
     projectName: string;
-    members: Member[];
+    members: ProjectMember[];
 }
 
+// 스타일 컴포넌트
 const Container = styled(ItemsCenterRow)<{
     $isSelected: boolean;
     $isSubFolder?: boolean;
@@ -169,6 +163,7 @@ const Backdrop = styled.div`
     height: 100vh;
 `;
 
+// 메인 함수 컴포넌트
 const FolderItem: React.FC<FolderItemProps> = ({
     id,
     name,

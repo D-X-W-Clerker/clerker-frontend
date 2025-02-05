@@ -1,21 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTable, Column } from 'react-table';
+import { ProjectMember } from '@types';
 
 /* eslint-disable react/jsx-props-no-spreading */
 
-// -- 인터페이스 --
+// 인터페이스
 interface MemberTableProps {
-    data: {
-        organizationId: string;
-        username: string;
-        email: string;
-        type: string | null;
-        role: string;
-    }[];
+    data: ProjectMember[];
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled.div`
     width: 100%;
     overflow-x: auto;
@@ -67,6 +62,7 @@ const TextWithBackground = styled.div<{ $roleColor?: string }>`
     border-radius: 4px;
 `;
 
+// 상수 객체
 const roleColorMap: { [key: string]: string } = {
     PM: 'var(--color-pm)',
     FE: 'var(--color-fe)',
@@ -75,28 +71,17 @@ const roleColorMap: { [key: string]: string } = {
     AI: 'var(--color-ai)',
 };
 
-const columns: Column<{
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}>[] = [
+const columns: Column<ProjectMember>[] = [
     { Header: '이름', accessor: 'username', id: 'username' },
     { Header: '업무', accessor: 'type', id: 'type' },
     { Header: '이메일', accessor: 'email', id: 'email' },
     { Header: '권한', accessor: 'role', id: 'role' },
 ];
 
+// 메인 함수 컴포넌트
 const MemberTable: React.FC<MemberTableProps> = ({ data }) => {
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-        useTable<{
-            organizationId: string;
-            username: string;
-            email: string;
-            type: string | null;
-            role: string;
-        }>({ columns, data });
+        useTable<ProjectMember>({ columns, data });
 
     return (
         <Container>

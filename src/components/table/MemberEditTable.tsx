@@ -3,24 +3,17 @@ import styled from 'styled-components';
 import { useTable, Column, CellProps } from 'react-table';
 import { DownArrowIcon } from '@assets';
 import { ItemsCenterRow } from '@styles';
+import { ProjectMember } from '@types';
 
 /* eslint-disable react/jsx-props-no-spreading */
 
-// -- 인터페이스 --
-interface Member {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
+// 인터페이스
 interface MemberEditTableProps {
-    data: Member[];
+    data: ProjectMember[];
     onChangeType: (id: string, newType: string) => void;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled.div`
     width: 100%;
     overflow-x: auto;
@@ -122,7 +115,7 @@ const SelectCell: React.FC<{
 
 const RoleCell = (
     onChangeType: (id: string, newType: string) => void,
-): React.FC<CellProps<Member, string | null>> => {
+): React.FC<CellProps<ProjectMember, string | null>> => {
     return ({ row, value }) => {
         return (
             <SelectCell
@@ -134,12 +127,13 @@ const RoleCell = (
     };
 };
 
+// 메인 함수 컴포넌트
 const MemberEditTable: React.FC<MemberEditTableProps> = ({
     data,
     onChangeType,
 }) => {
     // useMemo를 사용하여 columns를 캐싱
-    const columns = useMemo((): Column<Member>[] => {
+    const columns = useMemo((): Column<ProjectMember>[] => {
         return [
             { Header: '이름', accessor: 'username', id: 'username' },
             {
@@ -154,7 +148,7 @@ const MemberEditTable: React.FC<MemberEditTableProps> = ({
     }, [onChangeType]);
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-        useTable<Member>({ columns, data });
+        useTable<ProjectMember>({ columns, data });
 
     return (
         <Container>
