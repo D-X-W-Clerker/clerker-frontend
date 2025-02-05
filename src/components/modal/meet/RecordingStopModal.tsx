@@ -181,7 +181,6 @@ const RecordingStopModal: React.FC<RecordingStopModalProps> = ({
                             return (
                                 <DateInput
                                     key={field.label}
-                                    type="meet"
                                     label={field.label}
                                     value={field.value}
                                     isEditable={false}

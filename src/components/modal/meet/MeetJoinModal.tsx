@@ -30,7 +30,9 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use((config) => {
     const token = document.cookie
         .split('; ')
-        .find((row) => row.startsWith('token='))
+        .find((row) => {
+            return row.startsWith('token=');
+        })
         ?.split('=')[1];
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
@@ -218,15 +220,16 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                             isEditable={false}
                         />
                         <DateInputArea>
-                            {dateFields.map((field) => (
-                                <DateInput
-                                    key={field.label}
-                                    type="meet"
-                                    label={field.label}
-                                    value={field.value}
-                                    isEditable={false}
-                                />
-                            ))}
+                            {dateFields.map((field) => {
+                                return (
+                                    <DateInput
+                                        key={field.label}
+                                        label={field.label}
+                                        value={field.value}
+                                        isEditable={false}
+                                    />
+                                );
+                            })}
                         </DateInputArea>
                     </ContentArea>
                     <SubContentArea>
@@ -236,7 +239,9 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                                     label="회의를 녹화 하시겠습니까?"
                                     name="sendAlert"
                                     checked={sendAlert}
-                                    onChange={() => setSendAlert(!sendAlert)}
+                                    onChange={() => {
+                                        return setSendAlert(!sendAlert);
+                                    }}
                                 />
                                 <Alert>
                                     녹화 옵션을 선택하지 않을 시, 회의 요약 및
@@ -283,7 +288,9 @@ const MeetJoinModal: React.FC<MeetJoinModalProps> = ({
                     }}
                     domain={domain} // 도메인 전달
                     recordingBlob={recordedBlob} // Blob 전달
-                    onConfirm={() => setShowRecordingStopModal(false)}
+                    onConfirm={() => {
+                        return setShowRecordingStopModal(false);
+                    }}
                 />
             )}
         </>

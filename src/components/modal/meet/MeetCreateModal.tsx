@@ -238,7 +238,6 @@ const MeetCreateModal: React.FC<MeetCreateModalProps> = ({
                                 return (
                                     <DateInput
                                         key={field.value}
-                                        type="meet"
                                         label={field.label}
                                         value={
                                             dateTime[
