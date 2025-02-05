@@ -5,36 +5,18 @@ import { AddIcon } from '@assets';
 import { ActionButton, FolderItem } from '@components';
 import { useFolderStore } from '@store';
 import { FlexCol } from '@styles';
-import { Project, Meeting, ChildProject } from '@types';
+import { Project } from '@types';
 
-// -- 인터페이스 --
-// interface Meeting {
-//     meetingId: string;
-//     name: string;
-// }
-//
-// interface ChildProject {
-//     id: string;
-//     name: string;
-//     childProjects: [];
-//     meetings: Meeting[];
-// }
-//
-// interface Project {
-//     projectId: string;
-//     name: string;
-//     childProjects: ChildProject[];
-//     meetings: Meeting[];
-// }
-
+// 인터페이스
 interface RootFolderProps {
     project: Project;
     onClickCreateSubFolder: (projectId: string) => void;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(FlexCol)``;
 
+// 메인 함수 컴포넌트
 const RootFolder: React.FC<RootFolderProps> = ({
     project,
     onClickCreateSubFolder,
