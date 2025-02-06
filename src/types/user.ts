@@ -9,3 +9,9 @@ export interface ProjectMember {
 export interface Emails {
     emails: string[];
 }
+
+export interface Notification {
+    notificationId: string;
+    content: string;
+    createdAt: string;
+}

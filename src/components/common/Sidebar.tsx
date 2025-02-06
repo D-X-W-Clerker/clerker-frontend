@@ -23,17 +23,9 @@ import {
     createProject,
     createChildProject,
 } from '@api';
-import { Project } from '@types';
+import { Project, Notification } from '@types';
 
-// -- 인터페이스 --
-interface InboxItem {
-    notificationId: string;
-    content: string;
-    createdAt: string;
-    // isUnread: boolean; 여유가 되면 백엔드에게 기능 추가 부탁
-}
-
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Container = styled(FlexCol)`
     position: relative;
     width: 175px;
@@ -131,7 +123,7 @@ const SideBar: React.FC = () => {
     //     },
     // });
 
-    // const { data: fetchedInboxItems = [], refetch } = useQuery<InboxItem[]>(
+    // const { data: fetchedInboxItems = [], refetch } = useQuery<Notification[]>(
     //     'notifications',
     //     getNotification,
     //     {
@@ -153,7 +145,7 @@ const SideBar: React.FC = () => {
     //     },
     // });
 
-    const exampleInboxItems: InboxItem[] = [
+    const exampleInboxItems: Notification[] = [
         {
             notificationId: '1',
             content:

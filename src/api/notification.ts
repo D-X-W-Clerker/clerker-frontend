@@ -1,11 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@store';
-
-interface Notification {
-    notificationId: string;
-    content: string;
-    createdAt: string;
-}
+import { Notification } from '@types';
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
