@@ -1,18 +1,8 @@
 import axios from 'axios';
 import { useAuthStore } from '@store';
-import { Project, ProjectMember, Emails, Meeting, ChildProject } from '@types';
+import { Project, ProjectInfo, ProjectMember, Emails } from '@types';
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
-
-interface ProjectRequest {
-    projectName: string;
-    members: ProjectMember[];
-}
-
-interface ProjectInfo {
-    projectName: string;
-    members: ProjectMember[];
-}
 
 export const getProject = async (): Promise<Project[]> => {
     try {
@@ -111,7 +101,7 @@ export const exitProject = async (projectID: string): Promise<void> => {
 // 프로젝트 정보(이름+멤버) 수정
 export const modifyProject = async (
     projectID: string,
-    data: ProjectRequest,
+    data: ProjectInfo,
 ): Promise<string> => {
     try {
         const { token } = useAuthStore.getState();
