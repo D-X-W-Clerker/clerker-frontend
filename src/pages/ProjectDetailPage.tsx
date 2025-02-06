@@ -19,6 +19,7 @@ import {
 } from '@components';
 import { projectInfo, dummyMeetingData, dummyScheduleData } from '@data';
 import { FlexCol, FlexRow, ItemsCenterRow, ItemsCenterStartRow } from '@styles';
+import { ProjectInfo } from '@types';
 import axios from 'axios';
 import { useAuthStore } from '@store';
 import Layout from '@layout';
@@ -69,19 +70,6 @@ interface ScheduleData {
     endTime: string;
     createdAt: string;
     isEnded: boolean;
-}
-
-interface Member {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
-interface ProjectInfo {
-    projectName: string;
-    members: Member[];
 }
 
 // ModalType에 'when2meet' 추가
