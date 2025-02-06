@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@store';
-import { Project, ProjectInfo, ProjectMember, Emails } from '@types';
+import { Project, ProjectInfo, Emails } from '@types';
 
 const apiUrl = process.env.REACT_APP_BASE_URL;
 
