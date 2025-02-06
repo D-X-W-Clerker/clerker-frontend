@@ -1,5 +1,4 @@
-export interface ProjectMember {
-    organizationId: string;
+export interface Member {
     username: string;
     email: string;
     type: string | null;
