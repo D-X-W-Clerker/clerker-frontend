@@ -1,17 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from '@store';
-
-interface TimeTable {
-    time: string;
-}
-
-interface Member {
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-    timeTables: TimeTable[];
-}
+import { TimeMember } from '@types';
 
 interface ScheduleRequest {
     timeTable: string[];
@@ -44,7 +33,7 @@ export const postTimeTable = async (
 export const getTimeTable = async (
     projectID: string,
     scheduleID: string,
-): Promise<Member[]> => {
+): Promise<TimeMember[]> => {
     try {
         const { token } = useAuthStore.getState();
         const response = await axios.get(

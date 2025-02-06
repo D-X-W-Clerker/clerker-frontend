@@ -3,30 +3,11 @@ import styled from 'styled-components';
 import { useQuery } from 'react-query';
 import { TimeGrid, MemberTable, ModalButton } from '@components';
 import { FlexCol, JustifyCenterRow, ItemsCenterEndRow } from '@styles';
+import { ProjectMember, TimeMember } from '@types';
 import { useAuthStore } from '@store';
 import { getTimeTable, postTimeTable } from '@api';
 
-// 타입 정의
-interface TimeTable {
-    time: string;
-}
-
-interface Member {
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-    timeTables: TimeTable[];
-}
-
-interface User {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
+// 인터페이스
 interface When2meetProps {
     projectID: string;
     scheduleID: string;
@@ -34,7 +15,7 @@ interface When2meetProps {
     endDate: string;
     startTime: string;
     endTime: string;
-    userInfo: User;
+    userInfo: ProjectMember;
     onCancel: () => void;
 }
 
@@ -69,10 +50,10 @@ const When2meet: React.FC<When2meetProps> = ({
     onCancel,
 }) => {
     const [personalAvailable, setPersonalAvailable] = useState<string[]>([]);
-    const [memberData, setMemberData] = useState<Member[]>([]);
+    const [memberData, setMemberData] = useState<TimeMember[]>([]);
     const { user } = useAuthStore();
 
-    const myInfo: Member = {
+    const myInfo: TimeMember = {
         username: user?.name || 'Unknown User',
         email: user?.email || 'unknown@example.com',
         role: userInfo?.role || '',
@@ -108,7 +89,7 @@ const When2meet: React.FC<When2meetProps> = ({
     //     },
     // );
 
-    const updateMyInfo = (times: string[]): Member => {
+    const updateMyInfo = (times: string[]): TimeMember => {
         return {
             ...myInfo,
             timeTables: times.map((time) => {
