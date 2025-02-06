@@ -9,7 +9,7 @@ import {
 } from '@assets';
 import { FolderModal, SmallModal } from '@components';
 import { CenterRow, ItemsCenterRow } from '@styles';
-import { ProjectMember } from '@types';
+import { ProjectInfo } from '@types';
 import { useMutation, useQueryClient } from 'react-query';
 import { deleteProject, exitProject, modifyProject } from '@api';
 
@@ -22,11 +22,6 @@ interface FolderItemProps {
     onClickToggle?: () => void;
     onClickNav: () => void;
     isSubFolder?: boolean;
-}
-
-interface ProjectRequest {
-    projectName: string;
-    members: ProjectMember[];
 }
 
 // 스타일 컴포넌트
@@ -189,7 +184,7 @@ const FolderItem: React.FC<FolderItemProps> = ({
     };
 
     const modifyMutation = useMutation(
-        ({ projectID, data }: { projectID: string; data: ProjectRequest }) => {
+        ({ projectID, data }: { projectID: string; data: ProjectInfo }) => {
             return modifyProject(projectID, data);
         },
         {
