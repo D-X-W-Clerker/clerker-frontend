@@ -10,25 +10,18 @@ import {
     ItemsCenterStartRow,
     ItemsCenterEndRow,
 } from '@styles';
+import { ProjectMember } from '@types';
 import { modifyProject } from '@api';
 
-// -- 인터페이스 --
-interface Member {
-    organizationId: string;
-    username: string;
-    email: string;
-    type: string | null;
-    role: string;
-}
-
+// 인터페이스
 interface MemberInfoModalProps {
     projectId: string;
     projectName: string;
-    memberData: Member[];
+    memberData: ProjectMember[];
     onCancel: () => void;
 }
 
-// -- 스타일 컴포넌트 --
+// 스타일 컴포넌트
 const Backdrop = styled(CenterRow)`
     position: fixed;
     top: 0;
@@ -93,7 +86,7 @@ const MemberInfoModal: React.FC<MemberInfoModalProps> = ({
         (data: {
             projectID: string;
             projectName: string;
-            members: Member[];
+            members: ProjectMember[];
         }) => {
             return modifyProject(data.projectID, {
                 projectName: data.projectName,
